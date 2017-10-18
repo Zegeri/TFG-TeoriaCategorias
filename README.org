@@ -1,0 +1,5 @@
+* Lista de Lectura sobre Teoría de Categorías y Programación Funcional
++ [[https://github.com/hmemcpy/milewski-ctfp-pdf][Bartosz Milewski ~ Category Theory for Programmers]] (En Lectura)
++ [[https://github.com/jpvillaisaza/abel][Villa Isaza, Juan Pedro ~ Category Theory Applied to Functional Programming]]
++ [[http://www.acsu.buffalo.edu/~wlawvere/books.html][F. William Lawvere ~ Matemáticas Conceptuales]]
++ [[https://wiki.haskell.org/User:Michiexile/MATH198][Mikael Vejdemo Johansson ~ Category theory and functional programming]]
