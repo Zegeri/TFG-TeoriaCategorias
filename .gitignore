@@ -4,8 +4,9 @@
 *.pdf
 *.synctex
 *.synctex.gz
-*.txt
 *.log
 *.out
 *.toc
 *.swp
+*.fls
+*.fdb_latexmk
