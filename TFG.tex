@@ -4,6 +4,15 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english, spanish, es-noshorthands]{babel}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[superscript]{cite}
+
+\usepackage{tikz}
+\usetikzlibrary{babel}
+\usetikzlibrary{cd}
+
 %% FONTS: libertine+biolinum+stix
 \usepackage[mono=false]{libertine}
 \usepackage[notext]{stix}
@@ -89,7 +98,6 @@
 % ======================================
 % = Color de la Universidad de Sevilla =
 % ======================================
-\usepackage{tikz}
 \definecolor{USred}{cmyk}{0,1.00,0.65,0.34}
 
 % =========
@@ -154,6 +162,7 @@
 \declaretheorem[name=Corolario, style=normal]{corollary}
 \declaretheorem[name=Proposici\'on, style=normal]{proposition}
 \declaretheorem[name=Lema, style=normal]{lemma}
+\declaretheorem[name=Ejemplo, style=normal]{example}
 
 \declaretheorem[name=Teorema, style=importante]{theorem}
 \declaretheorem[name=Definici\'on, style=importante]{definition}
@@ -161,6 +170,16 @@
 \let\proof=\undefined
 \declaretheorem[name=Demostraci\'on, style=demostracion]{proof}
 
+
+
+\usepackage{scalerel}
+\newcommand{\cat}{{\mathcal{C}}}
+\newcommand{\Set}{{Set}}
+\newcommand{\Grp}{{Grp}}
+\newcommand{\Top}{{Top}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\cod}{cod}
+\DeclareMathOperator{\id}{id}
 
 % ============================
 % = Composición de la página =
@@ -221,7 +240,6 @@
 % =============================
 \begin{document}
 
-
 \maketitle
 
 \frontmatter
@@ -234,8 +252,6 @@
 \addcontentsline{toc}{chapter}{English Abstract}
 \markright{English Abstract}
 
-
-
 \begin{otherlanguage}{english}
     According to the guidelines, every dissertation should include a short english abstract at the beginning. In the abstract, you describe in general terms what is your dissertation about, the main points you want to make, and any important consequences that may arise.
 \end{otherlanguage}
@@ -243,58 +259,163 @@
 
 \chapter{Los enunciados}
 
-\section{Teoremas y demostraciones}
+\section{Categorías y functores}
 
-
-\begin{theorem}[Euclides]\label{thm:th1}
-    Esto es un Teorema. Se numeran a partir del 1 en cada capítulo. Como son importantes, tienen un cuadrado rojo al principio. Llevan letra cursiva.
-\end{theorem}
-
-\begin{proof}
-    Esto es la demostración. Al final de la demostración se puede ver un cuadrado rojo similar al de los teoremas. Las demostraciones no llevan letra cursiva.
-\end{proof}
-
-
-\begin{definition}\label{def:1}
-    Esto es una definición. Las definiciones son importantes; también llevan un cuadradito rojo.
+\begin{definition}
+Una categoría $\cat$ es:
+\begin{itemize}
+\item Una colección de \emph{objetos} $O(\cat)$.
+\item A cada par de objetos $A$, $B$ en $O(\cat)$, una colección de \emph{morfismos} $C(A,B)$ de $A$ a $B$.
+Un morfismo $f$ en $C(A,B)$ se denotará $f \colon A \to B$.
+\item A cada par de morfismos $f \colon A \to B$, $g \colon B \to C$, un morfismo de $g \circ f \colon A \to C$ llamado \emph{morfismo composición} de $f$ y $g$.
+\end{itemize}
+de manera que:
+\begin{itemize}
+\item Para cada objeto $A \in O(\cat)$, existe un morfismo $\id_A \in C(A,A)$ que llamamos \emph{morfismo identidad}.
+\item Para todo morfismo $f \colon A \to B$:
+\[ \id_B \circ f = f \circ \id_A = f \]
+\item Asociatividad de la composición: Para toda tripleta de morfismos $f \colon A \to B$, $g \colon B \to C$, $h \colon C \to D$:
+\begin{equation}\label{cat:3} (h \circ g) \circ f = h \circ (g \circ f) \end{equation}
+\end{itemize}
 \end{definition}
 
+A menudo usaremos diagramas para expresar visualmente ciertas propiedades.
+En Teoría de Categoría, existe una definición precisa de diagrama, pero por ahora, no tenemos las herramientas suficientes para explicarlo.
+Basta imaginar que es un grafo formado por una cantidad finita de objetos y morfismos de una categoría.
 
-\subsection{Otros enunciados}
+El concepto de conmutatividad de un diagrama es el habitual de otros campos.
+Como ejemplo, la propiedad \eqref{cat:3} se puede expresar diciendo que el diagrama
+\[
+\begin{tikzcd}
+A \arrow[rr,"f"]\arrow[rrdd,"g \circ f" above=5pt] \arrow[dd,"h\circ g \circ f"] & & B \arrow[lldd,"h\circ g" below=5pt, crossing over] \arrow[dd,"h"]\\
+&\\
+C & & D \arrow[ll,"g"]
+\end{tikzcd}
+\]
+conmuta.
 
+Dado un morfismo $f \colon A \to B$, llamaremos dominio de $f$ a $\dom f = A$.
+De igual manera, el codominio de $f$ será $\cod f = B$.
 
-\begin{remark}
-    Esto es una observación, que dice que $e=mc^{2}$. Como las observaciones no son importantes, no llevan cuadrado rojo, y el tipo de letra no es cursiva.
-\end{remark}
+Además, llamaremos a la colección de morfismos de una categoría $M(\cat)$.
 
+No hay ni mucho menos falta de ejemplos de categorías, ni siquiera si nos limitamos a un campo específicio de la matemática.
+Algunos ejemplos ilustrativos son los siguientes:
 
-\begin{proof}
-    Si la demostración acaba en una fórmula, para poner el cuadrado rojo a la altura de la última formula, hay que usar la orden \verb|\qedhere|, como en este caso:
-    \[
-        e=mc^{2}.\qedhere
-    \]
+\begin{example}
+La categoría $\Set$ formada por los conjuntos como objetos y funciones entre conjuntos como morfismos.
+La composición de morfismos se corresponde, como es de esperar, con la composición de funciones.
+\end{example}
 
-\end{proof}
+\begin{example}
+La categoría $\Grp$ formada por los grupos como objetos y homomorfismos entre grupos como morfismos.
+\end{example}
 
+\begin{example}
+La categoría $\Top$ formada por los espacios topológicos como objetos y funciones continuas como morfismos.
+\end{example}
 
-\begin{corollary}\label{cor:1}
-    Esto es un corolario.
-\end{corollary}
+También nos interesarán en algunos casos categorías que posean una estructura finita dada, como:
+\begin{example}
+La categoría $\mathbb{1}$ formada por un sólo objeto y su morfismo identidad:
+\[ \begin{tikzcd}
+A \arrow[loop above,"\id_A"]
+\end{tikzcd}\]
+\end{example}
 
-\begin{proposition}\label{pro:1}
-    Esto es una proposición.
+\begin{example}
+La categoría $\mathbb{2}$:
+\[ \begin{tikzcd}
+A \arrow[loop above,"\id_A"] \arrow[r,"f"] & B \arrow[loop above,"\id_B"]
+\end{tikzcd}\]
+\end{example}
+
+\begin{definition}
+Sea $A$, $B$ objetos de una categoría $\cat$.
+Un morfismo $f \colon B \to C$ de una categoría es un monomorfismo (o mónico) si para todo morfismo $g \colon A \to B$ y $h \colon A \to B$ tal que $f \circ g = f \circ h$, entonces $g = h$.
+\end{definition}
+
+\begin{proposition}
+En \Set, un morfismo es mónico si y sólo si es inyectivo.
 \end{proposition}
 
-\begin{lemma}[Gauss]\label{lem:1}
-    Esto es un lema.
-\end{lemma}
+\begin{proof}
+Sea $f \colon B \to C$ un monomorfismo. Sea $b, b' \in B$ tal que $f(b) = f(b')$. Sea $A = \{b\}$ y definimos $g \colon A \to B$ como $g(b)=b'$.
+Entonces $f(\id_A(b)) = f(g(b))$
+como $b$ es el único elemento de $A$, tenemos que:
+\[ f \circ \id_A = f \circ g \]
+luego, como $f$ es monomorfismo:
+\[ \id_A = g \]
+Entonces $b'=g(b)=\id_A(b)=b$.
 
+Consideramos ahora $f \colon B \to C$ un morfismo inyectivo.
+Sean los morfismos $g, h \colon A \to B$ tal que $f \circ g = f \circ h$.
+Sea $a \in A$ cualquiera. Como $f(g(a)) = f(h(a))$ y $f$ es inyectiva, entonces $g(a) = h(a)$.
+Entonces $g = h$. 
+\end{proof}
 
+\begin{definition}
+Un morfismo $f \colon A \to B$ es epimorfismo (o épico) si para cualquier par de morfismos $g \colon B \to C$ y $h \colon B \to C$, se tiene que $g \circ f = h \circ f$ implica que $g = h$.
+\end{definition}
+
+\begin{proposition}
+En \Set, un morfismo es épico si y sólo si es sobreyectivo.
+\end{proposition}
+
+\begin{proof}
+Sea $f \colon A \to B$ un epimorfismo. Supongamos que $f$ no fuera sobreyectivo. Entonces existe $b \in B$ que no es preimagen de ningún elemento de $A$. Sean $g, h \colon B \to \{1,2\}$ tal que $g(x)=h(x)=1$ para todo $x \in B \setminus \{b\}$, $g(b) = 1$ y $h(b) = 2$. Entonces tenemos que $g \circ f = h \circ f$. Como $f$ es epimorfismo, esto implica que $g = h$, pero esto entra en una contradicción.
+
+Sea $f \colon A \to B$ un morfismo sobreyectivo. Sean $g, h \colon B \to C$ tal que $g \circ f = h \circ f$. Para todo $b \in B$, existe $a \in A$ tal que $f(a)=b$, luego: $g(b) = g(f(a)) = h(f(a)) = h(b)$, luego $g = h$.
+\end{proof}
+
+Esta equivalencia entre monomorfismo e inyectividad, y epimorfismo y sobreyectividad no se da en cualquier categoría.
+
+\begin{definition}
+Un functor $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
+\begin{itemize}
+\item $F_O : O(\cat) \to O(\mathcal{D})$.
+\item $F_M : M(\cat) \to M(\mathcal{D})$.
+\end{itemize}
+tal que:
+\begin{itemize}
+\item Respeta el dominio y codominio de los morfismos: A cada morfismo $f : A \to B$:
+\[ F_M(f) : F_O(A) \to F_O(B) \]
+\item Respeta el morfismo identidad:
+\[ F_M(\id_A) = \id_{F_O(A)} \]
+\item Respeta la composición de morfismo: Para todo morfismos $f : A \to B$, $g : B \to C$.
+\[ F_M(g \circ f) = F_M(g) \circ F_M(f) \]
+\end{itemize}
+\end{definition}
+
+Escribiremos $F \colon \cat \to \mathcal{D}$ y a menudo usaremos $F$ para referirnos a $F_M$ ó $F_O$ según el contexto.
+
+\section{Construcciones universales}
+Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
+
+\begin{definition}
+Decimos que un objeto $A \in \cat$ es inicial si para cada objeto $B \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+
+Análogamente, decimos que un objeto $B \in \cat$ es terminal si para cada objeto $A \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+\end{definition}
+
+\section{Transformaciones naturales}
+\begin{definition}
+Una transformación natural $\mu$ entre dos functores $F, G \colon \cat \to \mathcal{D}$ es una colección de funciones
+\[ \mu_A \colon F A \to G A \]
+donde $A \in \cat$ tal que para todo $f \colon A \to B$ el diagrama:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\mu_A"] \arrow[d,"F f"] & G A \arrow[d,"G f"]\\
+F B \arrow[r,"\mu_B"] & G B
+\end{tikzcd}
+\]
+conmuta.
+\end{definition}
+
+Escribiremos $\mu \colon F \Rightarrow G$.
 \backmatter
 
 \bibliographystyle{acm}
-% \biliography{miarchivo} % -> lee miarchivo.bib
-
-
+%\bibliography{bibliografia}
 
 \end{document}
