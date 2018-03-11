@@ -95,6 +95,10 @@
   }
 \makeatother
 
+\usepackage{minted}
+\newcommand{\newterm}[1]{\index{#1}\emph{#1}}
+\newcommand{\code}[1]{\Verb+{#1}+}
+
 % ======================================
 % = Color de la Universidad de Sevilla =
 % ======================================
@@ -253,13 +257,18 @@
 \markright{English Abstract}
 
 \begin{otherlanguage}{english}
-    According to the guidelines, every dissertation should include a short english abstract at the beginning. In the abstract, you describe in general terms what is your dissertation about, the main points you want to make, and any important consequences that may arise.
+    Abstract goes here
 \end{otherlanguage}
 
 
-\chapter{Los enunciados}
+\chapter{Teoría de Categorías}
 
 \section{Categorías y functores}
+
+La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos y programadores y una poderosa abstracción a la composición de funciones.
+La idea empieza por el concepto de categoría, que resulta sorprendentemente ubicuo en la matemática.
+En principio, una categoría es sólo una colección de objetos y flechas entre dichos objetos donde se define una composición de flechas.
+Aunque los axiomas que pediremos a las categorías no son muchos, resulta que podemos crear una gran cantidad de resultados interesantes y muy genéricos.
 
 \begin{definition}
 Una categoría $\cat$ es:
@@ -370,7 +379,7 @@ Sea $f \colon A \to B$ un morfismo sobreyectivo. Sean $g, h \colon B \to C$ tal 
 
 Esta equivalencia entre monomorfismo e inyectividad, y epimorfismo y sobreyectividad no se da en cualquier categoría.
 
-\begin{definition}
+\begin{definition}\label{def:functor}
 Un functor $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
 \begin{itemize}
 \item $F_O : O(\cat) \to O(\mathcal{D})$.
@@ -388,6 +397,55 @@ tal que:
 \end{definition}
 
 Escribiremos $F \colon \cat \to \mathcal{D}$ y a menudo usaremos $F$ para referirnos a $F_M$ ó $F_O$ según el contexto.
+
+\subsection{Functores en Haskell}
+Recordemos que en el contexto de la programación con tipos, Haskell sólo trabaja con tipos de la categoría \code{Hask}.
+Los functores con los que podemos trabajar son de endofunctores de \code{Hask}, es decir, functores que van de \code{Hask} a \code{Hask} -- de tipos a tipos.
+
+Haskell implementa los functores a través de sus \code{typeclasses}.
+\begin{minted}{haskell}
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b
+\end{minted}
+
+La \code{f} actúa como $F$ y como $F_O$ en \ref{def:functor}.
+Si hay dudas de qué es lo que hace \code{fmap} aquí, resulta útil añadir unos paréntesis en el lugar adecuado:
+
+\begin{minted}{haskell}
+fmap :: (a -> b) -> (f a -> f b)
+\end{minted}
+
+\code{fmap} toma un función cualquiera \code{a -> b} y la transforma en una función del tipo \code{f a -> f b}.
+Esto es precisamente lo que antes llamábamos $F_M$.
+Con esto en mente, adaptemos las leyes de los functores en Haskell:
+\begin{minted}{haskell}
+fmap id = id
+fmap (g . f) = fmap g . fmap f
+\end{minted}
+Recordemos que en Haskell, la composición de funciones $g \circ f$ se expresa usando \code{g . f}.
+Antes de pasar a unos ejemplos, hay que tener en cuenta que Haskell no dispone de ningún mecanismo que comprueba que estas igualdades se cumplen.
+Queda como responsabilidad del programador que la clase \code{Functor} no se aplique sobre tipos que no cumplen las leyes de functores. 
+
+\begin{example}
+Nuestro primer ejemplo es \code{Maybe}.
+\begin{minted}{haskell}
+data Maybe a = Nothing | Just a 
+\end{minted}
+
+Podemos leer esta definición como \code{Maybe a} contiene o bien un valor constante o bien un valor del tipo \code{a}.
+Hay que tener cuidado con la diferencia entre \code{Maybe} y \code{Just}.
+\code{Maybe} es lo que llamamos un constructor de tipo.
+Veremos que este constructor de tipo, que asocia a cada tipo \code{a} el tipo \code{Maybe a}, es un functor.
+Por otro lado, \code{Just} es una función polimórfica --y por lo tanto una familia de morfismos en \code{Hask}-- de \code{a} a \code{Maybe a}.
+
+Para ver que \code{Maybe} es un functor, tenemos que describir como actua sobre morfismos, ahí es donde entra en juego la función \code{fmap}.
+
+\begin{minted}{haskell}
+instance Functor Maybe where
+  fmap f Nothing = Nothing
+  fmap f (Just x) = Just (f x) 
+\end{minted}
+\end{example}
 
 \section{Construcciones universales}
 Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
@@ -412,10 +470,104 @@ F B \arrow[r,"\mu_B"] & G B
 conmuta.
 \end{definition}
 
-Escribiremos $\mu \colon F \Rightarrow G$.
+Usaremos la notación $\mu \colon F \Rightarrow G$ para una transformación natural $\mu$.
+Llamamos $\mu_A$ \emph{componente} de $\mu$ en $A$.
+
+\chapter{F-álgebras}
+\begin{definition}
+Sea $\cat$ una categoría y $F \colon \cat \to \cat$ un endofunctor.
+Una $F$-álgebra es un par $(A,\alpha)$, donde $A \in \cat$ y $\alpha \colon F a \to a$ es un morfismo de $\cat$.
+\end{definition}
+
+% A taste of category theory for computer scientist
+En algunos libros, también se le llama \emph{punto prefijo}.
+Aunque no usaremos el nombre de punto prefijo, sí diremos que si $\alpha$ es isomorfismo, al par $(A,\alpha)$ par se le llama también \emph{punto fijo}, señalando su similitud con la idea de punto fijo habitual de análisis.
+
+Puede ser interesante darle una estructura de categoría a la colleción de $F$-álgebras.
+Para ello, necesitamos definir morfismos de un $(A,\alpha)$ a $(B,\beta)$.
+Suponiendo que tenemos un morfismo $f \colon A \to B$, observamos que $F f \colon F A \to F B$, que puede ser compuesta con $\beta$:
+\[ \beta \circ F f \colon F A \to B \]
+Por otro lado:
+\[ f \circ \alpha \colon F A \to B \]
+La igualdad de estos dos morfismos nos dará la fundación de la categoría de $F$-álgebras.
+Es más, como estos morfismos preservan bien la estructura de $F$-álgebran, les daremos el nombre (honorífico) de $F$-homomorfismo:
+
+\begin{proposition}
+Sea $\cat$ una categoría y $F$ un endomorfismo en $\cat$.
+Sea $Alg_F$ la colección de $F$-álgebras con homomorfismos $f \colon (A,\alpha) \to (B,\beta)$ tal que:
+\begin{itemize}
+\item $f \colon A \to B$ es un morfismo de $\cat$.
+\item El siguiente diagrama conmuta
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F f"] & A \arrow[d,"f"]\\
+F B \arrow[r,"\beta"] & B
+\end{tikzcd}
+\]
+\end{itemize}
+Entonces $Alg_F$ forma una categoría.
+\end{proposition}
+\begin{proof}
+Basta ver que la composición está bien definida, pues las demás condiciones se cumplen trivialmente.
+Sean $f \colon (A,\alpha) \to (B,\beta)$ y $g \colon (B,\beta) \to (C,\gamma)$ homomorfismos de $F$-álgebras.
+Entonces cada cuadrado del siguiente diagrama conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F f"] & A \arrow[d,"f"]\\
+F B \arrow[r,"\beta"] \arrow[d,"F g"] & B \arrow[d,"g"]\\
+F C \arrow[r,"\gamma"] & C
+\end{tikzcd}
+\]
+Tenemos que:
+\[ g \circ f \circ \alpha = g \circ \beta \circ F f = \gamma \circ F g \circ F f \]
+Como $F g \circ F f = F (g \circ f)$, tenemos que el siguiente diagrama conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F (g \circ f)"] & A \arrow[d,"g \circ f"]\\
+F C \arrow[r,"\gamma"] & C
+\end{tikzcd}
+\]
+Luego $g \circ f$ es un homomorfismo de $F$-álgebras.
+\end{proof}
+
+Una vez hemos determinado una nueva categoría, podemos empezar a buscar qué aspecto tienen nuestra construcciones universales en esta nueva categoría.
+Resultará de particular interés el objeto inicial de una $Alg_F$ por el siguiente lema debido a Lambek~\cite{lambek}:
+
+\begin{lemma}
+Sea $F \colon \cat \to \cat$ un endofunctor.
+Si $(A,\alpha)$ es una $F$-álgebra inicial de $Alg_F$, entonces $(A,\alpha)$ es un punto fijo de $F$.
+\end{lemma}
+\begin{proof}
+Sea $(A,\alpha)$ un objeto inicial en $Alg_F$.
+Para decir que $(A,\alpha)$ es un punto fijo, debemos ver que $\alpha$ es un isomorfismo.
+Para ello consideramos el $F$-álgebra $(F A, F \alpha)$.
+Como $(A,\alpha)$ es inicial, existe un único homomorfismo $u \colon (A, \alpha) \to (F A, F \alpha)$.
+
+Por un lado, $\alpha \circ u \colon (A, \alpha) \to (A, \alpha)$, pero el único homomorfismo de un objeto inicial a sí mismo es el morfismo identidad, luego $\alpha \circ u = \id_{(A, \alpha)}$.
+Por definición de homomorfismo, el siguiente diagram conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F u"] & A \arrow[d,"u"]\\
+F (F A) \arrow[r,"F \alpha"] & F A
+\end{tikzcd}
+\]
+Entonces:
+\[ u \circ \alpha = F \alpha \circ F u = F (\alpha \circ u) = F (\id_{(A, \alpha)}) = \id_{(F A, F \alpha)} \]
+Luego $\alpha$ tiene inversa y debe ser isomorfismo.
+\end{proof}
+
+El homomorfismo $u$ de la demostración recibe el imponente nombre de \emph{catamorfismo}.
+
+\section{Catamorfismos en Haskell}
+
+Para ilustrar la utilidad de los catamorfismos, vamos a construir una álgebra inicial en \code{Hask} sobre el functor \code{[]} (listas).
+En este caso, un \code{[]}-álgebra será un par \code{(a,alpha)} donde \code{alpha :: [a] -> a}.
+Digamos que \code{a = Int}
+Para que esta $F$-álgebra sea inicial, necesitamos un \code{cat :: Int -> [Int]} que sea la inversa de \code{alpha}.
+
 \backmatter
 
 \bibliographystyle{acm}
-%\bibliography{bibliografia}
+\bibliography{bibliografia}
 
 \end{document}
