@@ -447,6 +447,25 @@ instance Functor Maybe where
 \end{minted}
 \end{example}
 
+\section{Diagramas y conos}
+En estas páginas hemos trabajado a menudo con categorías con infinitos objetos e innumerables morfismos.
+Sin embargo, resulta de interés estudiar una estructura particular de objetos y morfismos que podamos encontrar dentro de esa categoría.
+Para ello, formalizaremos un concepto que hemos manejado antes, los diagramas.
+\begin{definition}
+Sean $\cat$ y $\mathcal{I}$ dos categorías. Un \emph{diagrama} de $\cat$ con \emph{forma} $\mathcal{I}$ es un functor $D \colon \mathcal{I} \to \cat$.
+\end{definition}
+Es decir, técnicamente \emph{diagrama} será sólo otra palabra para \emph{functor}.
+En la práctica, usaremos \emph{diagrama} cuando querramos distinguir una estructura particular dentro de una categoría.
+Esa estructura estará expresada en la forma del diagrama, $\mathcal{I}$ en la definición.
+
+\begin{example}
+Sea $\mathcal{I}$ la siguiente categoría:
+\[ \begin{tikzcd}
+A & B \arrow[l,"\leftarrow"] \arrow[r,"\rightarrow"] & C
+\end{tikzcd} \]
+Entonces el diagrama $D \colon \mathcal{I} \to \cat$ es llamado \emph{span}.
+\end{example}
+
 \section{Construcciones universales}
 Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
 
@@ -492,7 +511,7 @@ Por otro lado:
 La igualdad de estos dos morfismos nos dará la fundación de la categoría de $F$-álgebras.
 Es más, como estos morfismos preservan bien la estructura de $F$-álgebran, les daremos el nombre (honorífico) de $F$-homomorfismo:
 
-\begin{proposition}
+\begin{proposition}\label{prop:fmorfismo}
 Sea $\cat$ una categoría y $F$ un endomorfismo en $\cat$.
 Sea $Alg_F$ la colección de $F$-álgebras con homomorfismos $f \colon (A,\alpha) \to (B,\beta)$ tal que:
 \begin{itemize}
@@ -556,14 +575,70 @@ Entonces:
 Luego $\alpha$ tiene inversa y debe ser isomorfismo.
 \end{proof}
 
-El homomorfismo $u$ de la demostración recibe el imponente nombre de \emph{catamorfismo}.
+Dado un $F$-álgebra inicial $(A,\alpha)$, para todo otro $F$-áĺgebra $(B,\beta)$, al homomorfismo único de $(A,\alpha)$ a $(B,\beta)$ le daremos el imponente nombre de \emph{catamorfismo}.
+Por ejemplo, el homomorfismo $u$ de la demostración era un catamorfismo a $(F A, F \alpha)$.
 
 \section{Catamorfismos en Haskell}
 
-Para ilustrar la utilidad de los catamorfismos, vamos a construir una álgebra inicial en \code{Hask} sobre el functor \code{[]} (listas).
-En este caso, un \code{[]}-álgebra será un par \code{(a,alpha)} donde \code{alpha :: [a] -> a}.
-Digamos que \code{a = Int}
-Para que esta $F$-álgebra sea inicial, necesitamos un \code{cat :: Int -> [Int]} que sea la inversa de \code{alpha}.
+Debemos empezar implementando álgebras en Haskell:
+\begin{minted}{haskell}
+type Algebra f a = f a -> a
+\end{minted}
+Hay que tener en cuenta que no estamos imponiendo que \code{f} sea un functor, ya que Haskell no permite imponer restricciones a constructores de datos sin recurrir a GADTs\footnote{\url{https://wiki.haskell.org/Data_declaration_with_constraint}}.
+
+Lo siguiente que necesitamos es implementar el punto fijo de \code{f}:
+\begin{minted}{haskell}
+newtype Fix f = U (f (Fix f))
+\end{minted}
+Como \code{Fix} tiene un único constructor, hay un isomorfismo entre \code{Fix f} y \code{f (Fix f)}.
+Este isomorfismo es \code{U}, y su inversa es:
+\begin{minted}{haskell}
+unFix :: Fix f -> f (Fix f)
+unFix (U f) = f
+\end{minted}
+
+Ahora que sabemos que (\code{Fix f}, \code{U}) es el álgebra inicial, sabemos que existe un catamorfismo de este álgebra a todas las demás álgebras.
+Consideramos cualquier otra álgebra (\code{b}, \code{g}), con \code{g :: Algebra f b}. sea \code{m :: Fix f -> b} el correspondiente catamorfismo, entonces por \ref{prop:fmorfismo}:
+
+\[
+\begin{tikzcd}
+{f (Fix f)} \arrow[r,"fmap\ m"] \arrow[d,"U"] & f b \arrow[d,"g"]\\
+{Fix f} \arrow[r,"m"] & b
+\end{tikzcd}
+\]
+
+Podemos invertir \code{U} con \code{unFix}, luego la conmutatividad del diagrama es equivalente a que:
+\begin{minted}{haskell}
+m = g . fmap m . unFix
+\end{minted}
+Usamos esto para definir recursivamente el catamorfismo:
+\begin{minted}{haskell}
+cata :: (Functor f) => (Algebra f b) -> (Fix f -> b)
+cata g = g . fmap (cata g) . unFix
+\end{minted}
+
+Veamos un ejemplo con el functor \code{Maybe}
+\begin{example}
+Especialicemos el código anterior para \code{Maybe}:
+\begin{minted}{haskell}
+type AlgebraM a = Algebra Maybe a
+type FixM = Fix Maybe
+\end{minted}
+Por ahora, no dice mucho. Pero al añadir las siguientes de líneas obtenemos una perspectiva interesante:
+\begin{minted}{haskell}
+type Nat = FixM
+
+cero :: Nat
+cero = U Nothing
+suc :: Nat -> Nat
+suc = U . Just
+\end{minted}
+Es decir, los naturales pueden verse como el punto fijo del functor \code{Maybe}.
+\end{example}
+%Para ilustrar la utilidad de los catamorfismos, vamos a construir una álgebra inicial en \code{Hask} sobre el functor \code{[]} (listas).
+%En este caso, un \code{[]}-álgebra será un par \code{(a,alpha)} donde \code{alpha :: [a] -> a}.
+%Digamos que \code{a = Int}
+%Para que esta $F$-álgebra sea inicial, necesitamos un \code{cat :: Int -> [Int]} que sea la inversa de \code{alpha}.
 
 \backmatter
 
