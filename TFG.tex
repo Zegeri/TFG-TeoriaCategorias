@@ -8,6 +8,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[superscript]{cite}
+\usepackage{csquotes}
 
 \usepackage{tikz}
 \usetikzlibrary{babel}
@@ -181,6 +182,7 @@
 \newcommand{\Set}{{Set}}
 \newcommand{\Grp}{{Grp}}
 \newcommand{\Top}{{Top}}
+\newcommand{\Hask}{{Hask}}
 \DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\id}{id}
@@ -288,6 +290,12 @@ de manera que:
 \end{itemize}
 \end{definition}
 
+La notación para referirse a objetos y morfismos de una categoría varía mucho dependiendo del autor.
+Por ejemplo, Awodey usa $\cat_0$ y $\cat_1$ para referirse a los objetos y los morfismos de una categoría $\cat$ respectivamente~\cite{awodey}.
+Esta notación, da una guiño al lector de la existencia de categoría de orden superior.
+
+Otra notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $C(A,B)$.
+
 A menudo usaremos diagramas para expresar visualmente ciertas propiedades.
 En Teoría de Categoría, existe una definición precisa de diagrama, pero por ahora, no tenemos las herramientas suficientes para explicarlo.
 Basta imaginar que es un grafo formado por una cantidad finita de objetos y morfismos de una categoría.
@@ -338,6 +346,28 @@ La categoría $\mathbb{2}$:
 A \arrow[loop above,"\id_A"] \arrow[r,"f"] & B \arrow[loop above,"\id_B"]
 \end{tikzcd}\]
 \end{example}
+
+Las categorías finitas serán de gran uso cuando hablemos más adelante de los diagramas.
+Por otro lado, las categorías con las que trabajaremos a menudo serán enormes, donde a veces la teoría de conjuntos habitual se nos quedará pequeña.
+Por ejemplo, en la teoría de conjuntos habitual, el conjunto de todos los conjuntos es una noción inconsistente como consecuencia del Teorema de Cantor.
+Por esta razón, hablaremos a menudo de \textquote{colección} o \textquote{familia} y evitaremos la palabra \textquote{conjunto} en general.
+
+En ocasiones, sí nos será útil que la colección de objetos o morfismos forme un conjunto.
+Para ello, introducimos las siguientes definiciones:
+
+\begin{definition}
+Una categoría $\cat$ es \emph{pequeña} si $O(\cat)$ y $M(\cat)$ forman conjuntos.
+\end{definition}
+
+Por ejemplo, toda categoría finita es pequeña, pero $\Set$ no es pequeña.
+
+\begin{definition}
+Una categoría $\cat$ es \emph{localmente pequeña} si para todo par de objetos $A$ y $B$ en $\cat$, $C(A,B)$ forma un conjunto.
+\end{definition}
+
+Todos los ejemplos que hemos dado son localmente pequeños.
+Para poder dar ejemplos de categorías que no son localmente pequeñas, necesitaremos más conceptos.
+Casi siempre trabajaremos con categorías localmente pequeñas.
 
 \begin{definition}
 Sea $A$, $B$ objetos de una categoría $\cat$.
@@ -447,6 +477,30 @@ instance Functor Maybe where
 \end{minted}
 \end{example}
 
+\section{Construcciones universales}
+Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
+\footnote{En algunos libros como \cite{Spivak} las propiedades universales son ser inicial o terminal exclusivamente.}
+
+\begin{definition}
+Decimos que un objeto $A \in \cat$ es inicial si para cada objeto $B \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+
+Análogamente, decimos que un objeto $B \in \cat$ es terminal si para cada objeto $A \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+\end{definition}
+
+\begin{proposition}
+Sea $\cat$ una categoría. Sean $A$ y $B$ objetos iniciales (o terminales) de $\cat$.
+Entonces existe un único isomorfismo $A \to B$.
+\end{proposition}
+\begin{proof}
+Como $A$ es inicial, existe un único morfismo $f \colon A \to B$.
+Como $B$ es inicial, existe un único morfismo $g \colon B \to A$.
+Entonces $g \circ f \colon A \to A$.
+Al ser $A$ inicial, sólo hay un morfismo $A \to A$, que debe ser el morfismo identidad, luego $g \circ f = \id_A$.
+Análogamente, $f \circ g = \id_B$.
+
+Luego $f$ es isomorfismo.
+\end{proof}
+
 \section{Diagramas y conos}
 En estas páginas hemos trabajado a menudo con categorías con infinitos objetos e innumerables morfismos.
 Sin embargo, resulta de interés estudiar una estructura particular de objetos y morfismos que podamos encontrar dentro de esa categoría.
@@ -456,24 +510,145 @@ Sean $\cat$ y $\mathcal{I}$ dos categorías. Un \emph{diagrama} de $\cat$ con \e
 \end{definition}
 Es decir, técnicamente \emph{diagrama} será sólo otra palabra para \emph{functor}.
 En la práctica, usaremos \emph{diagrama} cuando querramos distinguir una estructura particular dentro de una categoría.
-Esa estructura estará expresada en la forma del diagrama, $\mathcal{I}$ en la definición.
+También se llamará a $\mathcal{I}$ \emph{categoría índice} del diagrama.
 
-\begin{example}
-Sea $\mathcal{I}$ la siguiente categoría:
+\begin{example}\label{ejemplo-span}
+Sea $\mathcal{I}$ la siguiente categoría índice:
 \[ \begin{tikzcd}
-A & B \arrow[l,"\leftarrow"] \arrow[r,"\rightarrow"] & C
+A & B \arrow[l] \arrow[r] & C
 \end{tikzcd} \]
 Entonces el diagrama $D \colon \mathcal{I} \to \cat$ es llamado \emph{span}.
 \end{example}
 
-\section{Construcciones universales}
-Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
+\begin{definition}
+Sea $\cat$ una categoría y $D \colon \mathcal{I} \to \cat$ un diagrama de forma $\mathcal{I}$.
+Un \emph{cono} en el diagrama $D$ es un objeto $V \in \cat$ (que llamamos \emph{vértice}) y una familia de morfismos $f_A \colon C \to D A$ para todo $A \in \mathcal{I}$, tal que para todo morfismo $g \colon A \to B$ de $\mathcal{I}$, el siguiente diagrama conmuta:
+\[ \begin{tikzcd}
+ & D A \arrow[dd,"D g"]\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"]\\
+ & D B
+\end{tikzcd} \]
+\end{definition}
+
+Una buena técnica para estudiar una nueva construcción es preguntarse: ¿Podemos formar una categoría con ella?
+
+Lo que nos queda por hacer para crear una categoría de conos de un diagrama fijo $D$ es definir un morfismo entre conos.
+Resulta intuitivo definirlo a partir de un morfismo entre los vértices.
+Si $C$ y $C'$ son dos conos con vértices $V$ y $V'$ respectivamente, definimos el morfismo $C \colon C'$ como un morfismo $u \colon V \to V'$ tal que el siguiente diagrama conmuta para todo $A \in \mathcal{I}$:
+\[ \begin{tikzcd}
+V \arrow[dr,"f_A"] \arrow[dd,"u"] &\\
+ & D A\\
+V' \arrow[ur,"f'_A"]
+\end{tikzcd} \]
+
+\begin{proposition}
+Dado una categoría $\cat$ y un diagram $D \colon \mathcal{I} \to \cat$, los conos de $D$ forma una categoría llamada $\text{Cono}(D)$ con los morfismos descritos anteriormente.
+\end{proposition}
+La demostración es directa gracias a que $\cat$ es una categoría.
+
+En esta categoría de conos, resulta de especial interés el objeto terminal.
 
 \begin{definition}
-Decimos que un objeto $A \in \cat$ es inicial si para cada objeto $B \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
-
-Análogamente, decimos que un objeto $B \in \cat$ es terminal si para cada objeto $A \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+Dado una categoría $\cat$ y un diagrama $D \colon \mathcal{I} \to \cat$, el \emph{límite del diagrama} $D$ es el objeto terminal de $\text{Cono}(D)$.
 \end{definition}
+
+Usaremos la notación $\underset{\longleftarrow}\lim D$ para referirnos al límite de un diagrama si existe.
+
+Podemos considerar el dual de estos conceptos.
+
+\begin{definition}
+Un \emph{cocono} de $\cat$ es un cono de $\cat^{op}$.
+En otras palabras, un \emph{cocono} en un diagrama $D \colon \mathcal{I} \to \cat$ es un objeto $V \in \cat$ y una familia de morfismos $f_A \colon D A \to V$ para todo $A \in \mathcal{I}$, tal que para todo morfismo $g \colon B \to A$ de $\mathcal{I}$, el siguiente diagrama conmuta:
+\[ \begin{tikzcd}
+ & D A \arrow[dl,"f_A"]\\
+V\\
+ & D B \arrow[ul,"f_B"] \arrow[uu,"D g"]
+\end{tikzcd} \]
+\end{definition}
+
+\begin{definition}
+Un \emph{colímite} es el objeto terminal de la categoría de coconos de un diagrama. Equivalentemente es el objeto inicial de la categoría de conos.
+\end{definition}
+
+\begin{definition}
+Una categoría $\cat$ es \emph{(co)completa} si existen todos los (co)límites de diagramas $D \colon \mathcal{I} \to \cat$ con $\mathcal{I}$ categoría pequeña.
+\end{definition}
+
+\begin{definition}
+Una categoría es \emph{bicompleta} si es completa y cocompleta.
+\end{definition}
+
+\section{Productos y coproductos}
+
+Resulta importante familiarizarse con la idea de límite antes de continuar, porque nos resultará muy útil para definir nuevos conceptos.
+
+\begin{definition}
+Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos aparte de los morfismos identidad. El \emph{producto} de dos objetos $A$ y $B$ en $\cat$ es el límite del diagrama $D \colon \mathcal{I} \to \cat$ con $D(I_1) = A$ y $D(I_2) = B$.
+
+Escribiremos $A \times B$ para denotar el producto de $A$ y $B$.
+\end{definition}
+
+Desenvolvamos las definiciones para entender que significa realmente el producto de dos objetos $A$ y $B$.
+Primero obsérvese que el diagrama $D$ actúa para \textquote{seleccionar} los objetos $A$ y $B$ y sus morfismos identidad.
+Puede que haya algún morfismo entre $A$ y $B$, pero no son relevantes para el diagrama y, en consecuencia, ni para el límite.
+
+Un cono sobre $D$ es de la forma:
+\begin{equation}\label{producto-cono} \begin{tikzcd}
+ & A\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"]\\
+ & B
+\end{tikzcd} \end{equation}
+
+El producto $A \times B$, límite de $D$, puede ser visto como el cono terminal en la categorías de conos sobre $D$.
+Es decir, para todo cono como en \ref{producto-cono}, debe existir un único morfismo de dicho cono al $A \times B$.
+Desenvolvamos las definiciones aún más.
+Digamos que el producto está formado por los objetos $A \times B$ (abusando un poco de notación aquí), $p_A \colon A \times B \to A$ y $p_B \colon A \times B \to B$.
+Para todo $V$, $f_A \colon V \to A$ y $f_B \colon V \to B$, debe existir un $h \colon V \to A \times B$ tal que el siguiente diagrama conmute:
+
+\[\begin{tikzcd}
+ & A\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"] \arrow[r,dashed,"h"] & A \times B \arrow[u,"p_A"] \arrow[d,"p_B"]\\
+ & B
+\end{tikzcd}\]
+
+o algebraicamente:
+\[ f_A = p_A \circ h \]
+\[ f_B = p_B \circ h \]
+Es decir, podemos dar un par de morfismos $V \to A$ y $V \to B$ es equivalente a dar un morfismo $V \to A \times B$.
+Luego, podemos volver a los objetos $A$ y $B$ usando unos morfismos fijos $p_A$ y $p_B$ (que llamamos \emph{proyecciones}).
+
+\begin{definition}
+Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos aparte de los morfismos identidad. El \emph{coproducto} de dos objetos $A$ y $B$ en $\cat$ es el colímite del diagrama $D \colon \mathcal{I} \to \cat$ con $D(I_1) = A$ y $D(I_2) = B$.
+
+Escribiremos $A \oplus B$ para denotar el coproducto de $A$ y $B$.
+\end{definition}
+
+Desarrollando como antes la definiciones tenemos que para todo $V$, $f_A \colon A \to V$, $f_B \colon B \to V$, se tiene que existe $h \colon A \oplus B \to V$ tal que:
+
+\[\begin{tikzcd}
+ & A \arrow[dl,"f_A"] \arrow[d,"i_A"]\\
+V & A \oplus B \arrow[l,dashed,"h"]\\
+ & B \arrow[ul,"f_B"] \arrow[u,"i_B"]
+\end{tikzcd}\]
+donde $i_A$ e $i_B$ son llamadas \emph{inyecciones naturales}.
+
+\begin{example}
+No es de extrañar que en $\Set$, el producto de dos objetos es el producto cartesiano de dos conjuntos.
+Por otro lado, el coproducto de dos conjuntos se corresponde con la unión disjunta.
+\end{example}
+
+\begin{example}
+En $\Hask$, el producto de dos tipos \code{a} y \code{b} es el par \code{(a,b)} y las proyecciones son las funciones \code{fst :: (a,b) -> a} y \code{snd :: (a,b) -> b}.
+También tenemos que \code{(a,b)} es isomorfo a:
+\begin{minted}{haskell}
+newtype Pair a b = Pair a b
+\end{minted}
+A su vez, el coproducto de dos tipos \code{a} y \code{b} es el tipo \code{Either a b}, cuya definición es:
+\begin{minted}{haskell}
+data Either a b = Left a | Right b
+\end{minted}
+Es más, tenemos que todos los tipos de datos compuestos son isomorfos a productos y coproductos.
+\end{example}
 
 \section{Transformaciones naturales}
 \begin{definition}
@@ -639,6 +814,10 @@ Es decir, los naturales pueden verse como el punto fijo del functor \code{Maybe}
 %En este caso, un \code{[]}-álgebra será un par \code{(a,alpha)} donde \code{alpha :: [a] -> a}.
 %Digamos que \code{a = Int}
 %Para que esta $F$-álgebra sea inicial, necesitamos un \code{cat :: Int -> [Int]} que sea la inversa de \code{alpha}.
+
+\chapter{Lema de Yoneda}
+
+El lema de Yoneda
 
 \backmatter
 
