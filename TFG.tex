@@ -13,8 +13,7 @@
 \usetikzlibrary{cd}
 
 %% FONTS: libertine+biolinum+stix
-\usepackage[mono=false]{libertine}
-\usepackage[notext]{stix}
+\usepackage{mathpazo}
 
 % =====================
 % = Datos importantes =
@@ -118,6 +117,7 @@
 \usepackage[]{mathtools}
 \usepackage[]{bm}
 \usepackage[]{thmtools}
+\usepackage[]{amsfonts}
 \newcommand{\marcador}{\vrule height 10pt depth 2pt width 2pt \hskip .5em\relax}
 \newcommand{\cabeceraespecial}{%
     \color{USred}%
@@ -187,6 +187,7 @@
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\Const}{Const}
 
 % ============================
 % = Composición de la página =
@@ -1172,10 +1173,10 @@ En esta categoría, los objetos son functores y los morfismos son transformacion
 Como estamos bajo la hipótesis que $\cat$ es localmente pequeña, entonces $C(A,B)$ es un conjunto para todo $A \in \cat$ y $B \in \cat$.
 Entonces, $C(A,B) \in \Set$.
 De este hecho, podemos crear el functor contravariante:
-\[ C(-,X) \colon \cat \to \Set \]
-que a cada objeto $A \in \cat$ le asocia el conjunto $C(A,X)$.
-A cada morfismo $f \colon A \to B$ en $\cat$, $C(f,X)$ será un morfismo entre los conjuntos $C(B,X)$ y $C(A,X)$.
-La forma natural de asociar estos conjuntos es por la composición $g \mapsto g \circ f$.
+\[ C(A,-) \colon \cat \to \Set \]
+que a cada objeto $X \in \cat$ le asocia el conjunto $C(A,X)$.
+A cada morfismo $f \colon X \to Y$ en $\cat$, $C(A,f)$ será un morfismo entre los conjuntos $C(A,X)$ y $C(A,Y)$.
+La forma natural de asociar estos conjuntos es por la composición $g \mapsto f \circ g$.
 A dicho functor le damos el nombre de \newterm{hom-functor}.
 
 Veamos que el hom-functor es realmente un functor.
@@ -1230,20 +1231,155 @@ index . tabulate  = id
 Las primera condición establece que \code{tabulate} sea una transformación natural. 
 Las otras dos condiciones son equivalentes a dicha transformaión natural sea invertible con \code{index}.
 
-\section{Embebimiento de Yoneda}
-Siguiendo en una categoría localmente pequeña $\cat$, consideramos la siguiente transformación:
+\section{Inmersión de Yoneda}
+Primero definamos qué es un inmersión.
+
+Recordemos de la definición de functor, que un functor consistía en un par $F_O$ y $F_M$ que actúan sobre los objetos y morfismos respectivamente.
+Dado un functor $F \colon \cat \to \mathcal{D}$ y dos objetos $A, B \in \cat$, denotamos por $F_M|_{\cat(A,B)}$ o, sencillamente, $F_{A,B}$ a la \textquote{restricción} de $F_M$ a la colección de morfismos $\cat(A,B)$.
+Como $F_M$ respeta el dominio y codominio, tenemos que $F_{A,B}$ es una aplicación:
+\[ F_{A,B} \colon \cat(A,B) \to \mathcal{D}(F A, F B) \]
+Con esto en mente, definimos las siguientes clases de functores:
+
+\begin{definition}
+Un functor $F \colon \cat \to \mathcal{D}$ es 
+\begin{itemize}
+  \item \index{functor!lleno}\emph{lleno} si para cada $A,B \in \cat$, $F_{A,B}$ es sobreyectiva.
+  \item \index{functor!fiel}\emph{fiel}, si para cada $A,B \in \cat$, $F_{A,B}$ es inyectiva.
+  \item \index{functor!{inyectivo en objetos}}\emph{inyectivo en objetos} si $F_O$ es inyectivo.
+\end{itemize}
+\end{definition}
+
+Obsérvese que no es lo mismo que $F$ sea lleno o fiel a que $F_M$ sea inyectiva y sobreyectiva.
+Podríamos decir que la propiedad de ser lleno y fiel es una propiedad \textquote{local}.
+
+\begin{definition}
+Un functor es una \newterm{inmersión} si es fiel e inyectivo en objetos.
+Si además es lleno, decimos que es una \newterm{inmersión llena}. 
+\end{definition}
+
+\begin{definition}
+Dada una categoría $\cat$, una \newterm{subcategoría} es un par $(\mathcal{D}, F)$ donda $\mathcal{D}$ es una categoría y $F \colon \mathcal{D} \to \cat$ es una inmersión.
+
+Si además, $F$ es llena, decimos que $(\mathcal{D}, F)$ es una \index{subcategoría!llena}\emph{subcategoría llena}.
+\end{definition}
+
+\begin{lemma}[Lema de Yoneda]
+Sea $\cat$ una categoría localmente pequeña, un functor $F \colon \cat \to \Set$ y un objeto $A \in \cat$.
+Denotemos por $Nat(\cat(A,-), F)$ a la colección de transformaciones naturales de $\cat(A,-) \Rightarrow F$.
+Hay una biyección:
+\[ Nat(\cat(A,-), F) \cong F A \]
+que es natural en $A$ y en $F$.
+\end{lemma}
+% Category theory in context + Awodey
+Vamos a precisar:
+\begin{itemize}
+  \item Hemos visto previamente que $\cat(A,-) \colon \cat \to \Set$ es un functor, luego puede haber una colección de transformaciones naturales de $\cat(A,-)$ al functor $F \colon \cat \to \Set$.
+  \item  En la categoría de functores $\Set^{\cat}$, donde $\cat(A,-)$ y $F$ son objetos, $Nat(\cat(A,-),F)$ es precisamente la colección de morfismos $\Set^{\cat}(\cat(A,-),F)$.
+  \item La naturalidad en $F$ quiere decir que para toda transformación natural $\theta \colon F \Rightarrow G$, se tiene que el siguiente diagrama es conmutativo:
+\[
+\begin{tikzcd}
+  {Nat(\cat(A,-),F)} \arrow[rr,"\cong"] \arrow[dd,"{Nat(\cat(A,-),\theta)}" left] & & F A \arrow[dd,"\theta_A"]\\
+  &\\
+  {Nat(\cat(A,-),G)} \arrow[rr,"\cong"] & & G A
+\end{tikzcd}
+\]
+  \item La naturalidad en $A$ quiere decir que para todo $f \colon A \to B$, se tiene que el siguiente diagrama conmuta:
+  \[
+\begin{tikzcd}
+  {Nat(\cat(A,-),F)} \arrow[rr,"\cong"] \arrow[dd,"{Nat(\cat(f,-),F)}" left] & & F A \arrow[dd,"F f"]\\
+  &\\
+  {Nat(\cat(B,-),F)} \arrow[rr,"\cong"] & & F B
+\end{tikzcd}
+\]
+\end{itemize}
+\begin{proof}
+Primero miramos que para una transformación natural $\mu \in Nat(\cat(A,-),F)$, es decir, $\mu \colon \cat(A,-) \Rightarrow F$, su componente en $A \in \cat$ es una función entre conjuntos
+\[ \mu_A \colon \cat(A,A) \to F A \]
+Sabemos además que $\cat(A,A)$ es un conjunto no vacío, pues al menos contiene $\id_A$
+
+Consideramos la función $\phi \colon Nat(\cat(A,-),F) \to F A$ definida por:
 \begin{align*}
-k \colon \cat^{op} \to \Set
-\end{align*} y un objeto $A$ en $\cat$, definimos la siguiente transformación natural a partir de un morfismo $h \colon A \to B$:
-\[ C(h,-) \colon C(B,-) \Rightarrow C(A,-) \]
-Donde la componente de $C(h,-)$ en $X \in \cat$ viene dado por:
-\begin{align*}
-C(h,X) \colon & C(B,X) \to C(A,X)\\
-& f \mapsto f \circ h
+  \phi \colon Nat(\cat(A,-),F) & \to F A\\
+  \alpha & \mapsto \alpha_A(\id_A)
 \end{align*}
 
-Como $C(B,X)$ y $C(A,X)$ son conjuntos, en particular $C(h,X)$ es un morfismo 
+Dado cualquier $x \in F A \in \Set$, definimos la transformación natural 
+\[ \psi(x) \colon \cat(A,-) \Rightarrow F \]
+estableciendo su componente para $B \in \cat$ cualquiera:
+\begin{align*}
+  \psi(x)_B \colon \cat(A,B) & \to F B\\
+  \psi(x)_B (f) & \mapsto (F f)(x)
+\end{align*}
 
+Veamos que $\psi(x)$ cumple la naturalidad. Para un $f \colon B \to C$:
+\begin{equation}\label{psi-diagrama}
+\begin{tikzcd}
+  {\cat(A,B)} \arrow[rr,"\psi(x)_B"] \arrow[dd,"{\cat(A,f)}"] & & F B \arrow[dd,"F f"]\\
+  &\\
+  {\cat(A,C)} \arrow[rr,"\psi(x)_C"] & & F C
+\end{tikzcd}
+\end{equation}
+Tenemos que para todo $h \colon A \to B$:
+\begin{align*}
+(\psi(x)_C \circ \cat(A,f)) (h) & = \psi(x)_C (f \circ h)\\
+& = (F (f \circ h))(x)\\
+& = (F f) \circ (F h)(x)\\
+& = (F f)(\psi(x)_B(h))\\
+& = (F f) \circ (\psi(x)_B)(h)
+\end{align*}
+Luego el diagrama \ref{psi-diagrama} conmuta.
+\end{proof}
+
+Veamos que $\phi$ y $\psi$ son inversas. Para $x \in F A$:
+\begin{align*}
+ \phi(\psi(x)) & = \psi(x)_A(\id_A)\\
+ & = (F (\id_A))(x)\\
+ & = \id_{F A}(x) & \text{por definición de functor}\\
+ & = x
+\end{align*}
+Para $\mu \colon \cat(A,-) \Rightarrow F$, $B \in \cat$ y $h \colon A \to B$:
+\begin{align*}
+ \psi(\phi(\mu))_B(h) & = \psi(\mu_A(\id_A))_B(h)\\
+ & = (F h)(\mu_A(\id_A))\\
+ & = (\mu_B)(C(A,h)(\id_A)) & \text{por naturalidad de }\mu\\
+ & = \mu_B(h\circ \id_A)\\
+ & = \mu_B(h)
+\end{align*}
+Luego $\phi$ y $\psi$ son inversas y $Nat(\cat(A,-),F) \cong F A$.
+Veamos la naturalidad en $F$ y en $A$:
+\begin{equation}\label{diagrama-F}
+\begin{tikzcd}
+  {Nat(\cat(A,-),F)} \arrow[rr,"\phi_F"] \arrow[dd,"{Nat(\cat(A,-),\theta)}" left] & & F A \arrow[dd,"\theta_A"]\\
+  &\\
+  {Nat(\cat(A,-),G)} \arrow[rr,"\phi_G"] & & G A
+\end{tikzcd}
+\end{equation}
+Sea $B \in \cat$ y $\mu \colon \cat(A,-) \Rightarrow F$:
+\begin{align*}
+ \theta_A(\phi_F(\mu)) & = \theta_A(\mu_A(\id_A))\\
+ & = (\theta \circ \mu)_A(\id_A)\\
+ & = \phi_G(\theta \circ \mu)
+\end{align*}
+que demuestra que el diagrama \ref{diagrama-F} conmuta.
+
+Sea $f \colon A \to B$ y $\mu \colon \cat(A,-) \Rightarrow F$:
+\begin{equation}\label{diagrama-A}
+\begin{tikzcd}
+  {Nat(\cat(A,-),F)} \arrow[rr,"\phi_A"] \arrow[dd,"{Nat(\cat(f,-),F)}" left] & & F A \arrow[dd,"F f"]\\
+  &\\
+  {Nat(\cat(B,-),F)} \arrow[rr,"\phi_B"] & & F B
+\end{tikzcd}
+\end{equation}
+\begin{align*}
+ (F f)(\phi_A(\mu)) & = (F f)(\mu_A(\id_A))\\
+ & = (\mu_B)(C(A,f)(\id_A)) & \text{por naturalidad de }\mu\\
+ & = (\mu_B)(f \circ \id_A)\\
+ & = (\mu_B)(\id_B \circ f)\\
+ & = (\mu_B)(C(f,B)(\id_B))\\
+ & = (\mu \circ C(f,-))_B(\id_B)\\
+ & = (\phi_B)(\mu \circ C(f,-))
+\end{align*}
+que deuestra que el diagrama \ref{diagrama-A} conmuta y acaba la demostración.
 \backmatter
 
 \bibliographystyle{acm}
