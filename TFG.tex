@@ -1199,6 +1199,8 @@ De aquí procede la siguiente definición:
 Un functor $F \colon \cat \to \Set$ es \newterm{representable} si es isomorfo naturalmente a un hom-functor.
 \end{definition}
 
+Es decir, un functor representable puede identificarse con $C(A,-)$ para algún $A$.
+
 \subsection{Functores representables en Haskell}
 % Milewski
 En la categoría $\Hask$, el hom-functor recibe a menudo el nombre de \code{Reader}
@@ -1291,6 +1293,8 @@ Vamos a precisar:
   {Nat(\cat(B,-),F)} \arrow[rr,"\cong"] & & F B
 \end{tikzcd}
 \]
+  donde para una transformación natural $\mu \colon \cat(A,-) \Rightarrow F$ y morfismo $h \colon B \to C$:
+  \[ (Nat(\cat(f,-),F)\mu)_C(h) = \mu_C \circ \cat(f,C)(h) = \mu_C (h \circ f) \]
 \end{itemize}
 \begin{proof}
 Primero miramos que para una transformación natural $\mu \in Nat(\cat(A,-),F)$, es decir, $\mu \colon \cat(A,-) \Rightarrow F$, su componente en $A \in \cat$ es una función entre conjuntos
@@ -1328,7 +1332,6 @@ Tenemos que para todo $h \colon A \to B$:
 & = (F f) \circ (\psi(x)_B)(h)
 \end{align*}
 Luego el diagrama \ref{psi-diagrama} conmuta.
-\end{proof}
 
 Veamos que $\phi$ y $\psi$ son inversas. Para $x \in F A$:
 \begin{align*}
@@ -1379,7 +1382,47 @@ Sea $f \colon A \to B$ y $\mu \colon \cat(A,-) \Rightarrow F$:
  & = (\mu \circ C(f,-))_B(\id_B)\\
  & = (\phi_B)(\mu \circ C(f,-))
 \end{align*}
-que deuestra que el diagrama \ref{diagrama-A} conmuta y acaba la demostración.
+que demuestra que el diagrama \ref{diagrama-A} conmuta y acaba la demostración.
+\end{proof}
+
+\begin{remark}
+Considerando la categoría opuesta, se tiene que para todo objeto $A \in \cat$ y functor contravariante $F \colon \cat^{op} \Rightarrow \Set$ hay una biyección
+\[ Nat(\cat(-,A), F) \cong F A\]
+natural en $A$ y $F$.
+\end{remark}
+
+Nuestra primera aplicación del lema de Yoneda es usando $F = \cat(B,-)$.
+Se tiene que:
+\[ Nat(\cat(A,-),\cat(B,-)) \cong \cat(B,A) \]
+Análogamente:
+\[ Nat(\cat(-,A),\cat(-,B)) \cong \cat(A,B) \]
+Esto motiva la inmersión de Yoneda:
+\begin{definition}
+Las \index{inmersión de Yoneda}\emph{inmersiones de Yoneda} covariante y contravariante son los morfismos:
+\begin{align*} 
+  Y \colon \cat & \to \Set^{\cat^{op}}\\
+  A & \mapsto \cat(-,A)\\
+  f \colon A \to B & \mapsto \cat(-,f) \colon \cat(-,A) \to \cat(-,B)
+\end{align*}
+\begin{align*} 
+  K \colon \cat^{op} & \to \Set^{\cat}\\
+  A & \mapsto \cat(A,-)\\
+  f \colon A \to B & \mapsto \cat(f,-) \colon \cat(B,-) \to \cat(A,-)
+\end{align*}
+es decir, las \index{currificación}currificaciones del bifunctor $\cat(-,-) \colon \cat^{op} \times \cat \to \Set$.
+\end{definition}
+Obsérvese que $K$ es un functor contravariante y que $K A$ es un functor covariante $\cat^{op} \to \Set$.
+Análogamente, $Y$ es un functor covariante a los functores contravariantes $\cat^{op} \to \Set$.
+
+Veremos ahora que el uso de \textquote{inmersión} está justificado:
+\begin{proposition}
+Las inmersiones de Yoneda son inmersiones llenas.
+\end{proposition}
+\begin{proof}
+Lo probamos para $Y$, primero obsérvese que
+\[ \cat(A,B) = (Y B)A \cong \Set^{\cat^{op}}(Y A, Y B)\]
+
+\end{proof}
 \backmatter
 
 \bibliographystyle{acm}
