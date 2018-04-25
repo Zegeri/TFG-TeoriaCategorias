@@ -189,6 +189,9 @@
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\Const}{Const}
 
+\hyphenation{func-tor}
+\hyphenation{func-to-res}
+
 % ============================
 % = Composición de la página =
 % ============================
@@ -302,9 +305,9 @@ El concepto de conmutatividad de un diagrama es el habitual de otros campos.
 Como ejemplo, la propiedad \eqref{cat:3} se puede expresar diciendo que el diagrama
 \[
 \begin{tikzcd}
-A \arrow[rr,"f"]\arrow[rrdd,"g \circ f" above=5pt] \arrow[dd,"h\circ g \circ f"] & & B \arrow[lldd,"h\circ g" below=5pt, crossing over] \arrow[dd,"h"]\\
+A \arrow[rr,"f"]\arrow[rrdd,pos=0.1,"g \circ f" sloped] \arrow[dd,"h\circ g \circ f" left] & & B \arrow[lldd,pos=0.4,"h\circ g" sloped, crossing over] \arrow[dd,"g"]\\
 &\\
-C & & D \arrow[ll,"g"]
+C & & D \arrow[ll,"h"]
 \end{tikzcd}
 \]
 conmuta.
@@ -386,7 +389,7 @@ Por ejemplo, el objeto terminal de una categoría (que veremos más adelante) no
 
 \begin{definition}
 Sea $A$, $B$ objetos de una categoría $\cat$.
-Un morfismo $f \colon B \to C$ de una categoría es un monomorfismo (o mónico) si para todo morfismo $g \colon A \to B$ y $h \colon A \to B$ tal que $f \circ g = f \circ h$, entonces $g = h$.
+Un morfismo $f \colon B \to C$ de una categoría es un monomorfismo (o mónico) si para todo morfismo $g \colon A \to B$ y $h \colon A \to B$ tales que $f \circ g = f \circ h$, entonces $g = h$.
 \end{definition}
 
 \begin{proposition}
@@ -394,7 +397,7 @@ En \Set, un morfismo es mónico si y sólo si es inyectivo.
 \end{proposition}
 
 \begin{proof}
-Sea $f \colon B \to C$ un monomorfismo. Sea $b, b' \in B$ tal que $f(b) = f(b')$. Sea $A = \{b\}$ y definimos $g \colon A \to B$ como $g(b)=b'$.
+Sea $f \colon B \to C$ un monomorfismo. Sean $b, b' \in B$ tales que $f(b) = f(b')$. Sea $A = \{b\}$ y definimos $g \colon A \to B$ como $g(b)=b'$.
 Entonces $f(\id_A(b)) = f(g(b))$
 como $b$ es el único elemento de $A$, tenemos que:
 \[ f \circ \id_A = f \circ g \]
@@ -403,9 +406,9 @@ luego, como $f$ es monomorfismo:
 Entonces $b'=g(b)=\id_A(b)=b$.
 
 Consideramos ahora $f \colon B \to C$ un morfismo inyectivo.
-Sean los morfismos $g, h \colon A \to B$ tal que $f \circ g = f \circ h$.
+Sean los morfismos $g, h \colon A \to B$ tales que $f \circ g = f \circ h$.
 Sea $a \in A$ cualquiera. Como $f(g(a)) = f(h(a))$ y $f$ es inyectiva, entonces $g(a) = h(a)$.
-Entonces $g = h$. 
+Es decir, se tiene que $g = h$. 
 \end{proof}
 
 \begin{definition}
@@ -417,9 +420,9 @@ En \Set, un morfismo es épico si y sólo si es sobreyectivo.
 \end{proposition}
 
 \begin{proof}
-Sea $f \colon A \to B$ un epimorfismo. Supongamos que $f$ no fuera sobreyectivo. Entonces existe $b \in B$ que no es preimagen de ningún elemento de $A$. Sean $g, h \colon B \to \{1,2\}$ tal que $g(x)=h(x)=1$ para todo $x \in B \setminus \{b\}$, $g(b) = 1$ y $h(b) = 2$. Entonces tenemos que $g \circ f = h \circ f$. Como $f$ es epimorfismo, esto implica que $g = h$, pero esto entra en una contradicción.
+Sea $f \colon A \to B$ un epimorfismo. Supongamos que $f$ no fuera sobreyectivo. Entonces existe $b \in B$ que no es imagen de ningún elemento de $A$. Sean $g, h \colon B \to \{1,2\}$ tal que $g(x)=h(x)=1$ para todo $x \in B \setminus \{b\}$, $g(b) = 1$ y $h(b) = 2$. Entonces tenemos que $g \circ f = h \circ f$. Como $f$ es epimorfismo, esto implica que $g = h$, pero esto entra en una contradicción.
 
-Sea $f \colon A \to B$ un morfismo sobreyectivo. Sean $g, h \colon B \to C$ tal que $g \circ f = h \circ f$. Para todo $b \in B$, existe $a \in A$ tal que $f(a)=b$, luego: $g(b) = g(f(a)) = h(f(a)) = h(b)$, luego $g = h$.
+Sea $f \colon A \to B$ un morfismo sobreyectivo. Sean $g, h \colon B \to C$ tales que $g \circ f = h \circ f$. Para todo $b \in B$, existe $a \in A$ tal que $f(a)=b$, luego: $g(b) = g(f(a)) = h(f(a)) = h(b)$, luego $g = h$.
 \end{proof}
 
 \begin{definition}
@@ -439,7 +442,7 @@ Para ello, debemos definir morfismos entre categorías que respetan su estructur
 Aunque la misma razón por la que no hay conjunto de conjuntos, no hay una categoría de categorías, esta cuestión motiva la definición de functor:
 
 \begin{definition}\label{def:functor}
-Un \newterm{functor} $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
+Un \newterm{functor} $F$ entre un par de categorías $\cat$ y $\mathcal{D}$ es un par de funciones:
 \begin{itemize}
 \item $F_O : O(\cat) \to O(\mathcal{D})$.
 \item $F_M : M(\cat) \to M(\mathcal{D})$.
@@ -505,7 +508,7 @@ Hay que tener cuidado con la diferencia entre \code{Maybe} y \code{Just}.
 Veremos que este constructor de tipo, que asocia a cada tipo \code{a} el tipo \code{Maybe a}, es un functor.
 Por otro lado, \code{Just} es una función polimórfica --y por lo tanto una familia de morfismos en \code{Hask}-- de \code{a} a \code{Maybe a}.
 
-Para ver que \code{Maybe} es un functor, tenemos que describir como actua sobre morfismos, ahí es donde entra en juego la función \code{fmap}.
+Para ver que \code{Maybe} es un functor, tenemos que describir como actúa sobre morfismos, ahí es donde entra en juego la función \code{fmap}.
 
 \begin{minted}{haskell}
 instance Functor Maybe where
@@ -514,7 +517,7 @@ instance Functor Maybe where
 \end{minted}
 \end{example}
 
-\subsection{Functor contravariantes}
+\subsection{Functor contravariante}
 Consideramos ahora el concepto de functor contravariante a través de un cambio en la definición de functor:
 \begin{definition}\label{def:cofunctor}
 Un \index{functor!contravariante}\emph{functor contravariante} $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
@@ -943,7 +946,7 @@ En una categoría cartesianamente cerrada $\cat$, la exponenciación por un obje
 Queremos probar que la exponenciación:
 \[ -^Z \colon \cat \to \cat \]
 para un objeto fijo $Z$ es un endofunctor.
-Como $\cat$ es cartesianamente cerrada, la exponenciación de $A^Z$ está bien definido para todo objeto $A$ de $\cat$.
+Como $\cat$ es cartesianamente cerrada, la exponenciación de $A^Z$ está bien definida para todo objeto $A$ de $\cat$.
 Consideremos ahora un morfismo $f \colon A \to B$, tenemos que definir $f^Z \colon A^Z \to B^Z$.
 Primero observamos que:
 \[ \varepsilon \colon A^Z \times Z \to A \]
@@ -1008,9 +1011,7 @@ Esto demuestra que $-^Z$ es un endofunctor.
 Más atrás, consideramos la categoría de functores entre dos categorías $\cat$ y $\mathcal{D}$.
 Consideramos ahora la \index{categoría!{de categorías pequeñas}}\emph{categoría de categorías pequeñas}, denominada \index{Cat@$\Cat$|see {categoría de categorías pequeñas}}$\Cat$, con functores como morfismos.
 
-Vamos a ver que $\Cat$ es cartesianamente cerrada.
-\begin{proposition}
-\end{proposition}
+% TODO: Vamos a ver que $\Cat$ es cartesianamente cerrada.
 
 \chapter{F-álgebras}
 \begin{definition}
@@ -1022,7 +1023,7 @@ Una $F$-álgebra es un par $(A,\alpha)$, donde $A \in \cat$ y $\alpha \colon F a
 En algunos libros, también se le llama \newterm{punto prefijo}.
 Aunque no usaremos el nombre de punto prefijo, sí diremos que si $\alpha$ es isomorfismo, al par $(A,\alpha)$ par se le llama también \newterm{punto fijo}, señalando su similitud con la idea de punto fijo habitual de análisis.
 
-Puede ser interesante darle una estructura de categoría a la colleción de $F$-álgebras.
+Puede ser interesante darle una estructura de categoría a la colección de $F$-álgebras.
 Para ello, necesitamos definir morfismos de un $(A,\alpha)$ a $(B,\beta)$.
 Suponiendo que tenemos un morfismo $f \colon A \to B$, observamos que $F f \colon F A \to F B$, que puede ser compuesta con $\beta$:
 \[ \beta \circ F f \colon F A \to B \]
@@ -1118,7 +1119,7 @@ unFix (U f) = f
 \end{minted}
 
 Ahora que sabemos que (\code{Fix f}, \code{U}) es el álgebra inicial, sabemos que existe un catamorfismo de este álgebra a todas las demás álgebras.
-Consideramos cualquier otra álgebra (\code{b}, \code{g}), con \code{g :: Algebra f b}. sea \code{m :: Fix f -> b} el correspondiente catamorfismo, entonces por \ref{prop:fmorfismo}:
+Consideramos cualquier otra álgebra (\code{b}, \code{g}), con \code{g :: Algebra f b}. Sea \code{m :: Fix f -> b} el correspondiente catamorfismo, entonces por \ref{prop:fmorfismo}:
 
 \[
 \begin{tikzcd}
@@ -1260,7 +1261,7 @@ Si además es lleno, decimos que es una \newterm{inmersión llena}.
 \end{definition}
 
 \begin{definition}
-Dada una categoría $\cat$, una \newterm{subcategoría} es un par $(\mathcal{D}, F)$ donda $\mathcal{D}$ es una categoría y $F \colon \mathcal{D} \to \cat$ es una inmersión.
+Dada una categoría $\cat$, una \newterm{subcategoría} es un par $(\mathcal{D}, F)$ donde $\mathcal{D}$ es una categoría y $F \colon \mathcal{D} \to \cat$ es una inmersión.
 
 Si además, $F$ es llena, decimos que $(\mathcal{D}, F)$ es una \index{subcategoría!llena}\emph{subcategoría llena}.
 \end{definition}
@@ -1386,7 +1387,7 @@ que demuestra que el diagrama \ref{diagrama-A} conmuta y acaba la demostración.
 \end{proof}
 
 \begin{remark}
-Considerando la categoría opuesta, se tiene que para todo objeto $A \in \cat$ y functor contravariante $F \colon \cat^{op} \Rightarrow \Set$ hay una biyección
+Considerando la categoría opuesta, se tiene que para todo objeto $A \in \cat$ y functor contravariante $F \colon \cat^{op} \to \Set$ hay una biyección
 \[ Nat(\cat(-,A), F) \cong F A\]
 natural en $A$ y $F$.
 \end{remark}
