@@ -179,6 +179,7 @@
 \newcommand{\Set}{{Set}}
 \newcommand{\Grp}{{Grp}}
 \newcommand{\Ab}{{Ab}}
+\newcommand{\Vect}{{Vect}}
 \newcommand{\Ring}{{Ring}}
 \newcommand{\Cat}{{Cat}}
 \newcommand{\Z}{{\mathbb{Z}}}
@@ -807,12 +808,12 @@ En resumen:
 
 \section{Transformaciones naturales}
 \begin{definition}
-Una transformación natural $\mu$ entre dos functores $F, G \colon \cat \to \mathcal{D}$ es una colección de funciones
+Una transformación natural $\mu$ entre dos functores $F, G \colon \cat \to \mathcal{D}$ es una colección de morfismos
 \[ \mu_A \colon F A \to G A \]
 donde $A \in \cat$ tal que para todo $f \colon A \to B$ el diagrama:
 \[
 \begin{tikzcd}
-F A \arrow[r,"\mu_A"] \arrow[d,"F f"] & G A \arrow[d,"G f"]\\
+F A \arrow[r,"\mu_A"] \arrow[d,"F f" left] & G A \arrow[d,"G f"]\\
 F B \arrow[r,"\mu_B"] & G B
 \end{tikzcd}
 \]
@@ -821,14 +822,20 @@ conmuta.
 
 Usaremos la notación $\mu \colon F \Rightarrow G$ para una transformación natural $\mu$.
 Llamamos $\mu_A$ \newterm{componente} de $\mu$ en $A$.
+La conmutatividad del diagrama se denomina \emph{propiedad de naturalidad} y es equivalente a:
+\[ G f \circ \mu_A = \mu_B \circ F f \]
+para todo morfismo $f \colon A \to B$ en $\cat$.
 
+Hay dos formas de componer transformaciones naturales.
 \begin{definition}
-Dado dos transformaciones naturales $\mu \colon F \Rightarrow G$ y $\eta \colon G \Rightarrow H$ donde $F,G,H \colon \cat \to \mathcal{D}$ son functores, su composición $\mu \circ \eta \colon F \Rightarrow H$ viene dada por
-\[ (\mu \circ \eta)_A = \mu_A \circ \eta_A \]
+Dado dos transformaciones naturales $\mu \colon F \Rightarrow G$ y $\eta \colon G \Rightarrow H$ donde $F,G,H \colon \cat \to \mathcal{D}$ son functores, su composición horizontal $\eta \circ \mu \colon F \Rightarrow H$ viene dada por
+\[ (\eta \circ \mu)_A = \eta_A \circ \mu_A \]
 para todo objeto $A \in \cat$.
 \end{definition}
+\[ \begin{tikzcd}{\cat} \arrow[r,"F", bend left=100, ""{name=U}] \arrow[r,"G", pos=0.2,""{name=M, pos=0.5,below},""{name=M', pos=0.5,above}] \arrow[r,"H" below, bend right=100, ""{name=D, below}] & \mathcal{D}\\
+\arrow[Rightarrow, from=U, to=M, "\mu"] \arrow[Rightarrow, from=M', to=D, "\eta"]\end{tikzcd}\]
 
-\begin{lemma}
+\begin{lemma}\label{functor-categoria}
 Dados dos categorías $\cat$ y $\mathcal{D}$, existe una categoría donde los objetos son functores $\cat \to \mathcal{D}$ y los morfismos son transformaciones naturales.
 
 Denotamos dicha categoría como $\mathcal{D}^\cat$ ó $[\cat,\mathcal{D}]$.
@@ -836,6 +843,64 @@ Denotamos dicha categoría como $\mathcal{D}^\cat$ ó $[\cat,\mathcal{D}]$.
 \begin{proof}
 Vemos primero que podemos definir una transformación natural identidad $\iota \colon F \Rightarrow F$ dado por $\iota_A = \id_{F A}$ para todo $A \in \cat$.
 Por otro lado, que la composición de transformaciones naturales es asociativa es trivial.
+\end{proof}
+
+% Milewski
+Nos interesa ahora definir una composición de transformaciones naturales de la forma:
+\begin{equation}\label{ver-comp} \begin{tikzcd}{\cat} \arrow[r,"F", bend left, ""{name=FU}] \arrow[r,"G" below, bend right, ""{name=FD, below}] & \mathcal{D} \arrow[r,"H",bend left, ""{name=GU}] \arrow[r,"K" below, bend right, ""{name=GD, below}] & \mathcal{E}
+\arrow[Rightarrow, from=FU, to=FD, "\mu"] \arrow[Rightarrow, from=GU, to=GD, "\eta"]\end{tikzcd}\end{equation}
+Nuestro objeto será definir una transformación natural que vaya de $H \circ F$ a $G \circ K$.
+%Riehl/Peter Selinger: Introduction to categorical logic. pdf, page 41
+Para ello necesitaremos describir dos formas en las que se pueden componer un functor y una transformación natural:
+\begin{definition}
+Si $F \colon \cat \to \mathcal{D}$ y $G, H\colon \mathcal{D} \to \mathcal{E}$ son functores y $\mu \colon G \Rightarrow H$ es una transformación natural, el \newterm{whiskering izquierdo}:
+\[ \mu \circ F \colon G \circ F \Rightarrow H \circ F \]
+está definido como:
+\[ (\mu \circ F)_A = \mu_{F A} \]
+\end{definition}
+La naturalidad de $(\mu \circ F)$ es consecuencia de la naturalidad de $\mu$.
+Por otro lado:
+\begin{definition}
+Si $F, G \colon \cat \to \mathcal{D}$ y $H\colon \mathcal{D} \to \mathcal{E}$ son functores y $\mu \colon F \Rightarrow G$ es una transformación natural, el \newterm{whiskering derecho}:
+\[ H \circ \mu  \colon H \circ F \Rightarrow H \circ G \]
+está definido como:
+\[ (H \circ \mu)_A = H(\mu_A) = H\mu_A \]
+\end{definition}
+Aquí la naturalidad no es tan evidente.
+\begin{proposition}
+El \emph{whiskering} derecho es una transformación natural.
+\end{proposition}
+\begin{proof}
+Por la naturalidad de $\mu$, se da la igualdad
+\[ G f \circ \mu_A = \mu_B \circ F f \]
+aplicando $H$ y su propiedad de functorialidad:
+\[ H(G f) \circ H\mu_A = H\mu_B \circ H(F f) \]
+Lo que prueba la naturalidad de $H \circ \mu$.
+\end{proof}
+
+Con esto, ya podemos definir la composición horizontal o composición de Godement.
+\begin{definition}
+Sean $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tres categorías.
+Consideramos los functores $F$, $G$, $H$ y $K$, y las transformaciones naturales $\mu$ y $\eta$ en la configuración dada en \ref{ver-comp}.
+Definimos la composición horizontal $\eta * \mu \colon H \circ F \Rightarrow K \circ G$ como:
+\[ (\eta * \mu)_A = \eta_{G A} \circ H\mu_A \]
+\end{definition}
+\begin{proposition}
+La composición de horizontal $\eta * \mu$ es una transformación natural.
+\end{proposition}
+%Riehl
+\begin{proof}
+Por la naturalidad de $\mu$ y $\eta$ se tiene que cada cuadrado del siguiente diagrama es conmutativo.
+\[\begin{tikzcd}
+{H(F A)} \arrow[r,"H\mu_A"] \arrow[d,"H(F f)"] & {H(G A)} \arrow[r,"\eta_{G A}"] \arrow[d,"H(G f)"] & {K(G A)} \arrow[d,"K(G f)"]\\
+{H(F B)} \arrow[r,"H\mu_A"] & {H(G B)} \arrow[r,"\eta_{G B}"] & {K(G B)}
+\end{tikzcd}\]
+Luego, componiendo horizontalmente, tenemos que es conmutativo el diagrama:
+\[\begin{tikzcd}
+{H(F A)} \arrow[rr,"\eta_{G A} \circ H\mu_A"] \arrow[d,"H(F f)"] & & {K(G A)} \arrow[d,"K(G f)"]\\
+{H(F B)} \arrow[rr,"\eta_{G B} \circ H\mu_A"] & & {K(G B)}
+\end{tikzcd}\]
+Esto demuestra la naturalidad de $\eta * \mu$.
 \end{proof}
 
 \section{Functores adjuntos}
@@ -1296,7 +1361,7 @@ Una consecuencia de la anterior proposición es que toda categoría localmente p
 
 \chapter{Mónadas}
 \epigraph{"A monad is a monoid in the category of endofunctors, what's the problem?"}{\textit{A Brief, Incomplete, and Mostly Wrong History of Programming Languages\\James Iry}}
-\section{Monoide}
+\section{Monoides clásicos}
 En álgebra, un \newterm{monoide} $(M,\cdot)$ es un conjunto $M$ junto a una operación binaria $\cdot \colon M \times M \to M$ asociativa y con elemento unidad en $M$.
 Una forma alternativa de ver un monoide es como una categoría de un sólo objeto.
 Si llamamos $A$ al único objeto de dicha categoría, identificamos los elementos de $M$ con los morfismos $f \colon A \to A$ y la composición de morfismos con la operación binaria.
@@ -1336,6 +1401,7 @@ mappend x :: m -> m
 Tenemos que \code{mappend x} es un endomorfismo en el tipo \code{m} y que \code{mappend mempty} es equivalente al morfismo identidad.
 Es decir \code{mappend} se puede ver como una función que asocia cada elemento del monoide (como grupo) con el endomorfismo correspondiente del monoide (como endomorfismos de \code{m}).
 
+\subsection{Categorías monoidales}
 % Awodey 4
 Otra forma de ver monoides en teoría de categorías es através de \index{objeto!monoide}\emph{objeto monoide} en una categoría.
 
@@ -1349,7 +1415,7 @@ Una \index{categoría!monoidal}\emph{categoría monoidal} es una categoría $\ca
   \item El unidor derecho:
 \[ \rho_A \colon A \otimes I \Rightarrow A \]
 \end{itemize}
-de manera que los siguientes diagramas conmuten (entiéndase que estamos tomando las correctas componentes de $\alpha$, $\lambda$ y $\rho$):
+de manera que cumpla las \index{leyes de coherencia}leyes de coherencia, es decir, que los siguientes diagramas conmuten (entiéndase que estamos tomando las correctas componentes de $\alpha$, $\lambda$ y $\rho$):
 \[\begin{tikzcd}
 {A \otimes (B \otimes (C \otimes D))} \arrow[r,"\alpha"] \arrow[d,"\id\otimes\alpha"] & {(A \otimes B) \otimes (C \otimes D)} \arrow[r,"\alpha"] & {((A \otimes B) \otimes C) \otimes D}\\
 {A \otimes ((B \otimes C) \otimes D)} \arrow[rr,"\alpha"] & & {(A \otimes (B \otimes C)) \otimes D} \arrow[u,"\alpha\otimes\id"]
@@ -1362,46 +1428,139 @@ y por último:
 \[ \lambda_I = \rho_I \]
 \end{definition}
 
-Un ejemplo sencillo de categoría monoidal es cualquier categoría con productos finitos, si tomamos $A \otimes B = A \times B$.
+% Categorical homotopy Theory Riehl
+Un ejemplo sencillo de categoría monoidal es cualquier categoría con productos finitos, tomando $A \otimes B = A \times B$.
+Es más, en dicho caso, existe un isomorfismo natural $A \otimes B \cong B \otimes A$.
+Una categoría monoidal con dicho isomorfismo natural se denomina \newterm{categoría monoidal simétrica}.
+Por lo tanto, $\Set$ forma una categoría monoidal simétrica con el producto cartesiano y un conjunto unitario cualquiera como identidad del producto.
+También, $\Cat$ forma una categoría monoidal simétrica con el producto y una categoría unitaria como $\mathbb{1}$ como identidad del producto.
+
 Veamos otro ejemplo más sofisticado.
 % MacLane
 \begin{example}
+\label{ej-abeliano}
 Consideramos la categoría de grupos abelianos $\Ab$.
-Para dos grupos $G$ y $H$, definimos $G \otimes H$ como el cociente del grupo abeliano libre de símbolos $\{g \otimes h \colon g \in G, h \in H\}$ por las relaciones que hagan que la aplicación $\gamma \colon (g,h) \mapsto g \oplus h$ sea bilineal en $G \times H$.
+Para dos grupos $A$ y $B$, definimos $A \otimes B$ como su producto tensorial como $\Z$-módulos.
+Más explícitamente, $A \otimes B$ es un grupo abeliano con un producto bilineal $\otimes$ tal que para todo grupo abeliano $C$ y toda aplicación bilineal $f \colon A \times B \to C$, existe un único homomorfismo de grupos $\widetilde{f}$ tal que el siguiente diagrama conmuta:
+\[ \begin{tikzcd}{A \times B} \arrow[dr,"f" below] \arrow[r,"\otimes"] & {A \otimes B}\arrow[d,"\widetilde{f}",dashed]\\
+& C \end{tikzcd}\]
+%Para dos grupos $G$ y $H$, definimos $G \otimes H$ como el cociente del grupo abeliano libre de símbolos $\{g \otimes h \colon g \in G, h \in H\}$ por las relaciones que hagan que la aplicación $\gamma \colon (g,h) \mapsto g \oplus h$ sea bilineal en $G \times H$.
 Por la unicidad de la construcción, hay un único isomorfismo natural $\alpha_{ABC} \colon A \otimes (B \otimes C) \to (A \otimes B) \otimes C$.
 
-% Demo: https://ncatlab.org/nlab/show/tensor+product+of+abelian+groups
-Veamos que $\Z$ es el objeto unidad. Para ello, consideramos la aplicación $G \otimes \Z \to G$:
+% Demo propia
+Veamos que $\Z$ es el objeto unidad.
+Para ello, consideramos una aplicación bilineal $f \colon A \times \Z \to B$ cualquiera.
+Definimos la aplicación lineal
 \begin{align*}
-\phi \colon G \otimes \Z & \to G\\
-\phi \colon g \oplus n & \mapsto \overbrace{g + g + \dots + g}^\text{n veces}
+\phi \colon A \times \Z & \to A\\
+\phi \colon (a,n) & \mapsto \overbrace{a + \dots + a}^\text{n veces}
 \end{align*}
-Definimos: 
+y el homomorfismo de grupo:
 \begin{align*}
-\psi \colon G & \to G \otimes \Z\\
-\psi \colon g & \mapsto \overbrace{g + g + \dots + g}^\text{n veces}
+\widetilde{f} \colon A & \to B\\
+\widetilde{f} \colon a & \mapsto f(a,1)
 \end{align*}
-Como la aplicación $G \times \Z \to G \otimes \Z$ es lineal sobre $\Z$:
-\[ g\otimes n = g\otimes (\overbrace{1 + \dots + 1}^\text{n veces}) = \overbrace{g \otimes 1 + \dots + g\otimes 1}^\text{n veces}\]
+Entonces, por linealidad sobre $\Z$:
+\[ f(a,n) = f(a,\overbrace{1 + 1 + \dots + 1}^\text{n veces}) = \overbrace{f(a,1) + \dots + f(a,1)}^\text{n veces} = (\widetilde{f} \circ \phi)(a,n)\]
+Luego $A \otimes \Z \cong_{\lambda_A} A \cong_{\rho_A} \Z \otimes G$.
+
+Es sencillo comprobar que las leyes de coherencia se cumplen.
+%Definimos: 
+%\begin{align*}
+%\psi \colon G & \to G \otimes \Z\\
+%\psi \colon g & \mapsto \overbrace{g + g + \dots + g}^\text{n veces}
+%\end{align*}
+%Como la aplicación $G \times \Z \to G \otimes \Z$ es lineal sobre $\Z$:
+%\[ g\otimes n = g\otimes (\overbrace{1 + \dots + 1}^\text{n veces}) = \overbrace{g \otimes 1 + \dots + g\otimes 1}^\text{n veces}\]
 \end{example}
 
+\subsection{Categorías enriquecidas}
+Recordemos que una categoría $\cat$ es localmente pequeña si para todo pares de objetos $A, B \in \cat$, se tiene que $\cat(A,B) \in \Set$.
+Una idea esencial en la teoría de categorías de orden superior es el concepto de \newterm{categoría enriquecida}, que consiste en remplazar $\Set$ de la definición anterior con cualquier otra categoría monoidal simétrica.
+Informalmente, dada una categoría monoidal simétrica $\mathcal{V}$, una categoría $\cat$ se dice que está $\mathcal{V}$-enriquecida si para cualquier par de objetos $A, B \in \cat$, $\cat(A, B) \in \mathcal{V}$.
+A esta definición hay que añadir unas condiciones de compatibilidad con la composición, de las que hablamos a continuación:
+%El punto de inicio para la teoría de categorías de orden superior consiste en considerar las categorías $\Cat$-enriquecida, denominadas $2$-categorías.
+
 \begin{definition}
-Sea $\cat$ una categoría con productos finitos.
-Un \emph{monoide} en $\cat$ es una tripleta $(M,\mu,\eta)$, de forma:
-\[
-\begin{tikzcd}
-{M \times M} \arrow[r,"\mu"] & M & \mathbb{1} \arrow[l,"\eta" above]
-\end{tikzcd}
-\]
-tal que:
-\begin{enumerate}
-  \item $\mu$ es asociativa, es decir, el siguiente diagrama conmuta:
-  \begin{tikzcd}
-  {(M \times M) \times M} 
-  \end{tikzcd}
-\end{enumerate}
+Dada una categoría monoidal simétrica $(\mathcal{V}, \otimes, I)$, una $\mathcal{V}$-categoría $\cat$ consiste en:
+\begin{itemize}
+  \item Una colección de objetos.
+  \item Para cada par de objetos $A, B$ en $\cat$, un objeto llamado \newterm{hom-objeto} $\cat(A,B) \in \mathcal{V}$.
+  \item Para cada $A \in \cat$, un morfismo $\Id_A \colon I \to \cat(A,A)$ en $\mathcal{V}$.
+  \item Para todo $A, B, C \in \cat$, un morfismo $\circ \colon \cat(B,C) \otimes \cat(A,B) \to \cat(A,C)$ en $\mathcal{V}$.
+\end{itemize}
+de manera que los siguientes diagramas conmuten:
+\[ \begin{tikzcd}
+{\cat(C,D) \otimes \cat(B,C) \otimes \cat(A,B)} \arrow[r,"\id\otimes\circ"] \arrow[d,"\circ\otimes\id"]& {\cat(C,D) \otimes \cat(A,C)} \arrow[d,"\circ"]\\
+{\cat(B,D) \otimes \cat(A,B)} \arrow[r,"\circ"] & {\cat(A,D)}
+\end{tikzcd}\]
+
+\[ \begin{tikzcd}
+{\cat(A,B) \otimes I} \arrow[r,"\id\otimes\Id_A"] \arrow[dr,"\cong" below] & {\cat(A,B) \otimes \cat(A,A)} \arrow[d,"\circ"] & {\cat(B,B) \otimes \cat(A,B)} \arrow[d,"\circ"] & {I \otimes \cat(A,B)} \arrow[l,"\Id_B \otimes \id" above] \arrow[dl,"\cong" below]\\
+& \cat(A,B) & \cat(A,B)
+\end{tikzcd}\]
 \end{definition}
-Por otro lado, podemos describir el concepto de monoide
+
+Dotemos ahora a $\Cat$ de estructura de $\Cat$-categoría, es decir, $2$-categoría.
+Recordemos que para un par de categorías $\cat$ y $\mathcal{D}$, los functores $\cat \to \mathcal{D}$ entre ellos forman la categoría $\mathcal{D}^\cat$ como comentamos en \ref{functor-categoria}.
+En esta categoría, los morfismos entre dos functores $F$ y $G$ eran las transformaciones naturales $F \Rightarrow G$.
+
+Además, consideramos la transformación natural $\Id_A \colon \mathbb{1} \to \cat^\cat$ que asocia el único objeto de $\mathbb{1}$ con el functor identidad.
+Por último, para unas categorías cualesquiera $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tenemos que definir una transformación natural.
+\[ \circ \mathcal{E}^\mathcal{D} \times \mathcal{D}^\cat \Rightarrow \mathcal{E}^\cat\]
+\[ \begin{tikzcd}{\cat} \arrow[r,"F", bend left, ""{name=FU}] \arrow[r,"F'" below, bend right, ""{name=FD, below}] & \mathcal{D} \arrow[r,"G",bend left] \arrow[r,"G'" below, bend right] & \mathcal{E}
+\arrow[Rightarrow, from=FU, to=FD]\end{tikzcd}\]
+
+\subsection{Monoides}
+Volviendo, al tema de los monoides, ahora podemos generalizar el concepto de monoide.
+\begin{definition}
+Un \index{monoide}\emph{monoide} es un objeto $M$ de una categoría monoidal $(\cat, \otimes, I)$ con dos morfismos:
+\begin{tikzcd}
+M \otimes M \arrow[r,"\mu"] & M & I \arrow[l,"\eta" above]
+\end{tikzcd}
+que cumplan:
+\begin{itemize}
+  \item La propiedad asociativa:
+  \[ \begin{tikzcd}
+  {(M \otimes M) \otimes M} \arrow[rr,"\alpha"] \arrow[d,"\mu\otimes\id"] & & {M \otimes (M \otimes M)} \arrow[d,"\id\otimes\mu"]\\
+  {M \otimes M} \arrow[dr,"\mu"] & & {M \otimes M} \arrow[dl,"\mu"]\\
+  & M
+  \end{tikzcd}\]
+  \item La propiedad de la unidad:
+  \[ \begin{tikzcd}
+  {I \otimes M} \arrow[r,"\eta\otimes\id"] \arrow[dr,"\rho" below] & {M \otimes M} \arrow[d,"\mu"] & {M \otimes I} \arrow[l,"\id\otimes\eta" above] \arrow[dl,"\rho"]\\
+  & M
+  \end{tikzcd}\]
+\end{itemize}
+\end{definition}
+
+\begin{example}
+Algunos ejemplos de monoides son:
+\begin{itemize}
+  \item Un monoide sobre la categoría monoidal $(\Set, \times, \{1\})$ es un monoide en el sentido algebraico.
+  \item Un monoide sobre la categoría monoidal de grupos abelianos $(\Ab, \otimes, \Z)$ descrita en el ejemplo \ref{ej-abeliano} es un \newterm{anillo}.
+  \item Un monoide sobre la categoría monoidal de $k$-espacios vectoriales $(\Vect_k, \otimes_k, k)$ es una \newterm{k-álgebra}.
+\end{itemize}
+
+Un ejemplo más será de gran importancia para nosotros, las mónadas.
+
+\subsection{Mónadas}
+Dada una categoría $\cat$, consideramos la categoría $\cat^\cat$, donde los objetos son endofunctores y los morfismos vienen dados por la composición entre functores.
+
+\begin{proposition}
+$\cat^\cat$ forma una categoría monoidal con la composición como producto tensorial y functor unidad como objeto unidad.
+\end{proposition}
+\begin{proof}
+Primero tenemos que ver que $\circ \colon \cat^\cat \times \cat^\cat \to \cat^\cat$ es un bifunctor.
+\end{proof}
+\end{example}
+
+\section{Bibliografía}
+\begin{itemize}
+  \item Category theory in context
+  \item Awodey 4
+  \item MacLane
+\end{itemize}
 
 \chapter{F-álgebras}
 \begin{definition}
