@@ -267,12 +267,180 @@
     Abstract goes here
 \end{otherlanguage}
 
-\chapter{Fundamentos}
+\chapter{Introducción}
+La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos y programadores, y una poderosa abstracción a la composición de funciones.
+Para explorar la teoría de categorías haremos uso de la programación funcional.
+Más concrétamente, usaremos Haskell, que es uno de los lenguajes puramente funcionales más populares.
 
+\section{Programación funcional}
+La programación funcional es un estilo de programación que tiene sus origenes en IPL (1956) y Lisp (1958).
+Aunque durante mucho tiempo ha tenido un interés más académico que práctico, ha estado teniendo más atención en los últimos años.
+Lenguajes de gran popularidad como C++ o Java han introducido características de la programación funcional en los últimos años.
+\footnote{Since the introduction of the STL (Standard Template Library) -- about 1994 -- there has been a steady and cautious increase in the use of functional programming techniques in C++. -- Bjarne Stroustrup, creador de C++}
+Algunos lenguajes, como Haskell o Standard ML, están diseñados con programación funcional en mente.
+Encuentran su inspiración en las matemáticas y sus características principales son:
+
+\begin{itemize}
+  \item \emph{Funciones puras}. Las subrutinas no dejan efectos secundarios en memoria, por lo que sólo dependen en sus argumentos y no en el estado de la máquina.
+  Por lo tanto, las funciones puras son más cercanas a las funciones con las que trabajan los matemáticos.
+  \item \emph{Sistema de tipos fuertes}. El lenguaje categoriza los datos por tipos y restringe la aplicaciones de funciones a ciertos tipos, de manera que la expresión \code{"texto" + 1} da un error de compilación.
+  A menudo hay un sistema de \emph{inferencia de tipo}, de manera que no es necesario tener que escribir los tipos constantemente.
+  \item \emph{Funciones polimórficas}. En consecuencia del punto anterior y para permitir escribir funciones genéricas, se permite escribir funciones que actúen tipos arbitrarios. Por ejemplo, en Haskell, la declaración de tipo
+  \begin{minted}{haskell}
+  f :: forall a. a -> a
+  \end{minted}
+  % =
+  % \end{minted}
+  describe \code{f} como una función que puede ser aplicado a todo tipo y devuelve el mismo tipo de salida.
+  Una función equivalente en C++ sería de la forma:
+  \begin{minted}{c++}
+  template<class A>
+  A f(A arg);
+  \end{minted}
+  Sin embargo, la programación funcional permite imponer restricciones a los tipos polimórficos que son validabes en compilación a través de mecanismos como las \emph{clases de tipos} en Haskell.
+  Son similares a las \emph{interfaces} de los lenguajes de programación orientada a objetos como Java.
+  En algunos lenguajes funcionales, se permite además imponer restricciones de tipos al tipo polimórfico devuelto de una función, por ejemplo:
+  \begin{minted}{haskell}
+  read :: forall a. (Read a) => String -> a
+  \end{minted}
+  % =
+  % \end{minted}
+  Esta función interpreta una cadena de texto como un tipo cualquiera \code{a} que sea de la clase de tipo \code{Read}.
+  \item \emph{Tipos de datos algebraicos}. Pueden representar suma de tipos, además de producto de tipos.
+  Esto permite la existencia de tipos definiciones recursivas como listas o árboles sin hacer uso de punteros.
+  Además no son mutables (por el hecho de que las funciones no pueden tener efectos secundario), por lo que no hay una diferencia esencial entre los datos del constructor y los datos que almacena el tipo de datos.
+
+  Por esta razón, la programación funcional suele resultar algo difícil para programadores acostumbrados a programar con efectos secundarios.
+  Por otro lado, permite procesar los argumentos de una función por patrones.
+
+  \item \emph{Evaluación perezosa}. Aunque no es característica de todos los lenguajes funcionales --por ejemplo, SML no lo incorpora--, muchos lenguajes funcionales como Haskell y Mirando lo adoptan.
+  La evaluación perezosa permite que los argumentos de una función sean evaluados sólamente cuando sea necesario.
+  Esto permite trabajar estructuras de datos infinitas, que en todo momento sólo están parcialmente definidas.
+\end{itemize}
+
+\section{Haskell}
+Vamos a introducir lo mínimo de Haskell para poder entender el código que aquí se da.
+No tendremos una imagen completa del lenguaje, pero sí lo suficiente para poder seguir el código.
+Si ya está familiarizado con Haskell, puede saltarse esta sección.
+
+Haskell nos permite \emph{declarar} una variable y su tipo:
+\begin{minted}{haskell}
+x :: Int
+\end{minted}
+y \emph{definir} el valor de dicha variable:
+\begin{minted}{haskell}
+x = 8
+\end{minted}
+Evidentemente, implementa aritmética básica:
+\begin{minted}{haskell}
+y = (x + 4) * 5
+-- Esto es un comentario
+-- y = 60
+\end{minted}
+Las funciones se definen de forma similar:
+\begin{minted}{haskell}
+duplica :: Int -> Int
+duplica x = 2 * x
+\end{minted}
+Obsérvese que no se ponen paréntesis alrededor de los parámetros.
+Tampoco se usan paréntesis cuando aplicamos la función, es decir, \code{duplica 3} es una expresión correcta.
+
+Las funciones de varios parámetros se definen como funciones de orden superior:
+\begin{minted}{haskell}
+multiplica :: Int -> Int -> Int
+multiplica x y = x * y
+\end{minted}
+Podemos entender que \code{multiplica} toma dos enteros y los multiplica, pero también se puede interpretar que \code{multiplica} se aplica a \code{x} y devuelve una función con tipo \code{Int -> Int}, que podemos a su vez aplicar al otro argumento.
+Esta idea nos lleva al concepto de funciones parcialmente aplicadas:
+\begin{minted}{haskell}
+duplica' :: Int -> Int
+duplica' x = multiplica 2 x
+\end{minted}
+
+Podemos definir funciones polimórficas, como explicamos en la sección anterior:
+\begin{minted}{haskell}
+max :: Ord a => a -> a -> a 
+max x y =
+  if x < y
+  then x 
+  else y
+\end{minted}
+Aquí vemos además la estructura condicional habitual \texttt{if-then-else}.
+
+Trabajaremos a menudo a nivel de funciones, por lo que resultará útil echar un ojo al operador composición:
+\begin{minted}{haskell}
+(.) :: (b -> c) -> (a -> b) -> a -> c
+f . g = \x -> f (g x)
+\end{minted}
+Toda función declarada entre paréntesis, como \code{(.)}, se corresponde con un operador infijo.
+Por otro lado, la expresión $\backslash$\code{x -> f (g x)} representa una función de un sólo parámetro \code{x} y que devuelve \code{f (g x)}.
+Más específicamente, representa la expresión lambda $\lambda x. f(g x)$.
+
+Hablemos también un poco sobre los tipos de datos algebraicos.
+Un tipo de dato se define con una expresión de la forma
+\begin{minted}{haskell}
+data Dato t1 ... tn = 
+  Constructor1 a11 ... a1m | ... | ConstructorM aM1 ... aMq
+\end{minted}
+donde \code{t1 ... tn} son argumentos del tipo \code{Dato}, que tiene distintos constructores \code{Constructor1},\dots, \code{ConstructorM} cada uno con sus correspondientes parámetros.
+
+Para entender mejor esto, veamos un ejemplo:
+\begin{minted}{haskell}
+data Maybe a = Nothing | Just a
+\end{minted}
+El tipo de dato \code{Maybe a} tiene dos constructores: \code{Nothing} (sin parámetro) y \code{Just a}, de parámetro \code{a}.
+Recordemos que, en programación funcional, los constructores tienen toda la información sobre el tipo de dato, por lo que podemos identificar todo objeto del tipo \code{Maybe a} con uno de sus constructores.
+
+Esto nos lleva a la interpretación que un objeto de tipo \code{Maybe a} es \code{Nothing} o bien \code{Just a}.
+Pero cuidado, no confunda el constructor con el tipo.
+Tanto \code{Nothing} como \code{Just 24} son del tipo \code{Maybe Int}.
+Para definir una función que tome \code{Maybe a} por defecto, suele venir bien definirla por casos:
+\begin{minted}{haskell}
+maybe_a_numero :: Maybe Int -> Int
+maybe_a_numero Nothing  = 0
+maybe_a_numero (Just x) = x
+\end{minted}
+
+Otro tipo que nos resultará de utilidad es el tipo de listas \code{[a]}.
+Esto tipo se salta algunas reglas de como está descrito para ser más sencillo de escribir.
+Podemos definirlo en pseudo-haskell como:
+\begin{minted}{haskell}
+data [a] = a : [a] | []
+\end{minted}
+Es decir, una lista de elementos del tipo \code{a} es o bien una lista vacía \code{[]}, o bien un elemento de tipo \code{a} y otra lista del mismo tipo.
+
+Podemos definir \emph{clases} sobre los tipos que implementen alguna función particular, por ejemplo:
+\begin{minted}{haskell}
+class Eq a where
+  (==) :: a -> a -> Bool
+\end{minted}
+% =
+% \end{minted}
+define la clase de los tipos sobre los que está definido el operador igualdad \code{(==)}.
+Si queremos que un tipo esté en la clase \code{Eq}, tendremos que escribir su instancia.
+Como ejemplo, supongamos que queremos escribir la instancia de \code{Maybe a} en la clase \code{Eq}.
+Si los dos elementos del tipo \code{Maybe a} son de la forma \code{Nothing}, diremos que son iguales.
+Si no, comparamos el argumento de \code{Just a}.
+Pero para ello, el tipo \code{a} debe ser también de la clase \code{Eq}.
+Por ello, una implementación sería:
+\begin{minted}{haskell}
+instance Eq a => Eq (Maybe a) where
+  Nothing == Nothing = True
+  Nothing == Just x  = False
+  Just x  == Nothing = False
+  Just x  == Just x  = x == x
+\end{minted}
+
+\section{Referencias}
+\begin{itemize}
+  \item Thompson, S. (1991). \emph{Type theory \& functional programming}, Capítulo 2.
+  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, Capítulo 1.
+  \item Lipovaca, M. (2011). \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}.
+\end{itemize}
+\chapter{Fundamentos}
 \section{Categorías}
 
 % Abramsky - Logic and categories as tools for building theories
-La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos y programadores, y una poderosa abstracción a la composición de funciones.
 La idea empieza por el concepto de categoría, que resulta sorprendentemente ubicua en la matemática.
 En principio, una categoría es sólo una colección de objetos y flechas entre dichos objetos donde se define una composición de flechas.
 Veremos que algunas de la categorías más interesantes son las relacionadas con las estructuras matemáticas, como $\Top$, la categoría de espacios topológicos y funciones continuas, o $\Grp$, la categoría de grupos y homomorfismos.
@@ -524,7 +692,7 @@ instance Functor Maybe where
 \end{minted}
 \end{example}
 
-\subsection{Functor contravariante}
+\subsection{Functores especiales}
 Consideramos ahora el concepto de functor contravariante a través de un cambio en la definición de functor:
 \begin{definition}\label{def:cofunctor}
 Un \index{functor!contravariante}\emph{functor contravariante} $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
@@ -547,6 +715,25 @@ Los functores con los que hemos trabajado hasta ahora serán llamados \index{fun
 Una razón para esto es que no hay diferencia esencial entre functor contravariante y functor covariante cuando observamos que los \textquote{intercambios} en la definición son equivalentes a que el functor parta de $\cat^{op}$.
 Por esta razón, hablaremos de functor contravariante cuando tratemos con un functor covariante de la forma:
 \[ F \colon \cat^{op} \to D \]
+
+Otros functores reciben nombres especiales por su dominio o su codominio:
+\begin{definition}
+Un functor $F \colon \cat \to \cat$ se denomina \newterm{endofunctor}.
+\end{definition}
+%Categories and Haskell 1
+\begin{example}
+Un ejemplo sencillo es el \newterm{endofunctor potencia} $\mathcal{P} \colon \Set \to \Set$ que envía un conjunto $A$ a su conjunto potencia $\mathcal{P}(A)$ y envía a las funciones entre conjuntos $f \colon A \to B$ a la función $\mathcal{P} f \colon \mathcal{P}(A) \to \mathcal{P}(B)$ definida como:
+\[ \mathcal{P} f (S) = \{f(s) \colon s \in S\}, \quad S \subseteq A \]
+\end{example}
+
+\begin{definition}
+Un functor $F \colon \cat^{op} \times \cat \to \mathcal{D}$ se denomina \newterm{bifunctor}.
+\end{definition}
+Aquí $\cat^{op} \times \cat$ es la categoría producto de $\cat^{op}$ y $\cat$, definida más adelante en la sección 1.5.
+
+\begin{definition}
+Un functor $F \colon \cat^{op} \to \Set$ se denomina \newterm{prehaz}.
+\end{definition}
 
 \section{Construcciones universales}
 Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
@@ -746,6 +933,12 @@ data Either a b = Left a | Right b
 Es más, tenemos que todos los tipos de datos compuestos son isomorfos a productos y coproductos.
 \end{example}
 
+%Riehl 1
+\begin{example}
+En \index{categoría!{de categorías pequeñas}}\emph{categoría de categorías pequeñas} $\Cat$, el producto de dos categorías $\cat$ y $\mathcal{D}$ es una categoría $\cat \times \mathcal{D}$ cuyos objetos son pares ordenados $(A,B)$ con $A \in \cat$ y $B \in \mathcal{D}$.
+Los morfismos, composición e identidad se definen a manera análoga por componentes.
+\end{example}
+
 Podemos definir producto $n$-ario de objetos como el límite de un diagrama con una categoría índice discreta (es decir, sin morfismos a parte de los morfismos identidad) de $n$ objetos.
 \begin{remark}\mbox{}
 \begin{itemize}
@@ -859,6 +1052,9 @@ está definido como:
 \[ (\mu \circ F)_A = \mu_{F A} \]
 \end{definition}
 La naturalidad de $(\mu \circ F)$ es consecuencia de la naturalidad de $\mu$.
+
+Se suele eliminar $\circ$ y escribir sencillamente $\mu F$.
+
 Por otro lado:
 \begin{definition}
 Si $F, G \colon \cat \to \mathcal{D}$ y $H\colon \mathcal{D} \to \mathcal{E}$ son functores y $\mu \colon F \Rightarrow G$ es una transformación natural, el \newterm{whiskering derecho}:
@@ -877,6 +1073,7 @@ aplicando $H$ y su propiedad de functorialidad:
 \[ H(G f) \circ H\mu_A = H\mu_B \circ H(F f) \]
 Lo que prueba la naturalidad de $H \circ \mu$.
 \end{proof}
+Se suele escribir $H\mu$ en lugar de $H \circ \mu$.
 
 Con esto, ya podemos definir la composición horizontal o composición de Godement.
 \begin{definition}
@@ -901,6 +1098,29 @@ Luego, componiendo horizontalmente, tenemos que es conmutativo el diagrama:
 {H(F B)} \arrow[rr,"\eta_{G B} \circ H\mu_A"] & & {K(G B)}
 \end{tikzcd}\]
 Esto demuestra la naturalidad de $\eta * \mu$.
+\end{proof}
+
+Véase que la composición horizontal se puede ver como una composición vertical tras aplicar un \emph{whiskering} apropiado a cada transformación natural.
+
+\begin{proposition}
+Para una transformación natural $\mu \colon F \Rightarrow G$ y una transformación natural identidad $\iota \colon H \Rightarrow H$:
+\[ \iota * \mu = H\mu \]
+\[ \mu * \iota = \mu H\]
+\end{proposition}
+\begin{proof}
+\begin{align*}
+(\iota * \mu)_A & = \iota_{G A} \circ F\mu_A\\
+& = \id_{H (G A)} \circ H\mu_A\\
+& = H\mu_A
+\end{align*}
+Por otro lado:
+\begin{align*}
+(\mu * \iota)_A & = \mu_{H A} \circ G\iota_A\\
+& = \mu_{H A} \circ G\id_{H A}\\
+& = \mu_{H A} \circ \id_{G(H A)}\\
+& = \mu_{H A}\\
+& = (\mu H)_A
+\end{align*}
 \end{proof}
 
 \section{Functores adjuntos}
@@ -1359,7 +1579,14 @@ La prueba para $K$ es análoga.
 Un functor contravariante en $\Set^{\cat^{op}}$ recibe el nombre de \newterm{prehaz}.
 Una consecuencia de la anterior proposición es que toda categoría localmente pequeña es una subcategoría llena de la categoría de prehaces.
 
-\chapter{Mónadas}
+\section{Referencias}
+\begin{itemize}
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulos 14-16.
+  \item Riehl, E. (2014). \emph{Category Theory in Context}, Capítulo 2.
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulo 8. 
+\end{itemize}
+
+\chapter{Monoides}
 \epigraph{"A monad is a monoid in the category of endofunctors, what's the problem?"}{\textit{A Brief, Incomplete, and Mostly Wrong History of Programming Languages\\James Iry}}
 \section{Monoides clásicos}
 En álgebra, un \newterm{monoide} $(M,\cdot)$ es un conjunto $M$ junto a una operación binaria $\cdot \colon M \times M \to M$ asociativa y con elemento unidad en $M$.
@@ -1378,7 +1605,7 @@ A \arrow[loop right,"0" right] \arrow[loop right,distance=3em,"1" right] \arrow[
 A su vez, para cualquier categoría localmente pequeña $\cat$, todo objeto $A \in \cat$ induce un monoide $\cat(A,A)$.
 
 % Milewski
-\subsection{Monoides en Haskell}
+\section{Monoides en Haskell}
 En Haskell, los monoides están representando por la siguiente clase:
 \begin{minted}{haskell}
 class Monoid m where
@@ -1401,7 +1628,7 @@ mappend x :: m -> m
 Tenemos que \code{mappend x} es un endomorfismo en el tipo \code{m} y que \code{mappend mempty} es equivalente al morfismo identidad.
 Es decir \code{mappend} se puede ver como una función que asocia cada elemento del monoide (como grupo) con el endomorfismo correspondiente del monoide (como endomorfismos de \code{m}).
 
-\subsection{Categorías monoidales}
+\section{Categorías monoidales}
 % Awodey 4
 Otra forma de ver monoides en teoría de categorías es através de \index{objeto!monoide}\emph{objeto monoide} en una categoría.
 
@@ -1431,7 +1658,7 @@ y por último:
 % Categorical homotopy Theory Riehl
 Un ejemplo sencillo de categoría monoidal es cualquier categoría con productos finitos, tomando $A \otimes B = A \times B$.
 Es más, en dicho caso, existe un isomorfismo natural $A \otimes B \cong B \otimes A$.
-Una categoría monoidal con dicho isomorfismo natural se denomina \newterm{categoría monoidal simétrica}.
+Una categoría monoidal con dicho isomorfismo natural se denomina \index{categoría!monoidal!simétrica}\emph{categoría monoidal simétrica}.
 Por lo tanto, $\Set$ forma una categoría monoidal simétrica con el producto cartesiano y un conjunto unitario cualquiera como identidad del producto.
 También, $\Cat$ forma una categoría monoidal simétrica con el producto y una categoría unitaria como $\mathbb{1}$ como identidad del producto.
 
@@ -1474,9 +1701,9 @@ Es sencillo comprobar que las leyes de coherencia se cumplen.
 %\[ g\otimes n = g\otimes (\overbrace{1 + \dots + 1}^\text{n veces}) = \overbrace{g \otimes 1 + \dots + g\otimes 1}^\text{n veces}\]
 \end{example}
 
-\subsection{Categorías enriquecidas}
+\section{Categorías enriquecidas}
 Recordemos que una categoría $\cat$ es localmente pequeña si para todo pares de objetos $A, B \in \cat$, se tiene que $\cat(A,B) \in \Set$.
-Una idea esencial en la teoría de categorías de orden superior es el concepto de \newterm{categoría enriquecida}, que consiste en remplazar $\Set$ de la definición anterior con cualquier otra categoría monoidal simétrica.
+Una idea esencial en la teoría de categorías de orden superior es el concepto de \index{categoría!enriquecida}\emph{categoría enriquecida}, que consiste en remplazar $\Set$ de la definición anterior con cualquier otra categoría monoidal simétrica.
 Informalmente, dada una categoría monoidal simétrica $\mathcal{V}$, una categoría $\cat$ se dice que está $\mathcal{V}$-enriquecida si para cualquier par de objetos $A, B \in \cat$, $\cat(A, B) \in \mathcal{V}$.
 A esta definición hay que añadir unas condiciones de compatibilidad con la composición, de las que hablamos a continuación:
 %El punto de inicio para la teoría de categorías de orden superior consiste en considerar las categorías $\Cat$-enriquecida, denominadas $2$-categorías.
@@ -1501,17 +1728,25 @@ de manera que los siguientes diagramas conmuten:
 \end{tikzcd}\]
 \end{definition}
 
+\begin{example}\label{cat-2-categoria}
 Dotemos ahora a $\Cat$ de estructura de $\Cat$-categoría, es decir, $2$-categoría.
-Recordemos que para un par de categorías $\cat$ y $\mathcal{D}$, los functores $\cat \to \mathcal{D}$ entre ellos forman la categoría $\mathcal{D}^\cat$ como comentamos en \ref{functor-categoria}.
+
+Primero recordemos que $(\Cat, \times, \mathbb{1})$ es una categoría monoidal simétrica.
+Por otro lado, para un par de categorías pequeñas $\cat$ y $\mathcal{D}$, los functores $\cat \to \mathcal{D}$ forman una categoría pequeña $\mathcal{D}^\cat$ como comentamos en \ref{functor-categoria}.
 En esta categoría, los morfismos entre dos functores $F$ y $G$ eran las transformaciones naturales $F \Rightarrow G$.
 
 Además, consideramos la transformación natural $\Id_A \colon \mathbb{1} \to \cat^\cat$ que asocia el único objeto de $\mathbb{1}$ con el functor identidad.
-Por último, para unas categorías cualesquiera $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tenemos que definir una transformación natural.
-\[ \circ \mathcal{E}^\mathcal{D} \times \mathcal{D}^\cat \Rightarrow \mathcal{E}^\cat\]
-\[ \begin{tikzcd}{\cat} \arrow[r,"F", bend left, ""{name=FU}] \arrow[r,"F'" below, bend right, ""{name=FD, below}] & \mathcal{D} \arrow[r,"G",bend left] \arrow[r,"G'" below, bend right] & \mathcal{E}
-\arrow[Rightarrow, from=FU, to=FD]\end{tikzcd}\]
+Por último, para unas categorías cualesquiera $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tenemos que definir un morfismo.
+\[ \circ \colon \mathcal{E}^\mathcal{D} \times \mathcal{D}^\cat \to \mathcal{E}^\cat\]
+Ojo, un morfismo en $\Cat$ es un functor.
+Sea $F \in \mathcal{D}^\cat$ y $G \in \mathcal{E}^\mathcal{D}$, definimos $G \circ F$ como la composición habitual de functores.
+Ahora bien, como $\circ$ es functor, debe actuar también sobre los morfismos, que aquí son transformaciones naturales.
+Para transformaciones naturales $\mu \colon F \Rightarrow G$ en $\mathcal{D}^\cat$ y $\eta \colon H \Rightarrow K$ en $\mathcal{E}^\mathcal{D}$, basta definir $\eta \circ \mu$ como su composición horizontal.
 
-\subsection{Monoides}
+Con estas definiciones se cumple la conmutatividad de los diagramas de las categoría enriquecidas y deducimos que $\Cat$ es una $2$-categoría.
+\end{example}
+
+\section{Monoides}
 Volviendo, al tema de los monoides, ahora podemos generalizar el concepto de monoide.
 \begin{definition}
 Un \index{monoide}\emph{monoide} es un objeto $M$ de una categoría monoidal $(\cat, \otimes, I)$ con dos morfismos:
@@ -1541,26 +1776,297 @@ Algunos ejemplos de monoides son:
   \item Un monoide sobre la categoría monoidal de grupos abelianos $(\Ab, \otimes, \Z)$ descrita en el ejemplo \ref{ej-abeliano} es un \newterm{anillo}.
   \item Un monoide sobre la categoría monoidal de $k$-espacios vectoriales $(\Vect_k, \otimes_k, k)$ es una \newterm{k-álgebra}.
 \end{itemize}
+\end{example}
 
 Un ejemplo más será de gran importancia para nosotros, las mónadas.
 
-\subsection{Mónadas}
+\section{Referencias}
+\begin{itemize}
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulo 4.
+  \item Mac Lane, S. (1997). \emph{Categories for the Working Mathematician}, Capítulo 7.
+  \item Riehl, E. (2014). \emph{Category Theory in Context}, Capítulo 1.
+  \item Riehl, E. (2014). \emph{Categorical homotopy theory}, Capítulo 3.
+\end{itemize}
+
+\chapter{Mónadas}
+\section{Mónadas de una categoría}
 Dada una categoría $\cat$, consideramos la categoría $\cat^\cat$, donde los objetos son endofunctores y los morfismos vienen dados por la composición entre functores.
 
 \begin{proposition}
-$\cat^\cat$ forma una categoría monoidal con la composición como producto tensorial y functor unidad como objeto unidad.
+$\cat^\cat$ forma una categoría monoidal con la composición como producto tensorial y functor unidad $\Id$ como objeto unidad.
 \end{proposition}
 \begin{proof}
-Primero tenemos que ver que $\circ \colon \cat^\cat \times \cat^\cat \to \cat^\cat$ es un bifunctor.
+Esto es consecuencia de que $\Cat$ sea una $2$-categoría, como vimos en \ref{cat-2-categoria}.
 \end{proof}
+
+Por lo tanto, podemos definir monoides sobre $\cat^\cat$.
+Dichos monoides se denominan \newterm{mónadas}.
+Tratemos de dar una definición más explícita, especializando la definición de monoide teniendo en cuenta que:
+\begin{itemize}
+  \item $\circ$ es asociativa.
+  \item El functor identidad $\Id \colon \cat \to \cat$ cumple que:
+\[ \Id \circ F = F \]
+\[ F \circ \Id = F\]
+  \item El bifunctor $\circ$ actuando sobre transformaciones naturales es la composición horizontal $*$.
+  \item Para la transformación natural identidad $\iota \colon F \Rightarrow F$:
+\[ \mu * \iota = \mu F \]
+\[ \iota * \mu = F \mu \]
+  \item Escribiremos $F^n$ para referirnos a $\underbrace{F \circ \dots \circ F}_{n \text{ veces}}$.
+\end{itemize}
+
+\begin{definition}
+Una \emph{mónada} es un endofunctor $F$ de una categoría $\cat$ con dos transformaciones naturales:
+\begin{tikzcd}
+F^2 \arrow[r,"\mu"] & F & \Id \arrow[l,"\eta" above]
+\end{tikzcd}
+que cumplan:
+\begin{itemize}
+  \item La propiedad asociativa:
+  \[ \begin{tikzcd}
+  &  {F^3} \arrow[dl,"\mu F" above,Rightarrow] \arrow[dr,"F\mu",Rightarrow]\\
+  {F^2} \arrow[dr,"\mu",Rightarrow] & & {F^2} \arrow[dl,"\mu" above,Rightarrow]\\
+  & F
+  \end{tikzcd}\]
+  \item La propiedad de la unidad:
+  \[ \begin{tikzcd}
+  F \arrow[r,"\eta F",Rightarrow] \arrow[dr,"\iota" below,Rightarrow] & {F^2} \arrow[d,"\mu",Rightarrow] & {F} \arrow[l,"F\eta" above,Rightarrow] \arrow[dl,"\iota",Rightarrow]\\
+  & F
+  \end{tikzcd}\]
+\end{itemize}
+\end{definition}
+
+
+%Categories and Haskell 7
+\begin{example}
+Sea $\mathcal{P} \colon \Set \to \Set$ el endofunctor potencia y consideramos las transformaciones naturales.
+\begin{align*} \mu_A \colon \mathcal{P}^2(A) & \to \mathcal{P}(A)\\
+\{S_i\}_{i \in I} & \mapsto \bigcup_{i \in I} B_i
+\end{align*}
+\begin{align*} \eta_A \colon \Id A = A & \to \mathcal{P}(A)\\
+a & \mapsto \{a\}
+\end{align*}
+
+Veamos que cumple las condiciones de mónada. 
+Sea $A$ un conjunto cualquiera.
+Obsérvese que $\mu_{\mathcal{P}(A)}(\mathcal{P}(A)) = A$, pues $A \in \mathcal{P}(A)$ y todo elemento de $\mathcal{P}(A)$ está contenido en $A$.
+\begin{align*}
+(\mu \circ \mu \mathcal{P})(\mathcal{P}^3(A)) & = \mu_{\mathcal{P}^2(A)}\left(\mu_{\mathcal{P}^3(A)}\mathcal{P}^3(A)\right)\\
+& = \mu_{\mathcal{P}^2(A)}\mathcal{P}^2(A)\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \mathcal{P}\mu)(\mathcal{P}^3(A)) & = \mu_{\mathcal{P}^2(A)}\left((\mathcal{P}\mu_{\mathcal{P}^2(A)})\mathcal{P}^3(A)\right)\\
+& = \mu_{\mathcal{P}^2(A)}\mathcal{P}^2(A)\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \eta\mathcal{P})(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)}\eta_{\mathcal{P}(A)}\mathcal{P}(A)\\
+& = \mu_{\mathcal{P}^2(A)}(\{\mathcal{P}(A)\})\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \mathcal{P}\eta)(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)} \left(\mathcal{P}\eta_{mathcal{P}(A)}(\mathcal{P}(A))\right)\\
+& = \mu_{\mathcal{P}^2(A)} \left(\{\mathcal{P}(A)\}\right)\\
+& = \mathcal{P}(A)
+\end{align*}
 \end{example}
 
-\section{Bibliografía}
+%Categories and Haskell + Awodey 10
+\section{Categoría de Kleisli}
+La siguiente construcción nos llevará de vuelta al dominio de Haskell.
+\begin{definition}
+Sea $(F,\eta,\mu)$ una mónada sobre una categoría $\cat$.
+La \index{categoría!de Kleisli}\emph{categoría de Kleisli} $\cat_F$ es la categoría donde:
 \begin{itemize}
-  \item Category theory in context
-  \item Awodey 4
-  \item MacLane
+  \item Sus objetos son los objetos de $\cat$.
+  \item Un morfismo $A \to_F B$ en $\cat_F$ es un morfismo de la forma $A \to F B$ en $\cat$.
+  \item La composición entre dos morfismos $f \colon A \to_F B$ y $g \colon B \to_F C$ viene dado por la conmutatividad del siguiente diagrama:
+  \[ \begin{tikzcd}
+  A \arrow[r,"g \circ_F f"] \arrow[d,"f" left] & {F C}\\
+  {F B} \arrow[r,"F g" below] & F^2 C \arrow[u,"\mu_C" right]
+  \end{tikzcd}\]
+  \item El morfismo identidad $\id_A$ en $\cat_F$ se correspoonde con $\eta_A$ en $\cat$.
 \end{itemize}
+\end{definition}
+Para demostrar que la categoría de Kleisli es realmente un categoría, nos limitamos a comprobar la asociatividad:
+
+Para $h \colon C \to F D$, $g \colon B \to F C$ y $f \colon A \to F B$, se tiene:
+\begin{align*}
+(h \circ_F g) \circ f = (\mu_D \circ F h \circ g) \circ_F f\\
+& = \mu_D \circ F(\mu_D \circ F h \circ g)\circ g\\
+& = \mu_D \circ F\mu_D \circ F^2 h \circ F g \circ g
+\end{align*}
+Por la naturalidad de $\mu$.
+
+\section{Mónadas en Haskell}
+¿Cómo vuelve todo esto a la programación funcional?
+Consideremos el siguiente ejemplo:
+\begin{minted}{haskell}
+convertir :: String -> Maybe Float
+inversa :: Float -> Maybe Float
+\end{minted}
+% =
+% \end{minted}
+donde \code{convertir} intenta convertir una cadena de texto a un número e inversa intenta dar la inversa de un número.
+En estos dos ejemplos, hay casos donde la función fallaría.
+Cuando \code{String} no se puede convertir a un número, o cuando \code{inversa} intenta invertir el número \code{0}.
+Imaginemos que quisieramos combinar estas dos funciones en una nueva función:
+\begin{minted}{haskell}
+convertir_inversa :: String -> Maybe Float
+\end{minted}
+% =
+% \end{minted}
+Donde \code{convertir\_inversa} primero usa \code{convertir} y luego usa \code{inversa} sobre el posible resultado.
+¿Cómo podríamos implementar esta función?
+Un camino sería el siguiente:
+\begin{minted}{haskell}
+convertir_inversa str =
+  let conv = convertir str in
+  if isNothing conv
+  then Nothing
+  else inversa (fromJust conv)
+\end{minted}
+
+Recuérdese que \code{Maybe} es un functor, luego podemos aplicar \code{Maybe} a la aplicación inversa para obtener:
+\begin{minted}{haskell}
+fmap inversa :: Maybe Float -> Maybe (Maybe Float)
+\end{minted}
+ahora que el dominio de \code{fmap inversa} coincide con el codominio de \code{convertir}, podemos hacer su composición:
+\begin{minted}{haskell}
+fmap inversa . convertir :: String -> Maybe (Maybe Float) 
+\end{minted}
+Aquí entra en juego la transformación natural $\mu \colon F^2 \Rightarrow F$, que en Haskell recibe el nombre de \code{join}, de tipo 
+\begin{minted}{haskell}
+join :: Monad m => m (m a) -> m a
+\end{minted}
+% =
+% \end{minted}
+\code{join} nos permite transformar \code{Maybe (Maybe Float)} en \code{Maybe Float}.
+Luego podríamos implementar \code{convertir\_inversa} como la composición de estas tres funciones:
+\begin{minted}{haskell}
+convertir_inversa = join . fmap inversa . convertir
+\end{minted}
+Estamos definiendo \code{convertir\_inversa} de manera que el siguiente diagram conmute:
+\begin{displaymath}\begin{tikzcd}[column sep=6em,row sep=4em]
+{String} \arrow[r,"convertir\_inversa",dashed] \arrow[d,"inversa"]& {Maybe\ Float}\\
+{Maybe\ String} \arrow[r,"{fmap\ inversa}"] & {Maybe\ (Maybe\ Float)} \arrow[u,"join"]
+\end{tikzcd}\end{displaymath}
+Se puede reconocer aquí el diagrama que define la composición de Kleisli $\circ_F$.
+En Haskell, dicha composición se denota a menudo como \code{>=>}, llamado conmúnmente \newterm{operador pez}, con tipo:
+
+\begin{minted}{haskell}
+(>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
+\end{minted}
+% =
+% \end{minted}
+
+y nos permite dar la siguiente definición sucinta de \code{convertir\_inversa}
+\begin{minted}{haskell}
+convertir_inversa = convertir >=> inversa
+\end{minted}
+
+Las mónadas en Haskell están definidas como una subclase de \code{Applicative}, que a su vez es una subclase de \code{Functor}.
+Aunque no entraremos mucho en ello, \code{Applicative} representa los functores que mantienen la estructura monoidal de $\Hask$, y están definidos como:
+\begin{minted}{haskell}
+class Functor f => Applicative f where
+    pure :: a -> f a
+    (<*>) :: f (a -> b) -> f a -> f b
+\end{minted}
+% =
+% \end{minted}
+
+Las mónadas se definen por la clase \code{Monad}:
+\begin{minted}{haskell}
+class Applicative m => Monad m where
+  (>>=)       :: m a -> (a -> m b) -> m b
+  return      :: a -> m a
+\end{minted}
+% =
+% \end{minted}
+Además, se deben cumplir las llamadas leyes de mónadas:
+\begin{minted}{haskell}
+return v >>= k = k v
+x >>= return = x
+m >>= (\y -> k y >>= h) = (m >>= k) >>= h
+\end{minted}
+
+El operador \code{(>>=)} se puede definir en terminos de \code{join :: m (m a) -> m a}, que era la implementación de la transformación natural $\mu$, y viceversa.
+\begin{minted}{haskell}
+x >>= f = join (fmap f x)
+join x = x >>= id
+\end{minted}
+También se puede implementar el operador pez de la categoría de Kleisli \code{(>=>)} con \code{(>>=)}.
+\begin{minted}{haskell}
+f >=> g = \x -> f x >>= g
+\end{minted}
+
+Haskell añade una forma de hacer operaciones con mónadas de forma aparentemente imperativa:
+\begin{minted}{haskell}
+convertir_inversa x = do
+  y <- convierte x
+  inversa y
+\end{minted}
+Esta expresión es equivalente a:
+\begin{minted}{haskell}
+convertir_inversa x =
+  convierte x >>= \y ->
+    inversa y
+\end{minted}
+
+Hemos usado implícitamente que \code{Maybe} forma una mónada, comprobémoslo:
+\begin{example}
+El functor \code{Maybe} forma una mónada:
+\begin{minted}{haskell}
+instance Monad Maybe where
+  (Just x) >>= f = f x
+  Nothing >>= _ = Nothing
+
+  return x = Just x
+\end{minted}
+Veamos que cumple las leyes de las mónadas:
+\begin{minted}{haskell}
+  return v >>= k 
+= { definición de return }
+  Just x >>= k
+= { definición de (>>=) }
+  k x
+\end{minted}
+Esto demuestra la primera ley.
+Demostraremos las otras dos leyes por casos:
+\begin{minted}{haskell}
+  Nothing >>= return
+= { definición de (>>=) }
+  Nothing
+\end{minted}
+\begin{minted}{haskell}
+  (Just x) >>= return
+= { definición de (>>=) }
+  return x
+= { definición de return }
+  Just x
+\end{minted}
+Esto demuestra la segunda ley.
+Finalmente:
+\begin{minted}{haskell}
+  Nothing >>= (\y -> k y >>= h)
+= { definición de (>>=) }
+  Nothing
+= { definición de (>>=) }
+  Nothing >>= h
+= { definción de (>>=) }
+  (Nothing >>= k) >>= h
+\end{minted}
+\begin{minted}{haskell}
+  (Just x) >>= (\y -> k y >>= h)
+= { definición de (>>=) }
+  (\y -> k y >>= h) x
+= { reducción beta }
+  k x >>= h
+= { definición de (>>=) }
+  (Just x >>= k) >>= h
+\end{minted}
+Por lo que \code{Maybe} forma una mónada.
+\end{example}
 
 \chapter{F-álgebras}
 \begin{definition}
@@ -1622,7 +2128,7 @@ Luego $g \circ f$ es un homomorfismo de $F$-álgebras.
 Una vez hemos determinado una nueva categoría, podemos empezar a buscar qué aspecto tienen nuestra construcciones universales en esta nueva categoría.
 Resultará de particular interés el objeto inicial de una $Alg_F$ por el siguiente lema debido a Lambek~\cite{lambek}:
 
-\begin{lemma}\ref{lambek-lemma}
+\begin{lemma}\label{lambek-lemma}
 Sea $F \colon \cat \to \cat$ un endofunctor.
 Si $(A,\alpha)$ es una $F$-álgebra inicial de $Alg_F$, entonces $(A,\alpha)$ es un punto fijo de $F$.
 \end{lemma}
