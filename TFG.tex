@@ -2,7 +2,9 @@
 %!TEX encoding = utf8
 \documentclass[12pt, twoside]{book}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
+\usepackage{bussproofs}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
 \usepackage[english, spanish, es-noshorthands]{babel}
 
 \usepackage{hyperref}
@@ -264,7 +266,7 @@
 \markright{English Abstract}
 
 \begin{otherlanguage}{english}
-    Abstract goes here
+    We will explore the realm of category theory and its connections with other fields of mathematics using functional programming.
 \end{otherlanguage}
 
 \chapter{Introducción}
@@ -812,7 +814,7 @@ Una buena técnica para estudiar una nueva construcción es preguntarse: ¿Podem
 
 Lo que nos queda por hacer para crear una categoría de conos de un diagrama fijo $D$ es definir un morfismo entre conos.
 Resulta intuitivo definirlo a partir de un morfismo entre los vértices.
-Si $C$ y $C'$ son dos conos con vértices $V$ y $V'$ respectivamente, definimos el morfismo $C \colon C'$ como un morfismo $u \colon V \to V'$ tal que el siguiente diagrama conmuta para todo $A \in \mathcal{I}$:
+Si $C$ y $C'$ son dos conos con vértices $V$ y $V'$ respectivamente, definimos el morfismo $C \to C'$ como un morfismo $u \colon V \to V'$ tal que el siguiente diagrama conmuta para todo $A \in \mathcal{I}$:
 \[ \begin{tikzcd}
 V \arrow[dr,"f_A"] \arrow[dd,"u"] &\\
  & D A\\
@@ -896,14 +898,14 @@ Luego, podemos volver a los objetos $A$ y $B$ usando unos morfismos fijos $p_A$ 
 \begin{definition}
 Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos aparte de los morfismos identidad. El \newterm{coproducto} de dos objetos $A$ y $B$ en $\cat$ es el colímite del diagrama $D \colon \mathcal{I} \to \cat$ con $D(I_1) = A$ y $D(I_2) = B$.
 
-Escribiremos $A \oplus B$ para denotar el coproducto de $A$ y $B$.
+Escribiremos $A + B$ para denotar el coproducto de $A$ y $B$.
 \end{definition}
 
-Desarrollando como antes la definiciones tenemos que para todo $V$, $f_A \colon A \to V$, $f_B \colon B \to V$, se tiene que existe $h \colon A \oplus B \to V$ tal que:
+Desarrollando como antes la definiciones tenemos que para todo $V$, $f_A \colon A \to V$, $f_B \colon B \to V$, se tiene que existe $h \colon A + B \to V$ tal que:
 
 \[\begin{tikzcd}
  & A \arrow[dl,"f_A"] \arrow[d,"i_A"]\\
-V & A \oplus B \arrow[l,dashed,"h"]\\
+V & A + B \arrow[l,dashed,"h"]\\
  & B \arrow[ul,"f_B"] \arrow[u,"i_B"]
 \end{tikzcd}\]
 donde $i_A$ e $i_B$ son llamadas \newterm{inyecciones naturales}.
@@ -998,6 +1000,44 @@ En resumen:
   Pareja paralela & Ecualizador & Coecualizador
 \end{tabular}
 \end{center}
+
+\section{Functores continuos}
+Claramente un functor envía conos a conos, pero no es cierto que envíe límites a límites en general.
+
+\begin{definition}
+Un functor $F \colon \cat \to \mathcal{D}$ se dice que \emph{preserva límites de forma} $\mathcal{I}$ si para todo diagrama $D \colon \mathcal{I} \to \cat$ con cono límite $L = \underset{\longleftarrow}\lim D$, el cono $F L$ es el cono límite del diagrama $F \circ D$.
+Se suele expresar como:
+\[ F\left(\underset{\longleftarrow}\lim D\right) = \underset{\longleftarrow}\lim \left(F \circ D\right)\]
+Análogamente, $F$ se dice que \emph{preserva colímites de forma} $D$ si:
+\[ F\left(\underset{\longrightarrow}\lim D\right) = \underset{\longrightarrow}\lim \left(F \circ D\right)\]
+\end{definition}
+
+La uso de límites aquí nos recuerda a la definición de funciones continuas de la matemática clásica.
+Esto lleva a la definición de functor continuo y cocontinuo:
+\begin{definition}
+Un functor es \index{functor!(co)continuo}\emph{functor (co)continuo} si preserva (co)límites de cualquier forma pequeña.
+\end{definition}
+%Mac Lane
+%\begin{theorem}
+%Para una categoria localmente pequeña $\cat$ y un objeto $A \in \cat$, el functor $\cat(A,-)$ es continua.
+%\end{theorem}
+%\begin{proof}
+%Sea $D \colon \mathcal{I} \to \cat$ un diagrama pequeño cualquiera con cono límite $\underset{\longleftarrow}\lim D$ formado por un vértice $V$ y morfismos 
+%\end{proof}
+
+En algunos contextos, resulta más útil debilitar la definición de functor continuo a diagramas de forma $\omega = (\mathbb{N}, \leq)$, esto nos lleva a la definición de functor $\omega$-continuo.
+Un diagrama de forma $\omega$ se refiere a una cada de morfismos como:
+\[ \dots \rightarrow A_3 \rightarrow A_2 \rightarrow A_1 \Rightarrow A_0 \]
+En estos casos, se suele identificar el diagrama con la sucesión $\{A_n\}_{n \in \mathbb{N}}$, de manera que el límite se escribe:
+\[ \underset{\longleftarrow}\lim A_i\]
+\begin{definition}
+Un functor es $\omega$\emph{-(co)continuo} si preserva (co)límites de forma $\omega$.
+\end{definition}
+\begin{example}
+Dado un primo $p$, los enteros $p$-ádicos se definen como el límite del diagrama:
+\[ \dots \rightarrow \mathbb{Z}/p^3\Z \rightarrow \mathbb{Z}/p^2\Z \rightarrow \mathbb{Z}/p\Z \]
+en la categoría de anillos.
+\end{example}
 
 \section{Transformaciones naturales}
 \begin{definition}
@@ -1156,155 +1196,6 @@ A \arrow[ur,"f"] \arrow[uu,"\eta_A"]
 \end{definition}
 
 Llamamos $F$ \newterm{adjunta izquierda}, $U$ \newterm{adjunta derecha} y $\eta$ es la \newterm{unidad} de la adjunción.
-
-\chapter{Categorías cartesianamente cerradas}
-\section{Exponencial}
-Si $\cat$ tiene productos binarios, entonces el \newterm{exponencial} de los objetos $B$ y $C$ de $\cat$ es el objeto
-\[ C^B \]
-y un morfismo:
-\[ \varepsilon \colon C^B \times B \to C \]
-tal que para todo objeto $A$ y morfismo
-\[ f \colon A \times B \to C \]
-hay un único morfismo
-\[ \lambda_f \colon A \to C^B \]
-tal que el siguiente diagrama conmuta:
-
-\[
-\begin{tikzcd}
-C^B \times B \arrow[rr,"\varepsilon"] & & C \\\\
-A \times B \arrow[uu,"\lambda_f\times\id_A"]  \arrow[uurr,"f"]
-\end{tikzcd}
-\]
-
-El morfismo $\varepsilon$ se denomina \newterm{evaluación}.
-El morfismo $\lambda_f$ se denomina \newterm{transposición} o \newterm{currificación} de $f$.
-
-Obsérvese que
-\begin{align*}
-\lambda \colon C(A \times B, C) & \to C(A,C^B)\\
-f & \mapsto \lambda_f
-\end{align*}
-es un isomorfismo por la existencia e unicidad de $\lambda_f$ por cada $f$.
-
-En programación funcional, la currificación resulta de gran utilidad.
-En Haskell, por ejemplo, se usa la función \code{curry} de tipo:
-\begin{minted}{haskell}
-curry :: ((a, b) -> c) -> a -> b -> c
-\end{minted}
-Su inversa es \code{uncurry}, de tipo:
-\begin{minted}{haskell}
-uncurry :: (a ->  b -> c) -> (a, b) -> c
-\end{minted}
-% a = b
-% \end{minted}
-
-\section{Categorías cerradas cartesianas}
-\begin{definition}
-Decimos que una categoría es \index{categoría!cartesianamente cerrada}\newterm{cartesianamente cerrada} si cumple las siguientes condiciones:
-\begin{enumerate}
-\item Tiene un objeto terminal.
-\item Tiene el producto de dos objetos cualesquiera.
-\item Tiene el exponencial de dos objetos cualesquiera.
-\end{enumerate}
-\end{definition}
-
-\begin{example}
-Consideramos la categoría $Pos$ de conjuntos parcialmente ordenados donde los morfismos son funciones monótonas del que hablamos en \ref{ejemplo-producto-pos}.
-Sean $P$ y $Q$ posets, veamos que $Q^P = \{ f \colon Q \to P \mid f \text{ monótona}\}$ con el orden:
-\[ f \leq g \sii f(p) \leq g(p) \text{ para todo }p \in P \]
-El morfismo evaluación es:
-\[ \varepsilon (f,p) = f(p) \]
-Veamos que efectivamente $\varepsilon$ es un morfismo.
-Supongamos que $(f,p) \leq (f',p')$, entonces:
-\begin{align*}
-\varepsilon(f,p) & = f(p) & \\
-& \leq f(p') & \text{ por ser }f\text{ monótona y }p\leq p'\\
-& \leq f'(p') & \text{ por ser }f \leq f'\\
-& = \varepsilon(f',p')
-\end{align*}
-Luego $\varepsilon$ es un morfismo $Pos$.
-Sea $f \colon X \times P \to Q$ monótona y sea $x \leq x'$.
-\begin{align*}
-\lambda_f(x)(p) & = f(x,p) & \\
-& \leq f(x',p) & \text{pues }(x,p) \leq (x',p)\\
-& \leq f'(x',p) & \text{pues }f \leq f'\\
-& = \lambda_f(x')(p)
-\end{align*}
-\end{example}
-
-\begin{lemma}
-En una categoría cartesianamente cerrada $\cat$, la exponenciación por un objeto fijo es un functor.
-\end{lemma}
-\begin{proof}
-Queremos probar que la exponenciación:
-\[ -^Z \colon \cat \to \cat \]
-para un objeto fijo $Z$ es un endofunctor.
-Como $\cat$ es cartesianamente cerrada, la exponenciación de $A^Z$ está bien definida para todo objeto $A$ de $\cat$.
-Consideremos ahora un morfismo $f \colon A \to B$, tenemos que definir $f^Z \colon A^Z \to B^Z$.
-Primero observamos que:
-\[ \varepsilon \colon A^Z \times Z \to A \]
-Luego:
-\[ f \circ \varepsilon \colon A^Z \times Z \to B\]
-Transponiendo:
-\[ \lambda_{f \circ \varepsilon} \colon A^Z \to B^Z \]
-Así que definimos $f^Z$ como $\lambda_{f \circ \varepsilon}$.
-
-Tenemos el siguiente diagrama conmutativo consecuencia de la transposición:
-\[
-\begin{tikzcd}
-B^Z \times Z \arrow[rr,"\varepsilon"] & & B \\\\
-A^Z \times Z \arrow[uu,"\lambda_{f\circ \varepsilon}\times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
-\end{tikzcd}
-\]
-
-Luego considerando $(\id_A)^Z$:
-\[
-\begin{tikzcd}
-A^Z \times Z \arrow[rr,"\varepsilon"] & & A \\\\
-A^Z \times Z \arrow[uu,"(\id_A)^Z\times\id_Z"]  \arrow[uurr,"\varepsilon"]
-\end{tikzcd}
-\]
-Como $\id_{A^Z}$ cumple también el anterior diagrama y tenemos que el morfismo que cumple el diagrama es único, $(\id_A)^Z = \id_{A^Z}$.
-
-Por otro lado, si tenemos morfismos: $f \colon A \to B$ y $g \colon B \to C$, tenemos que $(g \circ f)^Z$ es el único que conmuta el diagrama:
-\[
-\begin{tikzcd}
-C^Z \times Z \arrow[rr,"\varepsilon"] & & C \\\\
-A^Z \times Z \arrow[uu,"(g \circ f)^Z \times\id_Z"]  \arrow[uurr,"g \circ f \circ \varepsilon"]
-\end{tikzcd}
-\]
-Sin embargo, observamos que también conmuta:
-\[
-\begin{tikzcd}
-C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
-B^Z \times Z \arrow[rr,"\varepsilon"] \arrow[uu,"g^Z \times \id_Z"] \arrow[uurr,"g \circ \varepsilon"] & & B \\\\
-A^Z \times Z \arrow[uu,"f^Z \times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
-\end{tikzcd}
-\]
-Podemos reemplazar la flecha diagonal $g \circ \varepsilon$ obteniendo:
-\[
-\begin{tikzcd}
-C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
-B^Z \times Z \arrow[rr,"\varepsilon"] \arrow[uu,"g^Z \times \id_Z"] & & B \arrow[uu,"g"] \\\\
-A^Z \times Z \arrow[uu,"f^Z \times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
-\end{tikzcd}
-\]
-Finalmente, este diagrama implica que:
-\[
-\begin{tikzcd}
-C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
-A^Z \times Z \arrow[uu,"(g^Z \circ f^Z) \times\id_Z"]  \arrow[uurr,"g \circ f \circ \varepsilon"]
-\end{tikzcd}
-\]
-conmuta, luego prueba por unicidad que $(g \circ f)^Z = g^Z \circ f^Z$.
-
-Esto demuestra que $-^Z$ es un endofunctor.
-\end{proof}
-
-Más atrás, consideramos la categoría de functores entre dos categorías $\cat$ y $\mathcal{D}$.
-Consideramos ahora la \index{categoría!{de categorías pequeñas}}\emph{categoría de categorías pequeñas}, denominada \index{Cat@$\Cat$|see {categoría de categorías pequeñas}}$\Cat$, con functores como morfismos.
-
-% TODO: Vamos a ver que $\Cat$ es cartesianamente cerrada.
 
 \chapter{Lema de Yoneda}
 
@@ -1584,6 +1475,284 @@ Una consecuencia de la anterior proposición es que toda categoría localmente p
   \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulos 14-16.
   \item Riehl, E. (2014). \emph{Category Theory in Context}, Capítulo 2.
   \item Awodey, S. (2006). \emph{Category Theory}, Capítulo 8. 
+\end{itemize}
+\chapter{Categorías cartesianamente cerradas}
+\section{Exponencial}
+Si $\cat$ tiene productos binarios, entonces el \newterm{exponencial} de los objetos $B$ y $C$ de $\cat$ es el objeto
+\[ C^B \]
+y un morfismo:
+\[ \varepsilon \colon C^B \times B \to C \]
+tal que para todo objeto $A$ y morfismo
+\[ f \colon A \times B \to C \]
+hay un único morfismo
+\[ \lambda_f \colon A \to C^B \]
+tal que el siguiente diagrama conmuta:
+
+\[
+\begin{tikzcd}
+C^B \times B \arrow[rr,"\varepsilon"] & & C \\\\
+A \times B \arrow[uu,"\lambda_f\times\id_A"]  \arrow[uurr,"f"]
+\end{tikzcd}
+\]
+
+El morfismo $\varepsilon$ se denomina \newterm{evaluación}.
+El morfismo $\lambda_f$ se denomina \newterm{transposición} o \newterm{currificación} de $f$.
+
+Obsérvese que
+\begin{align*}
+\lambda \colon C(A \times B, C) & \to C(A,C^B)\\
+f & \mapsto \lambda_f
+\end{align*}
+es un isomorfismo por la existencia e unicidad de $\lambda_f$ por cada $f$.
+
+En programación funcional, la currificación resulta de gran utilidad.
+En Haskell, por ejemplo, se usa la función \code{curry} de tipo:
+\begin{minted}{haskell}
+curry :: ((a, b) -> c) -> a -> b -> c
+\end{minted}
+Su inversa es \code{uncurry}, de tipo:
+\begin{minted}{haskell}
+uncurry :: (a ->  b -> c) -> (a, b) -> c
+\end{minted}
+% a = b
+% \end{minted}
+
+\section{Categorías cerradas cartesianas}
+\begin{definition}
+Decimos que una categoría es \index{categoría!cartesianamente cerrada}\emph{cartesianamente cerrada} si cumple las siguientes condiciones:
+\begin{enumerate}
+\item Tiene productos finitos.
+\item Tiene el exponencial de dos objetos cualesquiera.
+\end{enumerate}
+Si además tiene coproductos finitos, se denomina \index{categoría!bicartesianamente cerrada}\emph{bicartesianamente cerrada}
+\end{definition}
+
+\begin{example}
+Consideramos la categoría $Pos$ de conjuntos parcialmente ordenados donde los morfismos son funciones monótonas del que hablamos en \ref{ejemplo-producto-pos}.
+Sean $P$ y $Q$ posets, veamos que $Q^P = \{ f \colon Q \to P \mid f \text{ monótona}\}$ con el orden:
+\[ f \leq g \sii f(p) \leq g(p) \text{ para todo }p \in P \]
+El morfismo evaluación es:
+\[ \varepsilon (f,p) = f(p) \]
+Veamos que efectivamente $\varepsilon$ es un morfismo.
+Supongamos que $(f,p) \leq (f',p')$, entonces:
+\begin{align*}
+\varepsilon(f,p) & = f(p) & \\
+& \leq f(p') & \text{ por ser }f\text{ monótona y }p\leq p'\\
+& \leq f'(p') & \text{ por ser }f \leq f'\\
+& = \varepsilon(f',p')
+\end{align*}
+Luego $\varepsilon$ es un morfismo $Pos$.
+Sea $f \colon X \times P \to Q$ monótona y sea $x \leq x'$.
+\begin{align*}
+\lambda_f(x)(p) & = f(x,p) & \\
+& \leq f(x',p) & \text{pues }(x,p) \leq (x',p)\\
+& \leq f'(x',p) & \text{pues }f \leq f'\\
+& = \lambda_f(x')(p)
+\end{align*}
+\end{example}
+
+\begin{lemma}
+En una categoría cartesianamente cerrada $\cat$, la exponenciación por un objeto fijo es un functor.
+\end{lemma}
+\begin{proof}
+Queremos probar que la exponenciación:
+\[ -^Z \colon \cat \to \cat \]
+para un objeto fijo $Z$ es un endofunctor.
+Como $\cat$ es cartesianamente cerrada, la exponenciación de $A^Z$ está bien definida para todo objeto $A$ de $\cat$.
+Consideremos ahora un morfismo $f \colon A \to B$, tenemos que definir $f^Z \colon A^Z \to B^Z$.
+Primero observamos que:
+\[ \varepsilon \colon A^Z \times Z \to A \]
+Luego:
+\[ f \circ \varepsilon \colon A^Z \times Z \to B\]
+Transponiendo:
+\[ \lambda_{f \circ \varepsilon} \colon A^Z \to B^Z \]
+Así que definimos $f^Z$ como $\lambda_{f \circ \varepsilon}$.
+
+Tenemos el siguiente diagrama conmutativo consecuencia de la transposición:
+\[
+\begin{tikzcd}
+B^Z \times Z \arrow[rr,"\varepsilon"] & & B \\\\
+A^Z \times Z \arrow[uu,"\lambda_{f\circ \varepsilon}\times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
+\end{tikzcd}
+\]
+
+Luego considerando $(\id_A)^Z$:
+\[
+\begin{tikzcd}
+A^Z \times Z \arrow[rr,"\varepsilon"] & & A \\\\
+A^Z \times Z \arrow[uu,"(\id_A)^Z\times\id_Z"]  \arrow[uurr,"\varepsilon"]
+\end{tikzcd}
+\]
+Como $\id_{A^Z}$ cumple también el anterior diagrama y tenemos que el morfismo que cumple el diagrama es único, $(\id_A)^Z = \id_{A^Z}$.
+
+Por otro lado, si tenemos morfismos: $f \colon A \to B$ y $g \colon B \to C$, tenemos que $(g \circ f)^Z$ es el único que conmuta el diagrama:
+\[
+\begin{tikzcd}
+C^Z \times Z \arrow[rr,"\varepsilon"] & & C \\\\
+A^Z \times Z \arrow[uu,"(g \circ f)^Z \times\id_Z"]  \arrow[uurr,"g \circ f \circ \varepsilon"]
+\end{tikzcd}
+\]
+Sin embargo, observamos que también conmuta:
+\[
+\begin{tikzcd}
+C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
+B^Z \times Z \arrow[rr,"\varepsilon"] \arrow[uu,"g^Z \times \id_Z"] \arrow[uurr,"g \circ \varepsilon"] & & B \\\\
+A^Z \times Z \arrow[uu,"f^Z \times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
+\end{tikzcd}
+\]
+Podemos reemplazar la flecha diagonal $g \circ \varepsilon$ obteniendo:
+\[
+\begin{tikzcd}
+C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
+B^Z \times Z \arrow[rr,"\varepsilon"] \arrow[uu,"g^Z \times \id_Z"] & & B \arrow[uu,"g"] \\\\
+A^Z \times Z \arrow[uu,"f^Z \times\id_Z"]  \arrow[uurr,"f \circ \varepsilon"]
+\end{tikzcd}
+\]
+Finalmente, este diagrama implica que:
+\[
+\begin{tikzcd}
+C^Z \times Z \arrow[rr,"\varepsilon"] & & C\\\\
+A^Z \times Z \arrow[uu,"(g^Z \circ f^Z) \times\id_Z"]  \arrow[uurr,"g \circ f \circ \varepsilon"]
+\end{tikzcd}
+\]
+conmuta, luego prueba por unicidad que $(g \circ f)^Z = g^Z \circ f^Z$.
+
+Esto demuestra que $-^Z$ es un endofunctor.
+\end{proof}
+
+%Más atrás, consideramos la categoría de functores entre dos categorías $\cat$ y $\mathcal{D}$.
+%Consideramos ahora la \index{categoría!{de categorías pequeñas}}\emph{categoría de categorías pequeñas}, denominada \index{Cat@$\Cat$|see {categoría de categorías pequeñas}}$\Cat$, con functores como morfismos.
+
+% TODO: Vamos a ver que $\Cat$ es cartesianamente cerrada.
+
+\section{Lógica}
+\begin{definition}
+Un \newterm{sistema deductivo} es un grafo:
+\begin{enumerate}
+\item Con flechas $A \xrightarrow{1_A} A$
+\item Con una operación binaria sobre flechas $A \xrightarrow{1_A} A$:
+
+\AxiomC{$A \xrightarrow{f} B$}
+\AxiomC{$B \xrightarrow{g} C$}
+\BinaryInfC{$A \xrightarrow{gf} C$}
+\DisplayProof
+\end{enumerate}
+\end{definition}
+
+Los nodos de los grafos de un sistema deductivo se denominan \emph{fórmulas} y las flechas, \emph{pruebas}.
+
+Hasta aquí es evidente que el concepto de sistema deductivo es equivalente a categoría.
+
+\begin{definition}
+Un \newterm{cálculo de conjunción} es un sistema deductivo donde existe una fórmula $T$ (de \emph{True}), una operación binaria $\land$ llamada conjunción y las siguientes reglas:
+\begin{enumerate}
+  \item $A \xrightarrow{O_A} T$.
+  \item $A \land B \xrightarrow{\pi^1_{A,B}} A$.
+  \item $A \land B \xrightarrow{\pi^2_{A,B}} B$.
+  \item
+  
+  \AxiomC{$C \xrightarrow{f} A$}
+  \AxiomC{$C \xrightarrow{g} C$}
+  \BinaryInfC{$C \xrightarrow{\langle f,g \rangle} A \land B$}
+  \DisplayProof
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}
+Una categoría con productos finitos es un cálculo de conjunción donde $T$ es el objeto terminal y $\land$ es el producto de objetos.
+\end{proposition}
+\begin{proof}
+Tomamos $O_A$ como el morfismo $A \to T$.
+Igualmente, tomamos $\pi^1$ y $\pi^2$ como las proyecciones del objeto producto $A \times B$ a sus factores.
+Para dos morfismo $f \colon C \to A$ y $g \colon C \to B$, sabemos que existe un único morfismo $f \colon C \to A \times B$, que se corresponde con $\langle f,g \rangle$.
+\end{proof}
+
+\begin{definition}
+Un \newterm{cálculo proposicional intuicionista positivo} es un cálculo de conjunción con una operación binaria $\Rightarrow$ sobre fórmulas y:
+\begin{enumerate}
+\item $(A \Rightarrow B) \land A \xrightarrow{\varepsilon_{A,B}} B$.
+\item 
+
+  \AxiomC{$C \land A \xrightarrow{h} B$}
+  \UnaryInfC{$C \xrightarrow{h^*} A \Rightarrow B$}
+  \DisplayProof
+\end{enumerate} 
+\end{definition}
+\begin{proposition}
+Una categoría cartesianamente cerrada es un cálculo proposicional intuicionista positivo donde $\Rightarrow$ se corresponde con la exponenciación.
+\end{proposition}
+\begin{proof}
+El morfismo $\varepsilon \colon B^A \times A \to B$ de la evaluación de la exponenciación sirve como $\varepsilon_{A,B}$.
+Por otro lado $h^*$ se corresponde con la currificación $\lambda_h$.
+\end{proof}
+
+\begin{definition}
+Una \newterm{cálculo intuicionista} es un cálculo proposicional intuicionista positivo con una fórmula $\bot$, una operación disyunción $\lor$ sobre fórmulas y unas flechas:
+\begin{enumerate}
+\item $\bot \xrightarrow{!} A$.
+\item $A \xrightarrow{\kappa^1_{A,B}} A \lor B$
+\item $B \xrightarrow{\kappa^2_{A,B}} A \lor B$
+\item 
+
+\AxiomC{$A \xrightarrow{f} C$}
+\AxiomC{$B \xrightarrow{g} C$}
+\BinaryInfC{$A \lor B \xrightarrow{[f,g]} C$}
+\DisplayProof
+\end{enumerate}
+\end{definition}
+\begin{proposition}
+Una categoría bicartesianamente cerrada es un cálculo intuicionista donde $\bot$ se corresponde con el objeto inicial y $\lor$ se corresponde con el coproducto.
+\end{proposition}
+\begin{proof}
+Las primera regla es consecuencia de la definición de objeto inicial.
+Las otras tres reglas están dadas por las propiedades del coproducto.
+\end{proof}
+
+Este vínculo entre lógica intuicionista y categorías bicartesianamente cerradas nos permite movernos entre las dos teorías cuando queramos demostrar algún resultado, por ejemplo:
+\begin{lemma}
+En cálculo intuicionista proposicional hay como mucho una demostración $A \to \bot$ salvo equivalencia de pruebas.
+\end{lemma}
+\begin{proof}
+En una categoría bicatersianamente cerrada $\cat$ con objeto inicial $0$, para cualquier par de objetos $A$ y $B$ cualesquiera:
+\[ \cat(0 \times A, B) \cong \cat(0, B^A) \]
+Como hay un único morfismo en $\cat(0, B^A)$ por ser $0$ inicial, entonces hay un único morfismo $0 \times A \to B$.
+Luego $0 \times A$ es objeto inicial.
+Supongamos que hubiera un morfismo $f \colon A \to 0$.
+Como también hay un morfismo $\id_A$, debe haber un morfismo $h \colon A \to 0 \times A$ por la definición de objeto producto.
+Si $\pi_2 \colon 0 \times A \to A$ es la segunda proyección, entonces $\pi_2 \circ h = \id_A$ por la definición de producto y $h \circ \pi_2 = \id_{0 \times A}$ porque sólo hay un morfismo $0 \times A \to 0 \times A$.
+Por lo tanto $A \cong 0$ y sólo $f$ es el único morfismo.
+\end{proof}
+
+
+Ahora que hemos construyendo en paralelo un sistema lógico intuicionista y una categoría equivalente, nos podemos preguntar si podemos dar un paso más y llegar la lógica clásica.
+Para ello hay que añadir el principio del tercero excluso, que es equivalente a la regla de eliminación de doble negación.
+Para ello, definimos $\neg A$ como la fórmula $A \Rightarrow \bot$.
+\begin{prooftree}
+\AxiomC{$\neg \neg A$}
+\UnaryInfC{A}
+\end{prooftree}
+¿Qué ocurriría si hubiera un isomorfismo $\neg \neg A \to A$ en una categoría bicartesianamente cerrada?
+Primero observémos que $\neg \neg A$ es equivalente a $0^{0^A}$.
+
+\begin{theorem}
+Sea $\cat$ una categoría cartesianamente cerrada con objeto inicial $0$.
+Si para todo objeto $A$ se tiene $0^{0^A} \cong A$, entonces $\cat$ es fina, es decir, tiene como mucho un morfismo entre dos objetos.
+\end{theorem}
+\begin{proof}
+Por definición, para objetos $B$ y $C$:
+\[ \cat(B, 0^C) \cong \cat(B \times C, 0) \]
+Como hay como mucho un morfismo en $\cat(B \times C, 0)$, entonces hay como mucho un morfismo $B \to 0^C$.
+Tomando $C = 0^A$, se tiene que hay como mucho un morfismo $B \to 0^{0^A} \cong A$.
+\end{proof}
+
+Por lo tanto, cuando añadimos la regla de eliminación de doble negación perdemos la capacidad de distinguir entre distintas pruebas en nuestra categoría.
+Esto vuelve poco interesante estudiar categorías de este tipo. 
+
+\section{Referencias}
+\begin{itemize}
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulo 6.
+  \item Lambek, J. (1986). \emph{Introduction to Higher Order Categorical Logic}, Parte I.
+  \item Low, Z.L. (2011). \emph{Bicartesian closed categories and logic}.
 \end{itemize}
 
 \chapter{Monoides}
@@ -2068,7 +2237,47 @@ Finalmente:
 Por lo que \code{Maybe} forma una mónada.
 \end{example}
 
+\section{Referencias}
+\begin{itemize}
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulos 7 y 10.
+  \item Buurlage, J. (2017). \emph{Categories and Haskell}, Capítulo 7.
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulo 20.
+\end{itemize}
+
 \chapter{F-álgebras}
+\section{Functores polinomiales}
+Nuestro objetivo va a ser describir una cierta clase de endofunctores que pueden ser descritos por producto y coproductos.
+Por esto, supongamos que estamos en una categoría $\cat$ con productos y coproductos finitos.
+Recordemos que esto implica, en particular que existen objetos iniciales y finales.
+Llamemos al objeto inicial $0$ y al objeto final $1$.
+
+\begin{definition}
+Un \index{functor!polinomial}\emph{functor polinomial} es un miembro de la menor colección de functores que:
+\begin{itemize}
+  \item Contiene el functor identidad $\Id$.
+  \item Contiene todo functor constante $\Delta_A$, que asocia todo elemento al objeto $A$.
+  \item Es cerrada bajo composición, producto y coproducto, donde el producto de dos functores se corresponde con el functor:
+  \[ (F \times G)(X) = F(X) \times G(X)\]
+  y el coproducto se corresponde con:
+  \[ (F + G)(X) = F(X) + G(X) \]
+\end{itemize}
+\end{definition}
+Estos tipos de functores se expresan como un polinomio.
+Por ejemplo, $F(X) = 1 + A \times X$ se debe entender como el functor que asocia a todo objeto $X$ el coproducto del producto de $A$ y $X$ con el objeto terminal $1$.
+
+Consideremos el functor $F(X) = 1 + X$ y una $F$-álgebra $(A,f)$ donde $f \colon F(A) \to A$.
+Por la definición de coproducto, este morfismo $f$ puede ser identificado con alguno de dos morfismos $f_1 \colon 1 \to U$ y $f_2 \colon A \to A$.
+Viendo $F(X)$ como un tipo parametrizado por $X$, tiene sentido considerar $f_1$ y $f_2$ los \index{constructor}\emph{constructores} de $F(X)$.
+
+Recordemos que en Haskell, el producto de dos tipos es su combinación en un par.
+El objeto terminal se corresponde con \code{()} y el objeto inicial se define como
+\begin{minted}{haskell}
+data Empty
+\end{minted}
+Es decir, un tipo sin constructor.
+En este contexto, podemos identificar $F(X)$ con el functor \code{Maybe a} y los morfismos $f_1$ y $f_2$ con \code{Nothing} y \code{Just}.
+
+\section{F-álgebras}
 \begin{definition}
 Sea $\cat$ una categoría y $F \colon \cat \to \cat$ un endofunctor.
 Una $F$-álgebra es un par $(A,\alpha)$, donde $A \in \cat$ y $\alpha \colon F a \to a$ es un morfismo de $\cat$.
@@ -2217,7 +2426,7 @@ Una \index{F-coálgebra}\emph{$F$-coálgebra} es, naturalmente, el dual de una $
 Más precisamente, es un par $(A,\alpha)$, donde $\alpha \colon A \to F A$.
 En Haskell:
 \begin{minted}{haskell}
-newtype Coalgebra f a = a -> f a
+type Coalgebra f a = a -> f a
 \end{minted}
 
 Al igual que con las álgebras, las $F$-coálgebras forman una categoría $Coalg_F$.
@@ -2231,19 +2440,55 @@ El único homomorfismo de un $F$-coálgebra a la $F$-coálgebra terminal se deno
 Como en el caso del catamorfismo, podemos definirlo recursivamente:
 \begin{minted}{haskell}
 ana :: (Functor f) => (Coalgebra f b) -> (b -> Fix f)
-ana g = Fix . fmap (ana g) . g
+ana g = U . fmap (ana g) . g
 \end{minted}
 
 \begin{example}
-Consideramos el functor \code{StreamF e} para un \code{e} fijo:
+Consideramos el functor $F(X)=1+A\times X$, que se puede ver como la composición de $G(X) = A \times X$ con $H(X) = 1+X$.
+En términos de Haskell, la composición de \code{(a,)} con \code{Maybe}.
 \begin{minted}{haskell}
-data StreamF e a = StreamF e a
+data F a x = Maybe (a,x)
 \end{minted}
-Su punto fijo
+Su punto fijo es un tipo de la forma $X = 1 + A \times X$, que se corresponde con el functor lista \code{[a]}.
+
+Por lo tanto, en este contexto \code{ana} tiene la forma:
 \begin{minted}{haskell}
-data Stream e = Stream e (Stream e)
+ana :: (x -> Maybe (a,x)) -> (x -> [a])
 \end{minted}
+\code{ana} nos permite construir una lista (posiblemente infinita) a partir de una \textquote{semilla} \code{x} y una función que devuelva \code{a}, el valor generado, y \code{x}, una nueva semilla. 
+Una implementación de este anamorfismo del paquete básico de Haskell es la función \code{unfoldr}.
 \end{example}
+
+\section{Referencias}
+\begin{itemize}
+  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, Capítulo 3.4.
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulo 24.
+\end{itemize}
+
+\chapter*{Epílogo}
+
+A estas alturas hemos visto las piezas básicas con las que se construye la teoría de categorías y cómo aparecen en programación funcional.
+Sin embargo, la teoría de categoría es un campo mucho más grande que lo podemos abarcar en este trabajo.
+Aquí damos un punto de comienzo para seguir el estudio de teoría de categorías.
+
+En el capítulo 4, hemos identificado qué propiedades debe cumplir una categoría para que sea equivalente a la lógica proposicional intuicionista.
+Añadiendo más propiedades a las categorías podemos obtener distintas lógicas.
+Por ejemplo, podemos ``mejorar'' esta lógica a lógica intuicionista de orden superior.
+Para ello, necesitaremos definir los \index{clasificador de subobjetos}\emph{clasificador de subobjetos}.
+En pocas palabras, un subobjeto es cualquier objeto $S$ con un monomorfismo $S \to X$.
+Un clasificador de subobjetos de $X$ es una colección de morfismos que caracterizan cada uno de sus subobjetos.
+En pocas palabras, es una generalización de la idea de función característica de los conjuntos:
+\begin{align*}
+\chi_S & \colon X \to \{0,1\}\\
+\chi_S (x) & = \begin{cases}0 & \text{si }x \notin S\\1 & \text{si }x \in S\end{cases}
+\end{align*}
+Una categoría cerrada cartesianamente con un clasificador de subobjetos se denomina \newterm{topos elemental}.
+Resulta que un \newterm{topos elemental} es equivalente a la lógica intuicionista de orden superior.
+
+En los capítulos 5, hemos introducido el concepto de monoide, pero también el concepto de categoría enriquecida y $2$-categoría.
+Siguiendo esta idea llegamos a la teoría de categorías de orden superior.
+Lurie dedica su libro a su estudio.
+
 
 \backmatter
 
