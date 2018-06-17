@@ -3,8 +3,7 @@
 \documentclass[12pt, twoside]{book}
 \usepackage[T1]{fontenc}
 \usepackage{bussproofs}
-\usepackage{ucs}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage[english, spanish, es-noshorthands]{babel}
 
 \usepackage{hyperref}
@@ -29,6 +28,19 @@
 \date{\today}
 \newcommand{\tutores}[1]{\newcommand{\guardatutores}{#1}}
 \tutores{Prof. Tutor José A. Alonso Jiménez}
+
+
+\newenvironment{dedication}
+  {\clearpage           % we want a new page
+   \thispagestyle{empty}% no header and footer
+   \vspace*{\stretch{1}}% some space at the top 
+   \itshape             % the text is in italics
+   \raggedleft          % flush to the right margin
+  }
+  {\par % end the paragraph
+   \vspace{\stretch{3}} % space at bottom is three times that at the top
+   \clearpage           % finish off the page
+  }
 
 % ======================
 % = Páginas de títulos =
@@ -194,6 +206,8 @@
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\Const}{Const}
 
+\newcommand{\underoverset}[3]{\underset{#1}{\overset{#2}{#3}}}
+
 \hyphenation{func-tor}
 \hyphenation{func-to-res}
 
@@ -260,22 +274,36 @@
 
 \mainmatter
 
+\chapter*{Sumario}
+\addcontentsline{toc}{chapter}{Sumario}
+\markright{Sumario}
+En esencia, la teoría de categorías es el estudio de la composición.
+Una categoría es una colección de objetos y morfismos entre ellos de manera que la composición tenga sentido.
+Este tipo de estructura ressulta ser muy común en la mayoría de los campos de las matemáticas.
+Es más, tiene un fuerte vínculo con la lógica y la teoría de tipos a través de las categorías cartesianamente cerradas.
+Es programación funcional, algunos diseños como las mónadas son originarias de la teoría de categorías.
+Para poder hablar de estos temas, primero tendremos que entender las construcciones comunes que pueden ser definidas sobre una categoría o incluso entre categorías.
+Exploraremos el campo de la teoría de categorías y sus conexiones con otros campos de la matemáticas usando programación funcional, específicamente Haskell.
 
-\chapter*{English Abstract}
-\addcontentsline{toc}{chapter}{English Abstract}
-\markright{English Abstract}
-
+\section*{Abstract}
 \begin{otherlanguage}{english}
-    We will explore the realm of category theory and its connections with other fields of mathematics using functional programming.
+    In essence, category theory is the study of the composition.
+    A category is a collection of objects and morphism between them where composition of morphism makes sense.
+    This kind of structure happens to be very common in most fields of mathematics.
+    Furthermore, it has strong links with logic and type theory through cartesian closed categories.
+    In functional programming, some design patterns like monads originate from category theory.
+    In order to discuss this topics, first we'll have to understand common constructions that can be defined over a category or even between categories. 
+    We will explore the realm of category theory and its connections with other fields of mathematics using functional programming, specifically Haskell.
 \end{otherlanguage}
 
 \chapter{Introducción}
-La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos y programadores, y una poderosa abstracción a la composición de funciones.
+La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos de distintas ramas a través de una poderosa abstracción a la composición de funciones.
+Es más, la teoría de categorías ha encontrado un interés en el campo de la ciencia de la computación.
 Para explorar la teoría de categorías haremos uso de la programación funcional.
-Más concrétamente, usaremos Haskell, que es uno de los lenguajes puramente funcionales más populares.
+Más concretamente, usaremos Haskell, que es uno de los lenguajes puramente funcionales más populares.
 
 \section{Programación funcional}
-La programación funcional es un estilo de programación que tiene sus origenes en IPL (1956) y Lisp (1958).
+La programación funcional es un estilo de programación que tiene sus orígenes en IPL (1956) y Lisp (1958).
 Aunque durante mucho tiempo ha tenido un interés más académico que práctico, ha estado teniendo más atención en los últimos años.
 Lenguajes de gran popularidad como C++ o Java han introducido características de la programación funcional en los últimos años.
 \footnote{Since the introduction of the STL (Standard Template Library) -- about 1994 -- there has been a steady and cautious increase in the use of functional programming techniques in C++. -- Bjarne Stroustrup, creador de C++}
@@ -299,7 +327,7 @@ Encuentran su inspiración en las matemáticas y sus características principale
   template<class A>
   A f(A arg);
   \end{minted}
-  Sin embargo, la programación funcional permite imponer restricciones a los tipos polimórficos que son validabes en compilación a través de mecanismos como las \emph{clases de tipos} en Haskell.
+  Sin embargo, la programación funcional permite imponer restricciones a los tipos polimórficos que son validables en compilación a través de mecanismos como las \emph{clases de tipos} en Haskell.
   Son similares a las \emph{interfaces} de los lenguajes de programación orientada a objetos como Java.
   En algunos lenguajes funcionales, se permite además imponer restricciones de tipos al tipo polimórfico devuelto de una función, por ejemplo:
   \begin{minted}{haskell}
@@ -430,7 +458,7 @@ instance Eq a => Eq (Maybe a) where
   Nothing == Nothing = True
   Nothing == Just x  = False
   Just x  == Nothing = False
-  Just x  == Just x  = x == x
+  Just x  == Just y  = x == y
 \end{minted}
 
 \section{Referencias}
@@ -468,11 +496,7 @@ de manera que:
 \end{itemize}
 \end{definition}
 
-La notación para referirse a objetos y morfismos de una categoría varía mucho dependiendo del autor.
-Por ejemplo, Awodey usa $\cat_0$ y $\cat_1$ para referirse a los objetos y los morfismos de una categoría $\cat$ respectivamente~\cite{awodey}.
-Esta notación funciona bien para la introducción de categorías de orden superior.
-
-Otra notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $C(A,B)$.
+Una notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $C(A,B)$.
 
 A menudo usaremos diagramas para expresar visualmente ciertas propiedades.
 En Teoría de Categoría, existe una definición precisa de diagrama, pero por ahora, no tenemos las herramientas suficientes para explicarlo.
@@ -756,6 +780,12 @@ Veamos algunos ejemplos en categorías usuales:
   \item En $\Grp$, el grupo trivial es inicial y terminal.
   \item En $\Ring$, el anillo unitario es terminal y el anillo $(\Z,+,\cdot)$ es inicial.
   \item En un poset, visto como categoría, el objeto inicial es el elemento mínimo global y el objeto terminal es el elemento máximo global, si existen.
+  \item En $\Hask$, el objeto terminal se define como el tipo de dato con un sólo valor posible.
+  Se suele usar \code{()}, que puede entenderse como una $0$-tupla.
+  El objeto inicial se define como el tipo de dato sin constructor:
+  \begin{minted}{haskell}
+  data Empty
+  \end{minted}
 \end{itemize}
 \end{example}
 
@@ -763,6 +793,7 @@ De estos ejemplos vemos que:
 \begin{itemize}
   \item Los objetos iniciales y terminales no son necesariamente únicos.
   \item Un objeto puede ser inicial y terminal.
+  En dicho caso, el objeto en cuestión recibe el nombre de \index{objeto!cero}\emph{objeto cero}.
   \item Una categoría puede no poseer objetos iniciales o terminales.
 \end{itemize}
 
@@ -866,7 +897,7 @@ Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos apa
 Escribiremos $A \times B$ para denotar el producto de $A$ y $B$.
 \end{definition}
 
-Desenvolvamos las definiciones para entender que significa realmente el producto de dos objetos $A$ y $B$.
+Desenvolvamos las definiciones para entender qué significa realmente el producto de dos objetos $A$ y $B$.
 Primero obsérvese que el diagrama $D$ actúa para \textquote{seleccionar} los objetos $A$ y $B$ y sus morfismos identidad.
 Puede que haya algún morfismo entre $A$ y $B$, pero no son relevantes para el diagrama y, en consecuencia, ni para el límite.
 
@@ -892,7 +923,7 @@ V \arrow[ur,"f_A"] \arrow[dr,"f_B"] \arrow[r,dashed,"h"] & A \times B \arrow[u,"
 o algebraicamente:
 \[ f_A = p_A \circ h \]
 \[ f_B = p_B \circ h \]
-Es decir, podemos dar un par de morfismos $V \to A$ y $V \to B$ es equivalente a dar un morfismo $V \to A \times B$.
+Es decir, dar un par de morfismos $V \to A$ y $V \to B$ es equivalente a dar un morfismo $V \to A \times B$.
 Luego, podemos volver a los objetos $A$ y $B$ usando unos morfismos fijos $p_A$ y $p_B$ (que llamamos \index{morfismo!proyección}\emph{proyecciones}).
 
 \begin{definition}
@@ -1163,39 +1194,107 @@ Por otro lado:
 \end{align*}
 \end{proof}
 
-\section{Functores adjuntos}
-Los functores adjuntos son, en esencia, una forma débil de inversa de functores.
-Antes de entrar formalmente en ellos, veamos un par de ejemplos que ilustren la noción que formalizaremos.
+\section{Equivalencias y functores adjuntos}\label{functores-adjuntos}
+Obsérvese que tenemos una noción de ``equivalencia'' cuando hablamos de objetos en una categoría que no es estrictamente igualdad, sino isomorfía.
+Que dos objetos sean isomorfos significa que existan morfismos entre ellos inversos el uno del otro.
+Al nivel de la categoría de categorías pequeñas $\Cat$, podríamos hablar de categorías $\cat$ y $\mathcal{D}$ isomorfas si tienen functores $F \colon \cat \to \mathcal{D}$ y $G \colon \mathcal{D} \to \cat$ tal que $G \circ F = \Id_\cat$ y $F \circ G = \Id_\mathcal{D}$.
+Sin embargo, esta idea resulta muy estricta para ser aplicada, en lugar de ello hacemos uso de equivalencias.
+Para relajar esta definición, usaremos transformaciones naturales.
 
-\begin{example}
-Consideremos el caso de dos conjuntos pre-ordenados $\cat$ y $\mathcal{D}$.
-Podemos verlos como categorías, donde los objetos son los elementos del conjunto y hay un morfismo $A \to B$ si $A \leq B$.
-Una funcion $F \colon \cat \to \mathcal{D}$ que mantiene el orden puede ser visto sencillamente como un functor sobre estas categorías.
+\begin{definition}
+Una \newterm{equivalencia} entre dos categorías $\cat$ y $\mathcal{D}$ es un par de functores $F \colon \cat \to \mathcal{D}$ y $G \colon \mathcal{D} \to \cat$ de manera que existen dos isomorfismos naturales $G \circ F \cong \Id_\cat$ y $F \cong G \cong \Id_\mathcal{D}$.
+\end{definition}
 
-Un functor $G \colon \mathcal{D} \to \cat$ es un \newterm{adjunción derecha} a $F$ si, para todo $A \in \cat$ y $B \in \mathcal{B}$:
-\[ F A \leq B \sii A \leq G B \]
-\end{example}
+Aunque las equivalencias resultan útiles en la teoría de categorías de orden superior, no sirve para un tipo de functor muy habitual en diversos campos de la matemáticas.
 
-\begin{example}
-Sea $U \colon \Grp \to \Set$ el functor natural de grupos a conjuntos y sea $F \colon \Set \to \Grp$ el functor que asocia a cada conjunto su correspondiente grupo libre.
-\end{example}
+Aquí entra la idea de adjunción.
+Antes de entrar formalmente en ellos, veamos un ejemplo que motiva la noción que formalizaremos.
+
+%\begin{example}
+%Consideremos el caso de dos conjuntos pre-ordenados $\cat$ y $\mathcal{D}$.
+%Podemos verlos como categorías, donde los objetos son los elementos del conjunto y hay un morfismo $A \to B$ si $A \leq B$.
+%Una función $F \colon \cat \to \mathcal{D}$ que mantiene el orden puede ser visto sencillamente como un functor sobre estas categorías.
+
+%Un functor $G \colon \mathcal{D} \to \cat$ es un \newterm{adjunción derecha} a $F$ si, para todo $A \in \cat$ y $B \in \mathcal{B}$:
+%\[ F A \leq B \sii A \leq G B \]
+%\end{example}
+
+Sea $U \colon \Grp \to \Set$ el functor que asocia a cada grupo $(G,*)$ el conjunto de sus elementos $G$.
+Esta clase de functor, que sólo ``olvida'' la estructura sobre un objeto, se denomina \index{functor!olvidadizo}\emph{functor olvidadizo}.
+Sea $F \colon \Set \to \Grp$ el functor que asocia a cada conjunto su correspondiente \newterm{grupo libre}.
+En concreto, para un conjunto $S$, $F S$ puede verse como el grupo formado por la concatenación de palabras cuyas letras son elementos de $S$ y sus correspondiente letras inversas.
+
+Estos functores no son inversos el uno del otro, ni siquiera forman una equivalencia, pero representan una relajación de inversión.
+Esta idea se formaliza en la adjunción:
 
 \begin{definition}
 Una \newterm{adjunción} entre categorías $\cat$ y $\mathcal{D}$ son functores
 \[ F \colon \cat \to \mathcal{D} \qquad U \colon \mathcal{D} \to \cat \]
-y una transformación natural:
-\[ \eta \colon \Id_\cat \Rightarrow U \circ F \]
-tal que para todo $A \in \cat$, $B \in \mathcal{D}$ y $f \colon A \to U B$, existe un único $f^* \colon F A \to B$ tal que el siguiente diagrama conmuta:
+y dos transformaciones naturales:
+\[ \eta \colon \Id_\cat \Rightarrow U \circ F \qquad \varepsilon \colon F \circ U \Rightarrow \Id_\mathcal{D} \]
+que satisfagan las identidades:
+
 \[
 \begin{tikzcd}
-U (F A) \arrow[dr,"U f^*"]\\
-& U B\\
-A \arrow[ur,"f"] \arrow[uu,"\eta_A"]
+F \arrow[r,Rightarrow,"F \eta"] \arrow[dr,Rightarrow,"\iota_F"] & F \circ U \circ F \arrow[d,Rightarrow,"\varepsilon F"]\\
+& F
+\end{tikzcd}
+\qquad
+\begin{tikzcd}
+U \arrow[r,Rightarrow,"\eta U"] \arrow[dr,Rightarrow,"\iota_U"] & U \circ F \circ U \arrow[d,Rightarrow,"U \varepsilon"]\\
+& U
 \end{tikzcd}
 \]
+donde $\iota_F \colon F \Rightarrow F$ es la transformación natural identidad.
 \end{definition}
 
-Llamamos $F$ \newterm{adjunta izquierda}, $U$ \newterm{adjunta derecha} y $\eta$ es la \newterm{unidad} de la adjunción.
+Dicha adjunción se suele expresar como:
+\[ \cat
+    \underoverset
+      {\underset{F}{\longrightarrow}}{\overset{U}{\longleftarrow}}{\top}
+  \mathcal{D}\]
+o sencillamente $F \dashv U$.
+Se suele decir que $U$ es la adjunta derecha de $F$ y $F$ es la adjunta izquierda de $U$.
+Las transformaciones naturales $\eta$ y $\varepsilon$ se llaman \newterm{unidad} y \newterm{counidad} respectivamente.
+
+Volviendo a nuestro ejemplo:
+\[ \Set
+    \underoverset
+      {\underset{F}{\longrightarrow}}{\overset{U}{\longleftarrow}}{}
+  \Grp\]
+para formar una adjunción basta tomar las transformaciones naturales $\eta_S \colon S \to U (F S)$ que envía cada elemento $s \in S$ a $s$ como elemento de $F S$ y $\varepsilon_G \colon F (U G) \to G$ que envía cada palabra cuyas letras son elementos $G$ a su producto.
+Con esto es una simple tarea comprobar que $F \dashv U$.
+
+\begin{proposition}
+Sea $F \colon \cat \to \mathbb{1}$ un functor a la categoría de un objeto $\mathbb{1}$ y $A$ un objeto de $\cat$.
+Dado $U \colon \mathbb{1} \to \cat$ cuya imagen es $A$, entonces $1$ es objeto terminal de $\cat$ si y sólo si $F \dashv U$.
+\end{proposition}
+\begin{proof}
+Denominemos $*$ el único objeto de $\mathbb{1}$.
+Obsérvese primero que $F (U *) = *$ y que $U (F B) = A$ para todo $B \in \cat$. Por lo tanto:
+\[ \eta_B \colon B \to A \]
+\[ \varepsilon_* = \id_* \]
+Entonces, tenemos:
+\[ F\eta_B = \id_* \]
+\[ \varepsilon_{F B} = \id_1\]
+\[ U\varepsilon_* \colon \id_A \]
+\[ \eta_{U *} = \eta_A \colon A \to A \]
+
+Luego se da siempre una de las dos igualdades triangulares:
+\[ F\eta \circ \varepsilon F = \iota \]
+
+Supongamos que $A$ es un objeto terminal, entonces $\eta$ es natural y $\eta_A = \id_A$, luego se da la otra igualdad triangular y se demuestra que $F \dashv U$.
+
+Supongamos que $F \dashv U$, entonces:
+\[ \id_A = U \varepsilon_1 \circ \eta_A = \id_A \circ \eta_A = \eta_A \]
+Sea $f \colon B \to A$ morfismo cualquiera a $A$.
+Por la naturalidad de $\eta$, se tiene que el siguiente diagrama conmuta:
+\[\begin{tikzcd}
+B \arrow[r,"\eta_B"] \arrow[d,"f" left] & A \arrow[d,"U(F f)"]\\
+A \arrow[r,"\eta_A"] & A
+\end{tikzcd}\]
+Obsérvese que $U (F f) = U (\id_1) = \id_A$, luego tenemos que: $\eta_B = f$, lo que implica la unicidad de los morfismos $B \to A$ y que $A$ es objeto terminal.
+\end{proof}
 
 \chapter{Lema de Yoneda}
 
@@ -1470,6 +1569,8 @@ La prueba para $K$ es análoga.
 Un functor contravariante en $\Set^{\cat^{op}}$ recibe el nombre de \newterm{prehaz}.
 Una consecuencia de la anterior proposición es que toda categoría localmente pequeña es una subcategoría llena de la categoría de prehaces.
 
+\begin{proposition}
+\end{proposition}
 \section{Referencias}
 \begin{itemize}
   \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulos 14-16.
@@ -1491,7 +1592,7 @@ tal que el siguiente diagrama conmuta:
 \[
 \begin{tikzcd}
 C^B \times B \arrow[rr,"\varepsilon"] & & C \\\\
-A \times B \arrow[uu,"\lambda_f\times\id_A"]  \arrow[uurr,"f"]
+A \times B \arrow[uu,"\lambda_f\times\id_B"]  \arrow[uurr,"f"]
 \end{tikzcd}
 \]
 
@@ -1644,9 +1745,9 @@ Los nodos de los grafos de un sistema deductivo se denominan \emph{fórmulas} y 
 Hasta aquí es evidente que el concepto de sistema deductivo es equivalente a categoría.
 
 \begin{definition}
-Un \newterm{cálculo de conjunción} es un sistema deductivo donde existe una fórmula $T$ (de \emph{True}), una operación binaria $\land$ llamada conjunción y las siguientes reglas:
+Un \newterm{cálculo de conjunción} es un sistema deductivo donde existe una fórmula $\top$, una operación binaria $\land$ llamada conjunción y las siguientes reglas:
 \begin{enumerate}
-  \item $A \xrightarrow{O_A} T$.
+  \item $A \xrightarrow{O_A} \top$.
   \item $A \land B \xrightarrow{\pi^1_{A,B}} A$.
   \item $A \land B \xrightarrow{\pi^2_{A,B}} B$.
   \item
@@ -1659,10 +1760,10 @@ Un \newterm{cálculo de conjunción} es un sistema deductivo donde existe una f�
 \end{definition}
 
 \begin{proposition}
-Una categoría con productos finitos es un cálculo de conjunción donde $T$ es el objeto terminal y $\land$ es el producto de objetos.
+Una categoría con productos finitos es un cálculo de conjunción donde $\top$ es el objeto terminal y $\land$ es el producto de objetos.
 \end{proposition}
 \begin{proof}
-Tomamos $O_A$ como el morfismo $A \to T$.
+Tomamos $O_A$ como el morfismo $A \to \top$.
 Igualmente, tomamos $\pi^1$ y $\pi^2$ como las proyecciones del objeto producto $A \times B$ a sus factores.
 Para dos morfismo $f \colon C \to A$ y $g \colon C \to B$, sabemos que existe un único morfismo $f \colon C \to A \times B$, que se corresponde con $\langle f,g \rangle$.
 \end{proof}
@@ -1723,8 +1824,7 @@ Si $\pi_2 \colon 0 \times A \to A$ es la segunda proyección, entonces $\pi_2 \c
 Por lo tanto $A \cong 0$ y sólo $f$ es el único morfismo.
 \end{proof}
 
-
-Ahora que hemos construyendo en paralelo un sistema lógico intuicionista y una categoría equivalente, nos podemos preguntar si podemos dar un paso más y llegar la lógica clásica.
+Ahora que hemos construido en paralelo un sistema lógico intuicionista y una categoría equivalente, nos podemos preguntar si podemos dar un paso más y llegar a la lógica clásica.
 Para ello hay que añadir el principio del tercero excluso, que es equivalente a la regla de eliminación de doble negación.
 Para ello, definimos $\neg A$ como la fórmula $A \Rightarrow \bot$.
 \begin{prooftree}
@@ -1747,6 +1847,40 @@ Tomando $C = 0^A$, se tiene que hay como mucho un morfismo $B \to 0^{0^A} \cong 
 
 Por lo tanto, cuando añadimos la regla de eliminación de doble negación perdemos la capacidad de distinguir entre distintas pruebas en nuestra categoría.
 Esto vuelve poco interesante estudiar categorías de este tipo. 
+
+Por otro lado, la \newterm{correspondencia de Curry-Howard} establece una equivalencia entre el cálculo intuicionista y el $\lambda$-cálculo con tipos simples.
+Las fórmulas se corresponden con tipos y una fórmula es cierta (en un sentido intuicionista) si está habitada, es decir, si existe algún término con dicho tipo.
+Esto resulta importante para nosotros, pues Haskell implementa $\lambda$-cálculo con tipos simples.
+Por lo tanto, podemos hacer deducciones en cálculo intuicionista con Haskell.
+
+De hecho, tenemos la siguiente tabla de equivalencias:
+\begin{center}
+\begin{tabular}{ c | c | c }
+  Lógica & Categoría & Haskell\\
+  \hline
+  $\bot$ & 0 & \code{Empty} \\
+  $\top$ & 1 & \code{()} \\
+  $\neg$ & $0^{-}$ & \code{a -> Empty} \\
+  $p \land q$ & $A \times B$ & \code{(a, b)} \\
+  $p \lor q$ & $A + B$ & Either a b \\
+\end{tabular}
+\end{center}
+
+Con esto en mente, podemos hacer algunas demostraciones sencillamente escribiendo una función que habite el tipo correspondiente.
+\begin{minted}{haskell}
+modus_ponens :: a -> (a -> b) -> b
+modus_ponens x f = f x
+
+prueba_por_negacion :: (a -> Empty) -> Not a
+prueba_por_negacion f = f
+
+de_morgan :: Either (Not a) (Not b) -> Not (a, b)
+de_morgan (Left f) = \(x, y) -> f x
+de_morgan (Right f) = \(x, y) -> f y
+
+otro_ejemplo :: (a -> (b -> c)) -> (a -> b) -> (a -> c)
+otro_ejemplo f g = \x -> f x (g x)
+\end{minted}
 
 \section{Referencias}
 \begin{itemize}
@@ -2034,7 +2168,7 @@ Obsérvese que $\mu_{\mathcal{P}(A)}(\mathcal{P}(A)) = A$, pues $A \in \mathcal{
 & = \mathcal{P}(A)
 \end{align*}
 \begin{align*}
-(\mu \circ \mathcal{P}\eta)(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)} \left(\mathcal{P}\eta_{mathcal{P}(A)}(\mathcal{P}(A))\right)\\
+(\mu \circ \mathcal{P}\eta)(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)} \left(\mathcal{P}\eta_{\mathcal{P}(A)}(\mathcal{P}(A))\right)\\
 & = \mu_{\mathcal{P}^2(A)} \left(\{\mathcal{P}(A)\}\right)\\
 & = \mathcal{P}(A)
 \end{align*}
@@ -2249,7 +2383,6 @@ Por lo que \code{Maybe} forma una mónada.
 Nuestro objetivo va a ser describir una cierta clase de endofunctores que pueden ser descritos por producto y coproductos.
 Por esto, supongamos que estamos en una categoría $\cat$ con productos y coproductos finitos.
 Recordemos que esto implica, en particular que existen objetos iniciales y finales.
-Llamemos al objeto inicial $0$ y al objeto final $1$.
 
 \begin{definition}
 Un \index{functor!polinomial}\emph{functor polinomial} es un miembro de la menor colección de functores que:
@@ -2294,7 +2427,7 @@ Suponiendo que tenemos un morfismo $f \colon A \to B$, observamos que $F f \colo
 Por otro lado:
 \[ f \circ \alpha \colon F A \to B \]
 La igualdad de estos dos morfismos nos dará la fundación de la categoría de $F$-álgebras.
-Es más, como estos morfismos preservan bien la estructura de $F$-álgebran, les daremos el nombre (honorífico) de $F$-homomorfismo:
+Es más, como estos morfismos preservan bien la estructura de $F$-álgebras, les daremos el nombre (honorífico) de $F$-homomorfismo:
 
 \begin{proposition}\label{prop:fmorfismo}
 Sea $\cat$ una categoría y $F$ un endomorfismo en $\cat$.
@@ -2335,7 +2468,7 @@ Luego $g \circ f$ es un homomorfismo de $F$-álgebras.
 \end{proof}
 
 Una vez hemos determinado una nueva categoría, podemos empezar a buscar qué aspecto tienen nuestra construcciones universales en esta nueva categoría.
-Resultará de particular interés el objeto inicial de una $Alg_F$ por el siguiente lema debido a Lambek~\cite{lambek}:
+Resultará de particular interés el objeto inicial de una $Alg_F$ por el siguiente lema debido a \hyperref[lambek-pf]{Lambek}:
 
 \begin{lemma}\label{lambek-lemma}
 Sea $F \colon \cat \to \cat$ un endofunctor.
@@ -2436,7 +2569,7 @@ Sea $F \colon \cat \to \cat$ un endofunctor.
 Si $(A,\alpha)$ es una $F$-coálgebra terminal de $Coalg_F$, entonces $(A,\alpha)$ es un punto fijo de $F$.
 \end{lemma}
 
-El único homomorfismo de un $F$-coálgebra a la $F$-coálgebra terminal se denomina \newterm{anamorfismo}.
+El único homomorfismo de una $F$-coálgebra a la $F$-coálgebra terminal se denomina \newterm{anamorfismo}.
 Como en el caso del catamorfismo, podemos definirlo recursivamente:
 \begin{minted}{haskell}
 ana :: (Functor f) => (Coalgebra f b) -> (b -> Fix f)
@@ -2461,8 +2594,9 @@ Una implementación de este anamorfismo del paquete básico de Haskell es la fun
 
 \section{Referencias}
 \begin{itemize}
-  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, Capítulo 3.4.
-  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulo 24.
+  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, capítulo 3.4.
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, capítulo 24.
+  \item Lambek, J. (1968). A fixed point theorem for complete categories. \emph{Mathematische Zeitschrift 103}, páginas 151--161. \label{lambek-pf}
 \end{itemize}
 
 \chapter*{Epílogo}
@@ -2486,14 +2620,35 @@ Una categoría cerrada cartesianamente con un clasificador de subobjetos se deno
 Resulta que un \newterm{topos elemental} es equivalente a la lógica intuicionista de orden superior.
 
 En los capítulos 5, hemos introducido el concepto de monoide, pero también el concepto de categoría enriquecida y $2$-categoría.
-Siguiendo esta idea llegamos a la teoría de categorías de orden superior.
-Lurie dedica su libro a su estudio.
-
+Siguiendo esta idea llegamos a la teoría de categorías de orden superior. El libro de Lurie sirve de introducción a este tema.
+Recordemos que en una $2$-categoría, tenemos $1$-morfismos entre $0$-morfismos (objetos) y $2$-morfismos entre $1$-morfismos.
+Con esto en mente, definimos las $\infty$-categorías describiendo los $k$-morfismos entre $k-1$-morfismos.
+Si además establecemos un particular concepto de equivalencia entre $k$-morfismos basado en nuestra descripción de equivalencias en la sección \ref{functores-adjuntos}, se introduce la idea de $(\infty,1)$-categorías, donde todos los $k$-morfismos son equivalentes para $k > 1$.
+El estudio de estas $(\infty,1)$-categorías y su relación con la teoría de homotopía de tipos es un campo muy activo en los últimos años.
+Véase el libro colaborativo 
 
 \backmatter
 
-\bibliographystyle{acm}
-\bibliography{bibliografia}
+\chapter*{Bibliografía}
+\markright{Bibliografía}
+\addcontentsline{toc}{chapter}{Bibliografía}
+%\nocite{milewski}
+%\bibliographystyle{acm}
+%\bibliography{bibliografia}
+
+\begin{itemize}
+  \item \textsc{Awodey, Steve} (2006). \emph{Category Theory}.
+  \item \textsc{Buurlage, Jan-Willem} (2017). \emph{Categories and Haskell}.
+  \item \textsc{Lambek, Joachin} (1986). \emph{Introduction to Higher Order Categorical Logic}.
+  \item \textsc{Lipovaca, Miran} (2011). \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}.
+  \item \textsc{Low, Z.L.} (2011). \emph{Bicartesian closed categories and logic}.
+  \item \textsc{Mac Lane, Saunders} (1997). \emph{Categories for the Working Mathematician}.
+  \item \textsc{Milewski, Bartosz} (2014). \emph{Category Theory for Programmers}.
+  \item \textsc{Pierce, B.C.} (1991). \emph{A taste of category theory for computer scientist}.
+  \item \textsc{Riehl, Emily} (2014). \emph{Category Theory in Context}.
+  \item \textsc{Riehl, Emily} (2014). \emph{Categorical homotopy theory}.
+  \item \textsc{Thompson, Simon} (1991). \emph{Type theory \& functional programming}.
+\end{itemize}
 
 \printindex
 
