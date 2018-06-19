@@ -49,20 +49,6 @@
 \edef\maintitle{\@title}
 \renewcommand\maketitle{%
   \begin{titlepage}
-      \vspace*{1.5cm}
-      \parskip=0pt
-      \Huge\bfseries
-      \begin{center}
-          %\leavevmode\includegraphics[totalheight=6cm]{sello.pdf}\\[2cm]
-          \@title
-      \end{center}
-      \vspace{1cm}
-      \begin{center}
-          \@author
-      \end{center}
-  \end{titlepage}
-
-  \begin{titlepage}
   \parindent=0pt
   \begin{flushleft}
   \vspace*{1.5mm}
@@ -82,6 +68,9 @@
   \vspace*{.5cm}
   \begin{center}
   \@author
+  \end{center}
+  \begin{center}
+  2018
   \end{center}
   \vspace*{1.8cm}
   \begin{flushright}
@@ -267,6 +256,27 @@
 % =============================
 \begin{document}
 
+\begin{titlepage}
+  \centering
+  {\scshape\Large Trabajo Fin de Grado\par}
+  \vspace{1.5cm}
+  {\huge\bfseries Teoría de Categorías y Programación Funcional\par}
+  \vspace{0.025cm}
+  \rule{0.4\textwidth}{0.4pt}
+  \vspace{1cm}
+
+  {\Large\itshape Diego Pedraza López\par}
+  \vspace{1cm}
+  tutorizado por\par
+  Prof.~Tutor~José A. Alonso Jiménez\par
+  \vspace{1cm}
+  %\includegraphics[width=0.6\textwidth]{bookworm}
+  \vspace{7cm}
+
+  {\scshape\LARGE Universidad de Sevilla \par}
+  \vfill
+\end{titlepage}
+
 \maketitle
 
 \begin{dedication}
@@ -285,7 +295,7 @@ En esencia, la teoría de categorías es el estudio de la composición.
 Una categoría es una colección de objetos y morfismos entre ellos de manera que la composición tenga sentido.
 Este tipo de estructura ressulta ser muy común en la mayoría de los campos de las matemáticas.
 Es más, tiene un fuerte vínculo con la lógica y la teoría de tipos a través de las categorías cartesianamente cerradas.
-Es programación funcional, algunos diseños como las mónadas son originarias de la teoría de categorías.
+En programación funcional, algunos diseños como las mónadas son originarias de la teoría de categorías.
 Para poder hablar de estos temas, primero tendremos que entender las construcciones comunes que pueden ser definidas sobre una categoría o incluso entre categorías.
 Exploraremos el campo de la teoría de categorías y sus conexiones con otros campos de la matemáticas usando programación funcional, específicamente Haskell.
 
@@ -2497,7 +2507,7 @@ Entonces:
 Luego $\alpha$ tiene inversa y debe ser isomorfismo.
 \end{proof}
 
-Dado un $F$-álgebra inicial $(A,\alpha)$, para todo otro $F$-áĺgebra $(B,\beta)$, al homomorfismo único de $(A,\alpha)$ a $(B,\beta)$ le daremos el imponente nombre de \newterm{catamorfismo}.
+Dada una $F$-álgebra inicial $(A,\alpha)$, para toda otra $F$-áĺgebra $(B,\beta)$, el único homomorfismo de $(A,\alpha)$ a $(B,\beta)$ recibirá el imponente nombre de \newterm{catamorfismo}.
 Por ejemplo, el homomorfismo $u$ de la demostración era un catamorfismo a $(F A, F \alpha)$.
 
 \section{Catamorfismos en Haskell}
@@ -2641,17 +2651,17 @@ Véase el libro colaborativo
 %\bibliography{bibliografia}
 
 \begin{itemize}
-  \item \textsc{Awodey, Steve} (2006). \emph{Category Theory}.
-  \item \textsc{Buurlage, Jan-Willem} (2017). \emph{Categories and Haskell}.
-  \item \textsc{Lambek, Joachin} (1986). \emph{Introduction to Higher Order Categorical Logic}.
-  \item \textsc{Lipovaca, Miran} (2011). \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}.
-  \item \textsc{Low, Z.L.} (2011). \emph{Bicartesian closed categories and logic}.
-  \item \textsc{Mac Lane, Saunders} (1997). \emph{Categories for the Working Mathematician}.
-  \item \textsc{Milewski, Bartosz} (2014). \emph{Category Theory for Programmers}.
-  \item \textsc{Pierce, B.C.} (1991). \emph{A taste of category theory for computer scientist}.
-  \item \textsc{Riehl, Emily} (2014). \emph{Category Theory in Context}.
-  \item \textsc{Riehl, Emily} (2014). \emph{Categorical homotopy theory}.
-  \item \textsc{Thompson, Simon} (1991). \emph{Type theory \& functional programming}.
+  \setlength\itemsep{1em}
+  \item \textsc{Awodey, Steve}, \emph{Category Theory}, Oxford University Press, 2006.
+  \item \textsc{Buurlage, Jan-Willem}, \emph{Lecture Notes on Categories and Haskell}, 2017. Disponible en \url{https://jwbuurlage.github.io/}.
+  \item \textsc{Lambek, Joachim} y \textsc{Scott, Philip J.}, \emph{Introduction to Higher Order Categorical Logic}, Cambridge University Press, 1986.
+  \item \textsc{Lipovača, Miran}, \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}, No Starch Press (2011). Disponible en \url{http://learnyouahaskell.com/}.
+  \item \textsc{Mac Lane, Saunder}, \emph{Categories for the Working Mathematician}, Springer, 2ª edición, 1998.
+  \item \textsc{Milewski, Bartosz}, \emph{Category Theory for Programmers}, 2018. Disponible en \url{https://github.com/hmemcpy/milewski-ctfp-pdf}.
+  \item \textsc{Pierce, Benjamin C.}, \emph{A taste of category theory for computer scientist}, Carnegie Mellon University, 1988.
+  \item \textsc{Riehl, Emily}, \emph{Categorical homotopy theory}, Cambridge University Press, 2014.
+  \item \textsc{Riehl, Emily}, \emph{Category Theory in Context}, Cambridge University Press, 2016.
+  \item \textsc{Thompson, Simon}, \emph{Type theory \& functional programming}, Addison-Wesley, 1991.
 \end{itemize}
 
 \printindex
