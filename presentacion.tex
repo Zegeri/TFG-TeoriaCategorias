@@ -1,0 +1,488 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usetheme{Berlin}
+\usecolortheme{beaver}
+\setbeamercolor{item projected}{bg=darkred}
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{navigation symbols}{}
+\setbeamercovered{transparent}
+\setbeamercolor{local structure}{fg=darkred}
+\setbeamercolor{block title}{use=structure,fg=white,bg=red!75!black}
+\setbeamercolor{block body}{use=structure,fg=black,bg=red!20!white}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{bussproofs}
+\usepackage{xcolor}
+%\usepackage{estilo-apuntes}
+\usepackage[]{graphicx}
+\usepackage{tikz}
+\usepackage{enumerate}
+\usepackage{minted}
+\usetikzlibrary{babel}
+\usetikzlibrary{positioning, fit, shapes.geometric}
+\usetikzlibrary{cd}
+\theoremstyle{definition}
+
+\newcommand{\cat}{{\mathcal{C}}}
+\newcommand{\catD}{{\mathcal{D}}}
+\newcommand{\Set}{{Set}}
+\newcommand{\Grp}{{Grp}}
+\newcommand{\Ab}{{Ab}}
+\newcommand{\Vect}{{Vect}}
+\newcommand{\Ring}{{Ring}}
+\newcommand{\Cat}{{Cat}}
+\newcommand{\Top}{{Top}}
+\newcommand{\Hask}{{Hask}}
+
+\newtheorem{teorema}{Teorema}
+\newtheorem{defi}{Definición}
+\newtheorem{prop}[teorema]{Proposición}
+\newtheorem{idea}{Idea}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\D}{\mathbb{D}}
+\providecommand{\gene}[1]{\langle{#1}\rangle}
+
+\makeatletter
+\newcommand*\bigcdot{\mathpalette\bigcdot@{.7}}
+\newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother
+
+\DeclareMathOperator{\id}{id}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamercolor{footline}{fg=black}
+\setbeamerfont{footline}{series=\bfseries}
+
+%-----------------------------------------------------------
+
+\title{Teoría de Categorías y Programación Funcional}
+\author{Diego Pedraza López}
+\institute{Universidad de Sevilla}
+\date{}
+ 
+\begin{document}
+\frame{\titlepage}
+
+%\begin{frame}
+%\frametitle{Tabla de contenidos}
+%\tableofcontents
+%\end{frame}
+%}
+
+\section{Categorías}
+\begin{frame}
+\frametitle{¿Qué es una categoría?}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  \begin{enumerate}
+	\item<1-> Una colección de objetos\\$A, B, \dots$.
+	\item<2-> Una colección de morfismos entre dichos objetos\\$f, g, \dots$.
+	\item<3-> Una composición de morfismos\\$\circ$.
+	\item<4-> Un morfismo $\id$ en cada objeto.
+	\end{enumerate}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \[
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+A
+\onslide*<2,4>{\arrow{r}{}}
+\onslide*<3>{\arrow[red]{r}{g}}
+\onslide*<4->{\arrow[red,loop left]{}{\id_A}}
+        \pgfmatrixnextcell 
+B
+\onslide*<4->{\arrow[red,loop right]{}{\id_B}}
+\\
+C
+\onslide*<2->{\arrow{u}{}}
+\onslide*<2->{\arrow{r}{}}
+\onslide*<4->{\arrow[red,loop left]{}{\id_C}}
+		\pgfmatrixnextcell
+D
+\onslide*<3>{\arrow[red,dashed]{u}[right]{g \circ f}}
+\onslide*<4->{\arrow{u}{}}
+\onslide*<2,4>{\arrow{ul}{}}
+\onslide*<3>{\arrow[red]{ul}{f}}
+\onslide*<4->{\arrow[red,loop right]{}{\id_D}}
+\end{tikzcd}
+\]
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{¿Qué es una categoría?}
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item<1->
+\[ f \circ \id_A = f \]
+\[ \id_B \circ f = f \]
+\item<2->
+\[ (f \circ g) \circ h = f \circ (g \circ h) \]
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Un poco de notación}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\[ \onslide*<1>{f \colon A \to B} 
+\onslide*<2>{\mathcal{C}(A,B)} \]
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\[
+\onslide*<1>{\begin{tikzcd}[row sep=3em,column sep=4.5em]
+A \arrow{r}{f} \pgfmatrixnextcell  B
+\end{tikzcd}}
+\onslide*<2>{\begin{tikzcd}[row sep=3em,column sep=4.5em]
+A \arrow{d}{}\arrow[bend right=20]{d}{} \arrow[bend right=40]{d}{} \arrow[bend left=20]{d}{\dots}\\  B
+\end{tikzcd}}
+\]
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Algunos ejemplos}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  \begin{enumerate}
+	\item<1-> $\mathbf{\Set}$.
+	\item<2-> $\mathbf{\Grp}$.
+	\item<3-> $\mathbf{\Top}$.
+	\item<4-> $\mathbf{1}$.
+	\item<5-> $\mathbf{\Cat}$.
+	\end{enumerate}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \[
+\onslide*<1,2,3,5>{
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+{\onslide*<1>{\{1,2\}}
+\onslide*<2>{\Z_2 \times \Z_2}
+\onslide*<3>{\mathbb{R}^4}
+\onslide*<5>{\Grp}}
+\arrow{r}{}
+        \pgfmatrixnextcell 
+{\onslide*<1>{\mathbb{R}}
+\onslide*<2>{C_4}
+\onslide*<3>{\mathbb{C}}
+\onslide*<5>{\mathbf{1}}
+}
+\\
+{\onslide*<1>{\emptyset}
+\onslide*<2>{\{1\}}
+\onslide*<3>{[0,1)}
+\onslide*<5>{\Set}}
+\arrow{u}{}
+		\pgfmatrixnextcell
+{\onslide*<1>{[0,1]}
+\onslide*<2>{S_8}
+\onslide*<3>{\mathbb{R}^2}
+\onslide*<5>{\Top}}
+\arrow{u}{}
+\arrow{ul}{}
+\end{tikzcd}}
+\onslide*<4>{
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+{*}
+\arrow[loop above]{}{\id_*}
+\end{tikzcd}
+}
+\]
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Functores: Aplicaciones entre categorías}
+
+\[
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+\cat \arrow{r}{F} \pgfmatrixnextcell \catD
+\end{tikzcd}
+\]
+\[
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+A \arrow[mapsto]{r}{}\onslide*<2>{\arrow{d}{f}}\pgfmatrixnextcell {F A} \onslide*<2>{\arrow{d}{F f}}\\
+\onslide*<1>{\ }\onslide*<2>{B \arrow[mapsto]{r}{}} \pgfmatrixnextcell 
+\onslide*<1>{\ \ }\onslide*<2>{F B}
+\end{tikzcd}
+\]
+\end{frame}
+
+\section{Programación Funcional}
+\begin{frame}
+\frametitle{¿Qué tienes que ver esto con la programación?}
+
+\begin{center}
+Teoría de tipos de la programación funcional
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{¿Programación funcional?}
+\begin{itemize}
+\item<2-> Funciones puras.
+\item<3-> Sistema de \textbf{tipos}. \color{gray}{Cálculo lambda con tipos simples}
+\item<4-> Funciones polimórficas. \color{gray}{System F}
+\item<5-> Y otras cosas.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Haskell}
+\begin{minted}{haskell}
+--         Tipo     Tipo
+repite_a :: Int -> String
+repite_a x = repeat x 'a'
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{La categoría Hask}
+\begin{center}
+\begin{tikzcd}[row sep=3em,column sep=6em]
+\color{red}{\text{Int}}
+\arrow[bend left]{r}{\color{blue}{\text{repite\_a}}}
+\onslide*<2>{\arrow{r}{\color{blue}{\text{repite\_b}}}
+\arrow[bend right]{r}{\color{blue}{\text{repite\_c}}}
+\arrow[bend right=80]{r}{\vdots}}
+\pgfmatrixnextcell \color{red}{\text{String}}
+\end{tikzcd}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Composición en Hask}
+\begin{minted}{haskell}
+repite_a :: Int -> String
+
+longitud :: String -> Int
+
+composicion :: Int -> Int
+composicion = longitud . repite_a
+\end{minted}
+\end{frame}
+
+\section{Construcciones sobre categorías}
+\begin{frame}
+\begin{center}Volvamos a las categorías.\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Isomorfismos}
+\[ 
+\begin{tikzcd}[row sep=3em, column sep=4.5em]
+A \arrow[bend left]{r}{f}\pgfmatrixnextcell B \arrow[bend left]{l}{g}
+\end{tikzcd}
+\]
+
+\[ \onslide*<2->{f \circ g = \id_B \quad g \circ f = \id_A} \]
+
+\[ \onslide*<3->{A \cong B}\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Objeto terminal}
+\[
+\begin{tikzcd}[row sep=3em,column sep=2em]
+\pgfmatrixnextcell \pgfmatrixnextcell 1\\
+\bigcdot \arrow{urr}{} \pgfmatrixnextcell \bigcdot \arrow{ur}{} \pgfmatrixnextcell \bigcdot \arrow{u}{} \pgfmatrixnextcell \bigcdot \arrow{ul}{} \pgfmatrixnextcell  \dots
+\end{tikzcd}
+\]
+\end{frame}
+
+
+\begin{frame}
+\begin{idea}[Dualizar]
+Cambiar de dirección los morfismos.
+\end{idea}
+\end{frame}
+
+\begin{frame}
+\frametitle{Objeto inicial}
+\[
+\begin{tikzcd}[row sep=3em,column sep=2em]
+\pgfmatrixnextcell \pgfmatrixnextcell 0 \arrow{dll}{} \arrow{dl}{} \arrow{d}{} \arrow{dr}{}\\
+\bigcdot  \pgfmatrixnextcell \bigcdot  \pgfmatrixnextcell \bigcdot  \pgfmatrixnextcell \bigcdot  \pgfmatrixnextcell  \dots
+\end{tikzcd}
+\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Objeto producto}
+\[\begin{tikzcd}[row sep=3em,column sep=4.5em]
+ \pgfmatrixnextcell A\\
+\onslide*<2->{V \arrow{ur}{f_A} \arrow{dr}[below]{f_B}} \onslide*<3>{\arrow[dashed]{r}{h}} \pgfmatrixnextcell {A \times B} \arrow{u}[right]{p_A} \arrow{d}{p_B}\\
+ \pgfmatrixnextcell B
+\end{tikzcd}\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Objeto coproducto}
+\[\begin{tikzcd}[row sep=3em,column sep=4.5em]
+ \pgfmatrixnextcell A \arrow{d}{i_A}\onslide*<2->{\arrow{dl}[above]{f_A}}\\
+\onslide*<2->{V} \pgfmatrixnextcell {A + B} \onslide*<2->{\arrow[dashed]{l}{h}}\\
+ \pgfmatrixnextcell B \arrow{u}[right]{i_B}\onslide*<2->{\arrow{ul}{f_B}}
+\end{tikzcd}\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Objeto exponencial}
+\[
+\begin{tikzcd}[row sep=3em,column sep=4.5em]
+C^B \times B \arrow{r}{\varepsilon} \pgfmatrixnextcell C \\
+\onslide*<2->{A \times B  \arrow{ur}[below]{f}} \onslide*<3>{\arrow[dashed]{u}{\lambda_f\times\id_B}}
+\end{tikzcd}
+\]
+\end{frame}
+
+\section{Categorías Cartesianas Cerradas}
+\begin{frame}
+\frametitle{Categorías Bicartesianas Cerradas}
+Una \textbf{categoría bicartesiana cerrada} (CBC) tiene:
+\begin{itemize}
+\item<2-> Objeto inicial y terminal.
+\item<3-> Productos y coproductos.
+\item<4-> Exponenciales.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Hask es CBC}
+\begin{itemize}
+\item<1-> Objeto inicial
+\begin{minted}{haskell}
+data Empty
+\end{minted}
+\item<2-> Objeto terminal
+\begin{minted}{haskell}
+() :: ()
+\end{minted}
+\item<3-> Producto
+\begin{minted}{haskell}
+(a, b)
+\end{minted}
+\item<4-> Coproducto
+\begin{minted}{haskell}
+data Either a b = Left a | Right b
+\end{minted}
+\item<5-> Exponencial
+\begin{minted}{haskell}
+curry :: ((a, b) -> c) -> (a -> b -> c)
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{idea}[Lambek]
+CBC es lógica proposicional intuicionista  (LPI).
+\end{idea}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lógica Proposicional Intuicionista}
+La LPI es un grafo de \textbf{fórmulas} con \textbf{pruebas} como flechas.
+\begin{enumerate}
+\itemsep1em 
+\item<1-> $A \to A$.
+\onslide*<2->{$\cong$ Morfismo identidad}
+\item<3-> 
+\AxiomC{$A \to B$}
+\AxiomC{$B \to C$}
+\BinaryInfC{$A \to C$}
+\DisplayProof
+\onslide*<4->{$\cong$ Composición de morfismos}
+
+\item<5-> $A \to \top$. 
+\onslide*<6->{$\cong$ Objeto terminal}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lógica Proposicional Intuicionista}
+\begin{enumerate}
+\itemsep1em
+\setcounter{enumi}{3}
+\item $A \land B \to A$.
+\item $A \land B \to B$.
+\item
+  
+\AxiomC{$C \to A$}
+\AxiomC{$C \to B$}
+\BinaryInfC{$C \to A \land B$}
+\DisplayProof
+
+\onslide*<2->{$\cong$ Objeto producto}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lógica Proposicional Intuicionista}
+\begin{enumerate}
+\itemsep1em
+\setcounter{enumi}{6}
+\item $(A \Rightarrow B) \land A \to B$.
+\item 
+
+  \AxiomC{$C \land A \to B$}
+  \UnaryInfC{$C \to A \Rightarrow B$}
+  \DisplayProof
+
+\onslide<2>{$\cong$ Exponencial}
+\end{enumerate} 
+\end{frame}
+
+\begin{frame}
+\frametitle{Lógica Proposicional Intuicionista}
+\begin{enumerate}
+\itemsep1em
+\setcounter{enumi}{8}
+\item<1-> $\bot \to A$. \onslide*<2->{$\cong$ Objeto inicial}
+\item<3-> $A \to A \lor B$
+\item<3-> $B \to A \lor B$
+\item<3->
+\AxiomC{$A \to C$}
+\AxiomC{$B \to C$}
+\BinaryInfC{$A \lor B \to C$}
+\DisplayProof
+
+\onslide*<4->{$\cong$ Coproducto}
+\end{enumerate} 
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Negación}
+\[ \neg p \equiv p \Rightarrow \bot \]
+
+\[ \neg A \equiv 0^A \]
+
+\begin{minted}{haskell}
+              type Not a = a -> Empty
+\end{minted}
+
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Demostración "por escritura"}
+\[ \neg p \lor \neg q \to \neg (p \land q) \]
+
+\begin{minted}{haskell}
+de_morgan :: Either (Not a) (Not b) -> Not (a, b)
+de_morgan (Left f) = \(x, y) -> f x
+de_morgan (Right f) = \(x, y) -> f y
+\end{minted}
+\end{frame}
+\setbeamertemplate{headline}{}
+\section*{}
+\begin{frame}
+\begin{figure}[h!]
+Muchas gracias
+\end{figure}
+\end{frame}
+\end{document}
