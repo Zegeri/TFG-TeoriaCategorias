@@ -1,0 +1,165 @@
+\chapter{Introducción}
+La teoría de categorías nos ofrece al mismo tiempo un lenguaje común por el que se pueden entender matemáticos de distintas ramas a través de una poderosa abstracción a la composición de funciones.
+Es más, la teoría de categorías ha encontrado un interés en el campo de la ciencia de la computación.
+Para explorar la teoría de categorías haremos uso de la programación funcional.
+Más concretamente, usaremos Haskell, que es uno de los lenguajes puramente funcionales más populares.
+
+\section{Programación funcional}
+La programación funcional es un estilo de programación que tiene sus orígenes en IPL (1956) y Lisp (1958).
+Aunque durante mucho tiempo ha tenido un interés más académico que práctico, ha estado teniendo más atención en los últimos años.
+Lenguajes de gran popularidad como C++ o Java han introducido características de la programación funcional en los últimos años.
+\footnote{Since the introduction of the STL (Standard Template Library) -- about 1994 -- there has been a steady and cautious increase in the use of functional programming techniques in C++. -- Bjarne Stroustrup, creador de C++}
+Algunos lenguajes, como Haskell o Standard ML, están diseñados con programación funcional en mente.
+Encuentran su inspiración en las matemáticas y sus características principales son:
+
+\begin{itemize}
+  \item \emph{Funciones puras}. Las subrutinas no dejan efectos secundarios en memoria, por lo que sólo dependen en sus argumentos y no en el estado de la máquina.
+  Por lo tanto, las funciones puras son más cercanas a las funciones con las que trabajan los matemáticos.
+  \item \emph{Sistema de tipos fuertes}. El lenguaje categoriza los datos por tipos y restringe la aplicaciones de funciones a ciertos tipos, de manera que la expresión \code{"texto" + 1} da un error de compilación.
+  A menudo hay un sistema de \emph{inferencia de tipo}, de manera que no es necesario tener que escribir los tipos constantemente.
+  \item \emph{Funciones polimórficas}. En consecuencia del punto anterior y para permitir escribir funciones genéricas, se permite escribir funciones que actúen tipos arbitrarios. Por ejemplo, en Haskell, la declaración de tipo
+  \begin{minted}{haskell}
+  f :: forall a. a -> a
+  \end{minted}
+  describe \code{f} como una función que puede ser aplicado a todo tipo y devuelve el mismo tipo de salida.
+  Una función equivalente en C++ sería de la forma:
+  \begin{minted}{c++}
+  template<class A>
+  A f(A arg);
+  \end{minted}
+  Sin embargo, la programación funcional permite imponer restricciones a los tipos polimórficos que son validables en compilación a través de mecanismos como las \emph{clases de tipos} en Haskell.
+  Son similares a las \emph{interfaces} de los lenguajes de programación orientada a objetos como Java.
+  En algunos lenguajes funcionales, se permite además imponer restricciones de tipos al tipo polimórfico devuelto de una función, por ejemplo:
+  \begin{minted}{haskell}
+  read :: forall a. (Read a) => String -> a
+  \end{minted}
+  Esta función interpreta una cadena de texto como un tipo cualquiera \code{a} que sea de la clase de tipo \code{Read}.
+  \item \emph{Tipos de datos algebraicos}. Pueden representar suma de tipos, además de producto de tipos.
+  Esto permite la existencia de tipos definiciones recursivas como listas o árboles sin hacer uso de punteros.
+  Además no son mutables (por el hecho de que las funciones no pueden tener efectos secundario), por lo que no hay una diferencia esencial entre los datos del constructor y los datos que almacena el tipo de datos.
+
+  Por esta razón, la programación funcional suele resultar algo difícil para programadores acostumbrados a programar con efectos secundarios.
+  Por otro lado, permite procesar los argumentos de una función por patrones.
+
+  \item \emph{Evaluación perezosa}. Aunque no es característica de todos los lenguajes funcionales --por ejemplo, SML no lo incorpora--, muchos lenguajes funcionales como Haskell y Mirando lo adoptan.
+  La evaluación perezosa permite que los argumentos de una función sean evaluados sólamente cuando sea necesario.
+  Esto permite trabajar estructuras de datos infinitas, que en todo momento sólo están parcialmente definidas.
+\end{itemize}
+
+\section{Haskell}
+Vamos a introducir lo mínimo de Haskell para poder entender el código que aquí se da.
+No tendremos una imagen completa del lenguaje, pero sí lo suficiente para poder seguir el código.
+Si ya está familiarizado con Haskell, puede saltarse esta sección.
+
+Haskell nos permite \emph{declarar} una variable y su tipo:
+\begin{minted}{haskell}
+x :: Int
+\end{minted}
+y \emph{definir} el valor de dicha variable:
+\begin{minted}{haskell}
+x = 8
+\end{minted}
+Evidentemente, implementa aritmética básica:
+\begin{minted}{haskell}
+y = (x + 4) * 5
+-- Esto es un comentario
+-- y = 60
+\end{minted}
+Las funciones se definen de forma similar:
+\begin{minted}{haskell}
+duplica :: Int -> Int
+duplica x = 2 * x
+\end{minted}
+Obsérvese que no se ponen paréntesis alrededor de los parámetros.
+Tampoco se usan paréntesis cuando aplicamos la función, es decir, \code{duplica 3} es una expresión correcta.
+
+Las funciones de varios parámetros se definen como funciones de orden superior:
+\begin{minted}{haskell}
+multiplica :: Int -> Int -> Int
+multiplica x y = x * y
+\end{minted}
+Podemos entender que \code{multiplica} toma dos enteros y los multiplica, pero también se puede interpretar que \code{multiplica} se aplica a \code{x} y devuelve una función con tipo \code{Int -> Int}, que podemos a su vez aplicar al otro argumento.
+Esta idea nos lleva al concepto de funciones parcialmente aplicadas:
+\begin{minted}{haskell}
+duplica' :: Int -> Int
+duplica' x = multiplica 2 x
+\end{minted}
+
+Podemos definir funciones polimórficas, como explicamos en la sección anterior:
+\begin{minted}{haskell}
+max :: Ord a => a -> a -> a 
+max x y =
+  if x < y
+  then x 
+  else y
+\end{minted}
+Aquí vemos además la estructura condicional habitual \texttt{if-then-else}.
+
+Trabajaremos a menudo a nivel de funciones, por lo que resultará útil echar un ojo al operador composición:
+\begin{minted}{haskell}
+(.) :: (b -> c) -> (a -> b) -> a -> c
+f . g = \x -> f (g x)
+\end{minted}
+Toda función declarada entre paréntesis, como \code{(.)}, se corresponde con un operador infijo.
+Por otro lado, la expresión $\backslash$\code{x -> f (g x)} representa una función de un sólo parámetro \code{x} y que devuelve \code{f (g x)}.
+Más específicamente, representa la expresión lambda $\lambda x. f(g x)$.
+
+Hablemos también un poco sobre los tipos de datos algebraicos.
+Un tipo de dato se define con una expresión de la forma
+\begin{minted}{haskell}
+data Dato t1 ... tn = 
+  Constructor1 a11 ... a1m | ... | ConstructorM aM1 ... aMq
+\end{minted}
+donde \code{t1 ... tn} son argumentos del tipo \code{Dato}, que tiene distintos constructores \code{Constructor1},\dots, \code{ConstructorM} cada uno con sus correspondientes parámetros.
+
+Para entender mejor esto, veamos un ejemplo:
+\begin{minted}{haskell}
+data Maybe a = Nothing | Just a
+\end{minted}
+El tipo de dato \code{Maybe a} tiene dos constructores: \code{Nothing} (sin parámetro) y \code{Just a}, de parámetro \code{a}.
+Recordemos que, en programación funcional, los constructores tienen toda la información sobre el tipo de dato, por lo que podemos identificar todo objeto del tipo \code{Maybe a} con uno de sus constructores.
+
+Esto nos lleva a la interpretación que un objeto de tipo \code{Maybe a} es \code{Nothing} o bien \code{Just a}.
+Pero cuidado, no confunda el constructor con el tipo.
+Tanto \code{Nothing} como \code{Just 24} son del tipo \code{Maybe Int}.
+Para definir una función que tome \code{Maybe a} por defecto, suele venir bien definirla por casos:
+\begin{minted}{haskell}
+maybe_a_numero :: Maybe Int -> Int
+maybe_a_numero Nothing  = 0
+maybe_a_numero (Just x) = x
+\end{minted}
+
+Otro tipo que nos resultará de utilidad es el tipo de listas \code{[a]}.
+Esto tipo se salta algunas reglas de como está descrito para ser más sencillo de escribir.
+Podemos definirlo en pseudo-haskell como:
+\begin{minted}{haskell}
+data [a] = a : [a] | []
+\end{minted}
+Es decir, una lista de elementos del tipo \code{a} es o bien una lista vacía \code{[]}, o bien un elemento de tipo \code{a} y otra lista del mismo tipo.
+
+Podemos definir \emph{clases} sobre los tipos que implementen alguna función particular, por ejemplo:
+\begin{minted}{haskell}
+class Eq a where
+  (==) :: a -> a -> Bool
+\end{minted}
+define la clase de los tipos sobre los que está definido el operador igualdad \code{(==)}.
+Si queremos que un tipo esté en la clase \code{Eq}, tendremos que escribir su instancia.
+Como ejemplo, supongamos que queremos escribir la instancia de \code{Maybe a} en la clase \code{Eq}.
+Si los dos elementos del tipo \code{Maybe a} son de la forma \code{Nothing}, diremos que son iguales.
+Si no, comparamos el argumento de \code{Just a}.
+Pero para ello, el tipo \code{a} debe ser también de la clase \code{Eq}.
+Por ello, una implementación sería:
+\begin{minted}{haskell}
+instance Eq a => Eq (Maybe a) where
+  Nothing == Nothing = True
+  Nothing == Just x  = False
+  Just x  == Nothing = False
+  Just x  == Just y  = x == y
+\end{minted}
+
+\section{Referencias}
+\begin{itemize}
+  \item Thompson, S. (1991). \emph{Type theory \& functional programming}, Capítulo 2.
+  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, Capítulo 1.
+  \item Lipovaca, M. (2011). \emph{Learn You a Haskell for Great Good!: A Beginner's Guide}.
+\end{itemize}

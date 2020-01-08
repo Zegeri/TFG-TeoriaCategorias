@@ -1,0 +1,274 @@
+\chapter{Mónadas}
+\section{Mónadas de una categoría}
+Dada una categoría $\cat$, consideramos la categoría $\cat^\cat$, donde los objetos son endofunctores y los morfismos vienen dados por la composición entre functores.
+
+\begin{proposition}
+$\cat^\cat$ forma una categoría monoidal con la composición como producto tensorial y functor unidad $\Id$ como objeto unidad.
+\end{proposition}
+\begin{proof}
+Esto es consecuencia de que $\Cat$ sea una $2$-categoría, como vimos en \ref{cat-2-categoria}.
+\end{proof}
+
+Por lo tanto, podemos definir monoides sobre $\cat^\cat$.
+Dichos monoides se denominan \newterm{mónadas}.
+Tratemos de dar una definición más explícita, especializando la definición de monoide teniendo en cuenta que:
+\begin{itemize}
+  \item $\circ$ es asociativa.
+  \item El functor identidad $\Id \colon \cat \to \cat$ cumple que:
+\[ \Id \circ F = F \]
+\[ F \circ \Id = F\]
+  \item El bifunctor $\circ$ actuando sobre transformaciones naturales es la composición horizontal $*$.
+  \item Para la transformación natural identidad $\iota \colon F \Rightarrow F$:
+\[ \mu * \iota = \mu F \]
+\[ \iota * \mu = F \mu \]
+  \item Escribiremos $F^n$ para referirnos a $\underbrace{F \circ \dots \circ F}_{n \text{ veces}}$.
+\end{itemize}
+
+\begin{definition}
+Una \emph{mónada} es un endofunctor $F$ de una categoría $\cat$ con dos transformaciones naturales:
+\begin{tikzcd}
+F^2 \arrow[r,"\mu"] & F & \Id \arrow[l,"\eta" above]
+\end{tikzcd}
+que cumplan:
+\begin{itemize}
+  \item La propiedad asociativa:
+  \[ \begin{tikzcd}
+  &  {F^3} \arrow[dl,"\mu F" above,Rightarrow] \arrow[dr,"F\mu",Rightarrow]\\
+  {F^2} \arrow[dr,"\mu",Rightarrow] & & {F^2} \arrow[dl,"\mu" above,Rightarrow]\\
+  & F
+  \end{tikzcd}\]
+  \item La propiedad de la unidad:
+  \[ \begin{tikzcd}
+  F \arrow[r,"\eta F",Rightarrow] \arrow[dr,"\iota" below,Rightarrow] & {F^2} \arrow[d,"\mu",Rightarrow] & {F} \arrow[l,"F\eta" above,Rightarrow] \arrow[dl,"\iota",Rightarrow]\\
+  & F
+  \end{tikzcd}\]
+\end{itemize}
+\end{definition}
+
+
+%Categories and Haskell 7
+\begin{example}
+Sea $\mathcal{P} \colon \Set \to \Set$ el endofunctor potencia y consideramos las transformaciones naturales.
+\begin{align*} \mu_A \colon \mathcal{P}^2(A) & \to \mathcal{P}(A)\\
+\{S_i\}_{i \in I} & \mapsto \bigcup_{i \in I} B_i
+\end{align*}
+\begin{align*} \eta_A \colon \Id A = A & \to \mathcal{P}(A)\\
+a & \mapsto \{a\}
+\end{align*}
+
+Veamos que cumple las condiciones de mónada. 
+Sea $A$ un conjunto cualquiera.
+Obsérvese que $\mu_{\mathcal{P}(A)}(\mathcal{P}(A)) = A$, pues $A \in \mathcal{P}(A)$ y todo elemento de $\mathcal{P}(A)$ está contenido en $A$.
+\begin{align*}
+(\mu \circ \mu \mathcal{P})(\mathcal{P}^3(A)) & = \mu_{\mathcal{P}^2(A)}\left(\mu_{\mathcal{P}^3(A)}\mathcal{P}^3(A)\right)\\
+& = \mu_{\mathcal{P}^2(A)}\mathcal{P}^2(A)\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \mathcal{P}\mu)(\mathcal{P}^3(A)) & = \mu_{\mathcal{P}^2(A)}\left((\mathcal{P}\mu_{\mathcal{P}^2(A)})\mathcal{P}^3(A)\right)\\
+& = \mu_{\mathcal{P}^2(A)}\mathcal{P}^2(A)\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \eta\mathcal{P})(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)}\eta_{\mathcal{P}(A)}\mathcal{P}(A)\\
+& = \mu_{\mathcal{P}^2(A)}(\{\mathcal{P}(A)\})\\
+& = \mathcal{P}(A)
+\end{align*}
+\begin{align*}
+(\mu \circ \mathcal{P}\eta)(\mathcal{P}(A)) & = \mu_{\mathcal{P}^2(A)} \left(\mathcal{P}\eta_{\mathcal{P}(A)}(\mathcal{P}(A))\right)\\
+& = \mu_{\mathcal{P}^2(A)} \left(\{\mathcal{P}(A)\}\right)\\
+& = \mathcal{P}(A)
+\end{align*}
+\end{example}
+
+%Categories and Haskell + Awodey 10
+\section{Categoría de Kleisli}
+La siguiente construcción nos llevará de vuelta al dominio de Haskell.
+\begin{definition}
+Sea $(F,\eta,\mu)$ una mónada sobre una categoría $\cat$.
+La \index{categoría!de Kleisli}\emph{categoría de Kleisli} $\cat_F$ es la categoría donde:
+\begin{itemize}
+  \item Sus objetos son los objetos de $\cat$.
+  \item Un morfismo $A \to_F B$ en $\cat_F$ es un morfismo de la forma $A \to F B$ en $\cat$.
+  \item La composición entre dos morfismos $f \colon A \to_F B$ y $g \colon B \to_F C$ viene dado por la conmutatividad del siguiente diagrama:
+  \[ \begin{tikzcd}
+  A \arrow[r,"g \circ_F f"] \arrow[d,"f" left] & {F C}\\
+  {F B} \arrow[r,"F g" below] & F^2 C \arrow[u,"\mu_C" right]
+  \end{tikzcd}\]
+  \item El morfismo identidad $\id_A$ en $\cat_F$ se correspoonde con $\eta_A$ en $\cat$.
+\end{itemize}
+\end{definition}
+Para demostrar que la categoría de Kleisli es realmente un categoría, nos limitamos a comprobar la asociatividad:
+
+Para $h \colon C \to F D$, $g \colon B \to F C$ y $f \colon A \to F B$, se tiene:
+\begin{align*}
+(h \circ_F g) \circ f = (\mu_D \circ F h \circ g) \circ_F f\\
+& = \mu_D \circ F(\mu_D \circ F h \circ g)\circ g\\
+& = \mu_D \circ F\mu_D \circ F^2 h \circ F g \circ g
+\end{align*}
+Por la naturalidad de $\mu$.
+
+\section{Mónadas en Haskell}
+¿Cómo vuelve todo esto a la programación funcional?
+Consideremos el siguiente ejemplo:
+\begin{minted}{haskell}
+convertir :: String -> Maybe Float
+inversa :: Float -> Maybe Float
+\end{minted}
+donde \code{convertir} intenta convertir una cadena de texto a un número e inversa intenta dar la inversa de un número.
+En estos dos ejemplos, hay casos donde la función fallaría.
+Cuando \code{String} no se puede convertir a un número, o cuando \code{inversa} intenta invertir el número \code{0}.
+Imaginemos que quisieramos combinar estas dos funciones en una nueva función:
+\begin{minted}{haskell}
+convertir_inversa :: String -> Maybe Float
+\end{minted}
+Donde \code{convertir\_inversa} primero usa \code{convertir} y luego usa \code{inversa} sobre el posible resultado.
+¿Cómo podríamos implementar esta función?
+Un camino sería el siguiente:
+\begin{minted}{haskell}
+convertir_inversa str =
+  let conv = convertir str in
+  if isNothing conv
+  then Nothing
+  else inversa (fromJust conv)
+\end{minted}
+
+Recuérdese que \code{Maybe} es un functor, luego podemos aplicar \code{Maybe} a la aplicación inversa para obtener:
+\begin{minted}{haskell}
+fmap inversa :: Maybe Float -> Maybe (Maybe Float)
+\end{minted}
+ahora que el dominio de \code{fmap inversa} coincide con el codominio de \code{convertir}, podemos hacer su composición:
+\begin{minted}{haskell}
+fmap inversa . convertir :: String -> Maybe (Maybe Float) 
+\end{minted}
+Aquí entra en juego la transformación natural $\mu \colon F^2 \Rightarrow F$, que en Haskell recibe el nombre de \code{join}, de tipo 
+\begin{minted}{haskell}
+join :: Monad m => m (m a) -> m a
+\end{minted}
+\code{join} nos permite transformar \code{Maybe (Maybe Float)} en \code{Maybe Float}.
+Luego podríamos implementar \code{convertir\_inversa} como la composición de estas tres funciones:
+\begin{minted}{haskell}
+convertir_inversa = join . fmap inversa . convertir
+\end{minted}
+Estamos definiendo \code{convertir\_inversa} de manera que el siguiente diagram conmute:
+\begin{displaymath}\begin{tikzcd}[column sep=6em,row sep=4em]
+{String} \arrow[r,"convertir\_inversa",dashed] \arrow[d,"inversa"]& {Maybe\ Float}\\
+{Maybe\ String} \arrow[r,"{fmap\ inversa}"] & {Maybe\ (Maybe\ Float)} \arrow[u,"join"]
+\end{tikzcd}\end{displaymath}
+Se puede reconocer aquí el diagrama que define la composición de Kleisli $\circ_F$.
+En Haskell, dicha composición se denota a menudo como \code{>=>}, llamado conmúnmente \newterm{operador pez}, con tipo:
+
+\begin{minted}{haskell}
+(>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
+\end{minted}
+
+y nos permite dar la siguiente definición sucinta de \code{convertir\_inversa}
+\begin{minted}{haskell}
+convertir_inversa = convertir >=> inversa
+\end{minted}
+
+Las mónadas en Haskell están definidas como una subclase de \code{Applicative}, que a su vez es una subclase de \code{Functor}.
+Aunque no entraremos mucho en ello, \code{Applicative} representa los functores que mantienen la estructura monoidal de $\Hask$, y están definidos como:
+\begin{minted}{haskell}
+class Functor f => Applicative f where
+    pure :: a -> f a
+    (<*>) :: f (a -> b) -> f a -> f b
+\end{minted}
+
+Las mónadas se definen por la clase \code{Monad}:
+\begin{minted}{haskell}
+class Applicative m => Monad m where
+  (>>=)       :: m a -> (a -> m b) -> m b
+  return      :: a -> m a
+\end{minted}
+Además, se deben cumplir las llamadas leyes de mónadas:
+\begin{minted}{haskell}
+return v >>= k = k v
+x >>= return = x
+m >>= (\y -> k y >>= h) = (m >>= k) >>= h
+\end{minted}
+
+El operador \code{(>>=)} se puede definir en terminos de \code{join :: m (m a) -> m a}, que era la implementación de la transformación natural $\mu$, y viceversa.
+\begin{minted}{haskell}
+x >>= f = join (fmap f x)
+join x = x >>= id
+\end{minted}
+También se puede implementar el operador pez de la categoría de Kleisli \code{(>=>)} con \code{(>>=)}.
+\begin{minted}{haskell}
+f >=> g = \x -> f x >>= g
+\end{minted}
+
+Haskell añade una forma de hacer operaciones con mónadas de forma aparentemente imperativa:
+\begin{minted}{haskell}
+convertir_inversa x = do
+  y <- convierte x
+  inversa y
+\end{minted}
+Esta expresión es equivalente a:
+\begin{minted}{haskell}
+convertir_inversa x =
+  convierte x >>= \y ->
+    inversa y
+\end{minted}
+
+Hemos usado implícitamente que \code{Maybe} forma una mónada, comprobémoslo:
+\begin{example}
+El functor \code{Maybe} forma una mónada:
+\begin{minted}{haskell}
+instance Monad Maybe where
+  (Just x) >>= f = f x
+  Nothing >>= _ = Nothing
+
+  return x = Just x
+\end{minted}
+Veamos que cumple las leyes de las mónadas:
+\begin{minted}{haskell}
+  return v >>= k 
+= { definición de return }
+  Just x >>= k
+= { definición de (>>=) }
+  k x
+\end{minted}
+Esto demuestra la primera ley.
+Demostraremos las otras dos leyes por casos:
+\begin{minted}{haskell}
+  Nothing >>= return
+= { definición de (>>=) }
+  Nothing
+\end{minted}
+\begin{minted}{haskell}
+  (Just x) >>= return
+= { definición de (>>=) }
+  return x
+= { definición de return }
+  Just x
+\end{minted}
+Esto demuestra la segunda ley.
+Finalmente:
+\begin{minted}{haskell}
+  Nothing >>= (\y -> k y >>= h)
+= { definición de (>>=) }
+  Nothing
+= { definición de (>>=) }
+  Nothing >>= h
+= { definción de (>>=) }
+  (Nothing >>= k) >>= h
+\end{minted}
+\begin{minted}{haskell}
+  (Just x) >>= (\y -> k y >>= h)
+= { definición de (>>=) }
+  (\y -> k y >>= h) x
+= { reducción beta }
+  k x >>= h
+= { definición de (>>=) }
+  (Just x >>= k) >>= h
+\end{minted}
+Por lo que \code{Maybe} forma una mónada.
+\end{example}
+
+\section{Referencias}
+\begin{itemize}
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulos 7 y 10.
+  \item Buurlage, J. (2017). \emph{Categories and Haskell}, Capítulo 7.
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, Capítulo 20.
+\end{itemize}

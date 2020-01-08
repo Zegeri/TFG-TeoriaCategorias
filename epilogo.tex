@@ -1,0 +1,27 @@
+\chapter*{Epílogo}
+
+A estas alturas hemos visto las piezas básicas con las que se construye la teoría de categorías y cómo aparecen en programación funcional.
+Sin embargo, la teoría de categoría es un campo mucho más grande que lo podemos abarcar en este trabajo.
+Aquí damos un punto de comienzo para seguir el estudio de teoría de categorías.
+
+En el capítulo 4, hemos identificado qué propiedades debe cumplir una categoría para que sea equivalente a la lógica proposicional intuicionista.
+Añadiendo más propiedades a las categorías podemos obtener distintas lógicas.
+Por ejemplo, podemos ``mejorar'' esta lógica a lógica intuicionista de orden superior.
+Para ello, necesitaremos definir los \index{clasificador de subobjetos}\emph{clasificador de subobjetos}.
+En pocas palabras, un subobjeto es cualquier objeto $S$ con un monomorfismo $S \to X$.
+Un clasificador de subobjetos de $X$ es una colección de morfismos que caracterizan cada uno de sus subobjetos.
+En pocas palabras, es una generalización de la idea de función característica de los conjuntos:
+\begin{align*}
+\chi_S & \colon X \to \{0,1\}\\
+\chi_S (x) & = \begin{cases}0 & \text{si }x \notin S\\1 & \text{si }x \in S\end{cases}
+\end{align*}
+Una categoría cerrada cartesianamente con un clasificador de subobjetos se denomina \newterm{topos elemental}.
+Resulta que un \newterm{topos elemental} es equivalente a la lógica intuicionista de orden superior.
+
+En los capítulos 5, hemos introducido el concepto de monoide, pero también el concepto de categoría enriquecida y $2$-categoría.
+Siguiendo esta idea llegamos a la teoría de categorías de orden superior. El libro de Lurie sirve de introducción a este tema.
+Recordemos que en una $2$-categoría, tenemos $1$-morfismos entre $0$-morfismos (objetos) y $2$-morfismos entre $1$-morfismos.
+Con esto en mente, definimos las $\infty$-categorías describiendo los $k$-morfismos entre $k-1$-morfismos.
+Si además establecemos un particular concepto de equivalencia entre $k$-morfismos basado en nuestra descripción de equivalencias en la sección \ref{functores-adjuntos}, se introduce la idea de $(\infty,1)$-categorías, donde todos los $k$-morfismos son equivalentes para $k > 1$.
+El estudio de estas $(\infty,1)$-categorías y su relación con la teoría de homotopía de tipos es un campo muy activo en los últimos años.
+Véase el libro colaborativo 

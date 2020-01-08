@@ -1,0 +1,199 @@
+\chapter{Monoides}
+\epigraph{"A monad is a monoid in the category of endofunctors, what's the problem?"}{\textit{A Brief, Incomplete, and Mostly Wrong History of Programming Languages\\James Iry}}
+\section{Monoides clásicos}
+En álgebra, un \newterm{monoide} $(M,\cdot)$ es un conjunto $M$ junto a una operación binaria $\cdot \colon M \times M \to M$ asociativa y con elemento unidad en $M$.
+Una forma alternativa de ver un monoide es como una categoría de un sólo objeto.
+Si llamamos $A$ al único objeto de dicha categoría, identificamos los elementos de $M$ con los morfismos $f \colon A \to A$ y la composición de morfismos con la operación binaria.
+El elemento identidad se identifica con el morfismo identidad.
+
+Por ejemplo, el monoide $(\mathbb{N},+)$ se corresponde con la categoría:
+\[
+\begin{tikzcd}
+A \arrow[loop right,"0" right] \arrow[loop right,distance=3em,"1" right] \arrow[loop right,distance=5em,"2" right]
+\arrow[loop right,distance=7em,"\dots" right]
+\end{tikzcd}
+\]
+
+A su vez, para cualquier categoría localmente pequeña $\cat$, todo objeto $A \in \cat$ induce un monoide $\cat(A,A)$.
+
+% Milewski
+\section{Monoides en Haskell}
+En Haskell, los monoides están representando por la siguiente clase:
+\begin{minted}{haskell}
+class Monoid m where
+  mappend :: m -> m -> m
+  mempty :: m
+\end{minted}
+donde \code{mappend} debe ser asociativa y \code{mempty} debe ser su elemento unidad.
+En Haskell, se suele usar el operador infijo \code{<>} como sinónimo de \code{mappend} para facilitar la lectura.
+Un ejemplo de monoide habitual es el de la listas de tipo un tipo cualquiera \code{a} donde \code{mappend} se corresponde con la concatenación.
+\begin{minted}{haskell}
+> [2,3,4] <> [5,6,7]
+[2,3,4,5,6,7]
+\end{minted}
+La interpretación de un monoide como la estructura de los endomorfismo de un objeto se puede ver aquí cuando aplicamos parcialmente \code{mappend} a un objeto \code{x} de tipo \code{m}:
+\begin{minted}{haskell}
+mappend x :: m -> m
+\end{minted}
+Tenemos que \code{mappend x} es un endomorfismo en el tipo \code{m} y que \code{mappend mempty} es equivalente al morfismo identidad.
+Es decir \code{mappend} se puede ver como una función que asocia cada elemento del monoide (como grupo) con el endomorfismo correspondiente del monoide (como endomorfismos de \code{m}).
+
+\section{Categorías monoidales}
+% Awodey 4
+Otra forma de ver monoides en teoría de categorías es através de \index{objeto!monoide}\emph{objeto monoide} en una categoría.
+
+\begin{definition}
+Una \index{categoría!monoidal}\emph{categoría monoidal} es una categoría $\cat$ con un bifunctor $\otimes \colon \cat \times \cat \to \cat$ y un objeto unidad $I \in \cat$ con isomorfismos naturales:
+\begin{itemize}
+  \item El asociador:
+\[ \alpha_{ABC} \colon A \otimes (B \otimes C) \Rightarrow (A \otimes B) \otimes C \]
+  \item El unidor izquierdo:
+\[ \lambda_A \colon I \otimes A \Rightarrow A \]
+  \item El unidor derecho:
+\[ \rho_A \colon A \otimes I \Rightarrow A \]
+\end{itemize}
+de manera que cumpla las \index{leyes de coherencia}leyes de coherencia, es decir, que los siguientes diagramas conmuten (entiéndase que estamos tomando las correctas componentes de $\alpha$, $\lambda$ y $\rho$):
+\[\begin{tikzcd}
+{A \otimes (B \otimes (C \otimes D))} \arrow[r,"\alpha"] \arrow[d,"\id\otimes\alpha"] & {(A \otimes B) \otimes (C \otimes D)} \arrow[r,"\alpha"] & {((A \otimes B) \otimes C) \otimes D}\\
+{A \otimes ((B \otimes C) \otimes D)} \arrow[rr,"\alpha"] & & {(A \otimes (B \otimes C)) \otimes D} \arrow[u,"\alpha\otimes\id"]
+\end{tikzcd}\]
+\[\begin{tikzcd}
+{A \otimes (I \otimes C)} \arrow[dr,"\id \otimes \lambda" below] \arrow[rr,"\alpha"] & & {(A \otimes I) \otimes C} \arrow[dl,"\rho \otimes \id"]\\
+& {A \otimes C}
+\end{tikzcd}\]
+y por último:
+\[ \lambda_I = \rho_I \]
+\end{definition}
+
+% Categorical homotopy Theory Riehl
+Un ejemplo sencillo de categoría monoidal es cualquier categoría con productos finitos, tomando $A \otimes B = A \times B$.
+Es más, en dicho caso, existe un isomorfismo natural $A \otimes B \cong B \otimes A$.
+Una categoría monoidal con dicho isomorfismo natural se denomina \index{categoría!monoidal!simétrica}\emph{categoría monoidal simétrica}.
+Por lo tanto, $\Set$ forma una categoría monoidal simétrica con el producto cartesiano y un conjunto unitario cualquiera como identidad del producto.
+También, $\Cat$ forma una categoría monoidal simétrica con el producto y una categoría unitaria como $\mathbb{1}$ como identidad del producto.
+
+Veamos otro ejemplo más sofisticado.
+% MacLane
+\begin{example}
+\label{ej-abeliano}
+Consideramos la categoría de grupos abelianos $\Ab$.
+Para dos grupos $A$ y $B$, definimos $A \otimes B$ como su producto tensorial como $\Z$-módulos.
+Más explícitamente, $A \otimes B$ es un grupo abeliano con un producto bilineal $\otimes$ tal que para todo grupo abeliano $C$ y toda aplicación bilineal $f \colon A \times B \to C$, existe un único homomorfismo de grupos $\widetilde{f}$ tal que el siguiente diagrama conmuta:
+\[ \begin{tikzcd}{A \times B} \arrow[dr,"f" below] \arrow[r,"\otimes"] & {A \otimes B}\arrow[d,"\widetilde{f}",dashed]\\
+& C \end{tikzcd}\]
+%Para dos grupos $G$ y $H$, definimos $G \otimes H$ como el cociente del grupo abeliano libre de símbolos $\{g \otimes h \colon g \in G, h \in H\}$ por las relaciones que hagan que la aplicación $\gamma \colon (g,h) \mapsto g \oplus h$ sea bilineal en $G \times H$.
+Por la unicidad de la construcción, hay un único isomorfismo natural $\alpha_{ABC} \colon A \otimes (B \otimes C) \to (A \otimes B) \otimes C$.
+
+% Demo propia
+Veamos que $\Z$ es el objeto unidad.
+Para ello, consideramos una aplicación bilineal $f \colon A \times \Z \to B$ cualquiera.
+Definimos la aplicación lineal
+\begin{align*}
+\phi \colon A \times \Z & \to A\\
+\phi \colon (a,n) & \mapsto \overbrace{a + \dots + a}^\text{n veces}
+\end{align*}
+y el homomorfismo de grupo:
+\begin{align*}
+\widetilde{f} \colon A & \to B\\
+\widetilde{f} \colon a & \mapsto f(a,1)
+\end{align*}
+Entonces, por linealidad sobre $\Z$:
+\[ f(a,n) = f(a,\overbrace{1 + 1 + \dots + 1}^\text{n veces}) = \overbrace{f(a,1) + \dots + f(a,1)}^\text{n veces} = (\widetilde{f} \circ \phi)(a,n)\]
+Luego $A \otimes \Z \cong_{\lambda_A} A \cong_{\rho_A} \Z \otimes G$.
+
+Es sencillo comprobar que las leyes de coherencia se cumplen.
+%Definimos: 
+%\begin{align*}
+%\psi \colon G & \to G \otimes \Z\\
+%\psi \colon g & \mapsto \overbrace{g + g + \dots + g}^\text{n veces}
+%\end{align*}
+%Como la aplicación $G \times \Z \to G \otimes \Z$ es lineal sobre $\Z$:
+%\[ g\otimes n = g\otimes (\overbrace{1 + \dots + 1}^\text{n veces}) = \overbrace{g \otimes 1 + \dots + g\otimes 1}^\text{n veces}\]
+\end{example}
+
+\section{Categorías enriquecidas}
+Recordemos que una categoría $\cat$ es localmente pequeña si para todo pares de objetos $A, B \in \cat$, se tiene que $\cat(A,B) \in \Set$.
+Una idea esencial en la teoría de categorías de orden superior es el concepto de \index{categoría!enriquecida}\emph{categoría enriquecida}, que consiste en remplazar $\Set$ de la definición anterior con cualquier otra categoría monoidal simétrica.
+Informalmente, dada una categoría monoidal simétrica $\mathcal{V}$, una categoría $\cat$ se dice que está $\mathcal{V}$-enriquecida si para cualquier par de objetos $A, B \in \cat$, $\cat(A, B) \in \mathcal{V}$.
+A esta definición hay que añadir unas condiciones de compatibilidad con la composición, de las que hablamos a continuación:
+%El punto de inicio para la teoría de categorías de orden superior consiste en considerar las categorías $\Cat$-enriquecida, denominadas $2$-categorías.
+
+\begin{definition}
+Dada una categoría monoidal simétrica $(\mathcal{V}, \otimes, I)$, una $\mathcal{V}$-categoría $\cat$ consiste en:
+\begin{itemize}
+  \item Una colección de objetos.
+  \item Para cada par de objetos $A, B$ en $\cat$, un objeto llamado \newterm{hom-objeto} $\cat(A,B) \in \mathcal{V}$.
+  \item Para cada $A \in \cat$, un morfismo $\Id_A \colon I \to \cat(A,A)$ en $\mathcal{V}$.
+  \item Para todo $A, B, C \in \cat$, un morfismo $\circ \colon \cat(B,C) \otimes \cat(A,B) \to \cat(A,C)$ en $\mathcal{V}$.
+\end{itemize}
+de manera que los siguientes diagramas conmuten:
+\[ \begin{tikzcd}
+{\cat(C,D) \otimes \cat(B,C) \otimes \cat(A,B)} \arrow[r,"\id\otimes\circ"] \arrow[d,"\circ\otimes\id"]& {\cat(C,D) \otimes \cat(A,C)} \arrow[d,"\circ"]\\
+{\cat(B,D) \otimes \cat(A,B)} \arrow[r,"\circ"] & {\cat(A,D)}
+\end{tikzcd}\]
+
+\[ \begin{tikzcd}
+{\cat(A,B) \otimes I} \arrow[r,"\id\otimes\Id_A"] \arrow[dr,"\cong" below] & {\cat(A,B) \otimes \cat(A,A)} \arrow[d,"\circ"] & {\cat(B,B) \otimes \cat(A,B)} \arrow[d,"\circ"] & {I \otimes \cat(A,B)} \arrow[l,"\Id_B \otimes \id" above] \arrow[dl,"\cong" below]\\
+& \cat(A,B) & \cat(A,B)
+\end{tikzcd}\]
+\end{definition}
+
+\begin{example}\label{cat-2-categoria}
+Dotemos ahora a $\Cat$ de estructura de $\Cat$-categoría, es decir, $2$-categoría.
+
+Primero recordemos que $(\Cat, \times, \mathbb{1})$ es una categoría monoidal simétrica.
+Por otro lado, para un par de categorías pequeñas $\cat$ y $\mathcal{D}$, los functores $\cat \to \mathcal{D}$ forman una categoría pequeña $\mathcal{D}^\cat$ como comentamos en \ref{functor-categoria}.
+En esta categoría, los morfismos entre dos functores $F$ y $G$ eran las transformaciones naturales $F \Rightarrow G$.
+
+Además, consideramos la transformación natural $\Id_A \colon \mathbb{1} \to \cat^\cat$ que asocia el único objeto de $\mathbb{1}$ con el functor identidad.
+Por último, para unas categorías cualesquiera $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tenemos que definir un morfismo.
+\[ \circ \colon \mathcal{E}^\mathcal{D} \times \mathcal{D}^\cat \to \mathcal{E}^\cat\]
+Ojo, un morfismo en $\Cat$ es un functor.
+Sea $F \in \mathcal{D}^\cat$ y $G \in \mathcal{E}^\mathcal{D}$, definimos $G \circ F$ como la composición habitual de functores.
+Ahora bien, como $\circ$ es functor, debe actuar también sobre los morfismos, que aquí son transformaciones naturales.
+Para transformaciones naturales $\mu \colon F \Rightarrow G$ en $\mathcal{D}^\cat$ y $\eta \colon H \Rightarrow K$ en $\mathcal{E}^\mathcal{D}$, basta definir $\eta \circ \mu$ como su composición horizontal.
+
+Con estas definiciones se cumple la conmutatividad de los diagramas de las categoría enriquecidas y deducimos que $\Cat$ es una $2$-categoría.
+\end{example}
+
+\section{Monoides}
+Volviendo, al tema de los monoides, ahora podemos generalizar el concepto de monoide.
+\begin{definition}
+Un \index{monoide}\emph{monoide} es un objeto $M$ de una categoría monoidal $(\cat, \otimes, I)$ con dos morfismos:
+\begin{tikzcd}
+M \otimes M \arrow[r,"\mu"] & M & I \arrow[l,"\eta" above]
+\end{tikzcd}
+que cumplan:
+\begin{itemize}
+  \item La propiedad asociativa:
+  \[ \begin{tikzcd}
+  {(M \otimes M) \otimes M} \arrow[rr,"\alpha"] \arrow[d,"\mu\otimes\id"] & & {M \otimes (M \otimes M)} \arrow[d,"\id\otimes\mu"]\\
+  {M \otimes M} \arrow[dr,"\mu"] & & {M \otimes M} \arrow[dl,"\mu"]\\
+  & M
+  \end{tikzcd}\]
+  \item La propiedad de la unidad:
+  \[ \begin{tikzcd}
+  {I \otimes M} \arrow[r,"\eta\otimes\id"] \arrow[dr,"\rho" below] & {M \otimes M} \arrow[d,"\mu"] & {M \otimes I} \arrow[l,"\id\otimes\eta" above] \arrow[dl,"\rho"]\\
+  & M
+  \end{tikzcd}\]
+\end{itemize}
+\end{definition}
+
+\begin{example}
+Algunos ejemplos de monoides son:
+\begin{itemize}
+  \item Un monoide sobre la categoría monoidal $(\Set, \times, \{1\})$ es un monoide en el sentido algebraico.
+  \item Un monoide sobre la categoría monoidal de grupos abelianos $(\Ab, \otimes, \Z)$ descrita en el ejemplo \ref{ej-abeliano} es un \newterm{anillo}.
+  \item Un monoide sobre la categoría monoidal de $k$-espacios vectoriales $(\Vect_k, \otimes_k, k)$ es una \newterm{k-álgebra}.
+\end{itemize}
+\end{example}
+
+Un ejemplo más será de gran importancia para nosotros, las mónadas.
+
+\section{Referencias}
+\begin{itemize}
+  \item Awodey, S. (2006). \emph{Category Theory}, Capítulo 4.
+  \item Mac Lane, S. (1997). \emph{Categories for the Working Mathematician}, Capítulo 7.
+  \item Riehl, E. (2014). \emph{Category Theory in Context}, Capítulo 1.
+  \item Riehl, E. (2014). \emph{Categorical homotopy theory}, Capítulo 3.
+\end{itemize}

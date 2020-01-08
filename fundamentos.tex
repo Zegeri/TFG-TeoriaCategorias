@@ -1,0 +1,828 @@
+\chapter{Fundamentos}
+\section{Categorías}
+
+% Abramsky - Logic and categories as tools for building theories
+La idea empieza por el concepto de categoría, que resulta sorprendentemente ubicua en la matemática.
+En principio, una categoría es sólo una colección de objetos y flechas entre dichos objetos donde se define una composición de flechas.
+Veremos que algunas de la categorías más interesantes son las relacionadas con las estructuras matemáticas, como $\Top$, la categoría de espacios topológicos y funciones continuas, o $\Grp$, la categoría de grupos y homomorfismos.
+En estos casos, la teoría de categorías sirve como un marco de las teorías matemáticas.
+Las aplicaciones entre categorías --functores-- ilustran las conexiones entre distintas teorías matemáticas.
+Aunque los axiomas que pediremos a las categorías no son muchos, resulta que podemos crear una gran cantidad de resultados interesantes y muy genéricos.
+
+\begin{definition}
+Una \newterm{categoría} $\cat$ es:
+\begin{itemize}
+\item Una colección de \index{objeto}\emph{objetos} $O(\cat)$.
+\item A cada par de objetos $A$, $B$ en $O(\cat)$, una colección de \index{morfismo}\emph{morfismos} $C(A,B)$ de $A$ a $B$.
+Un morfismo $f$ en $C(A,B)$ se denotará $f \colon A \to B$.
+\item A cada par de morfismos $f \colon A \to B$, $g \colon B \to C$, un morfismo de $g \circ f \colon A \to C$ llamado \newterm{morfismo composición} de $f$ y $g$.
+\end{itemize}
+de manera que:
+\begin{itemize}
+\item Para cada objeto $A \in O(\cat)$, existe un morfismo $\id_A \in C(A,A)$ que llamamos \newterm{morfismo identidad}.
+\item Para todo morfismo $f \colon A \to B$:
+\[ \id_B \circ f = f \circ \id_A = f \]
+\item Asociatividad de la composición: Para toda tripleta de morfismos $f \colon A \to B$, $g \colon B \to C$, $h \colon C \to D$:
+\begin{equation}\label{cat:3} (h \circ g) \circ f = h \circ (g \circ f) \end{equation}
+\end{itemize}
+\end{definition}
+
+Una notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $C(A,B)$.
+
+A menudo usaremos diagramas para expresar visualmente ciertas propiedades.
+En Teoría de Categoría, existe una definición precisa de diagrama, pero por ahora, no tenemos las herramientas suficientes para explicarlo.
+Basta imaginar que es un grafo formado por una cantidad finita de objetos y morfismos de una categoría.
+
+El concepto de conmutatividad de un diagrama es el habitual de otros campos.
+Como ejemplo, la propiedad \eqref{cat:3} se puede expresar diciendo que el diagrama
+\[
+\begin{tikzcd}
+A \arrow[rr,"f"]\arrow[rrdd,pos=0.1,"g \circ f" sloped] \arrow[dd,"h\circ g \circ f" left] & & B \arrow[lldd,pos=0.4,"h\circ g" sloped, crossing over] \arrow[dd,"g"]\\
+&\\
+C & & D \arrow[ll,"h"]
+\end{tikzcd}
+\]
+conmuta.
+
+Dado un morfismo $f \colon A \to B$, llamaremos dominio de $f$ a $\dom f = A$.
+De igual manera, el codominio de $f$ será $\cod f = B$.
+
+Además, llamaremos a la colección de morfismos de una categoría $M(\cat)$.
+
+No hay ni mucho menos falta de ejemplos de categorías, ni siquiera si nos limitamos a un campo específicio de la matemática.
+Algunos ejemplos ilustrativos son los siguientes:
+
+\begin{example}
+La categoría $\Set$ formada por los conjuntos como objetos y funciones entre conjuntos como morfismos.
+La composición de morfismos se corresponde, como es de esperar, con la composición de funciones.
+\end{example}
+
+\begin{example}
+La categoría $\Grp$ formada por los grupos como objetos y homomorfismos entre grupos como morfismos.
+\end{example}
+
+\begin{example}
+La categoría $\Top$ formada por los espacios topológicos como objetos y funciones continuas como morfismos.
+\end{example}
+
+\begin{example}
+Todo \newterm{conjunto parcialmente ordenado} (o \index{poset|see {conjunto parcialmente ordenado}}\emph{poset}) $(X,\leq)$ puede verse como una categoría, donde los objetos son los elementos de $X$ y hay un único morfismo $f \colon a \to b$ si y sólo si $a \leq b$.
+Este es nuestro primer ejemplo donde los morfismos no son equivalentes a función.
+La composición de dos morfismos aquí es equivalente a la propiedad transitiva de la relación de orden $\leq$.
+Es más, el morfismo identidad es equivalente a la propiedad reflexiva.
+\end{example}
+
+También nos interesarán en algunos casos categorías que posean una estructura finita dada, como:
+\begin{example}
+La categoría $\mathbb{1}$ formada por un sólo objeto y su morfismo identidad:
+\[ \begin{tikzcd}
+A \arrow[loop above,"\id_A"]
+\end{tikzcd}\]
+\end{example}
+
+\begin{example}
+La categoría $\mathbb{2}$:
+\[ \begin{tikzcd}
+A \arrow[loop above,"\id_A"] \arrow[r,"f"] & B \arrow[loop above,"\id_B"]
+\end{tikzcd}\]
+\end{example}
+
+Las categorías finitas serán de gran uso cuando hablemos más adelante de los diagramas.
+Por otro lado, las categorías con las que trabajaremos a menudo serán enormes, donde a veces la teoría de conjuntos habitual se nos quedará pequeña.
+Por ejemplo, en la teoría de conjuntos habitual, el conjunto de todos los conjuntos es una noción inconsistente como consecuencia del Teorema de Cantor.
+Por esta razón, hablaremos a menudo de \textquote{colección} o \textquote{familia} y evitaremos la palabra \textquote{conjunto} en general.
+
+En ocasiones, sí nos será útil que la colección de objetos o morfismos forme un conjunto.
+Para ello, introducimos las siguientes definiciones:
+
+\begin{definition}
+Una categoría $\cat$ es \index{categoría!pequeña}\emph{pequeña} si $O(\cat)$ y $M(\cat)$ forman conjuntos.
+\end{definition}
+
+Por ejemplo, toda categoría finita es pequeña, pero $\Set$ no es pequeña.
+
+\begin{definition}
+Una categoría $\cat$ es \index{categoría!localmente pequeña}\emph{localmente pequeña} si para todo par de objetos $A$ y $B$ en $\cat$, $C(A,B)$ forma un conjunto.
+\end{definition}
+
+Todos los ejemplos que hemos dado son localmente pequeños.
+Para poder dar ejemplos de categorías que no son localmente pequeñas, necesitaremos más conceptos.
+Casi siempre trabajaremos con categorías localmente pequeñas.
+
+También podemos construir categorías a partir de otras categorías.
+El ejemplo más importante es el de la categoría opuesta:
+\begin{definition}
+Dada una categoría $\cat$, la \index{categoría!opuesta}\emph{categoría opuesta} o \index{categoría!dual}\emph{dual} $\cat^{op}$ es la categoría con los mismos objetos que $\cat$ y donde un morfismo $f \colon B \to A$ en $\cat^{op}$ es un morfismo $f \colon A \to B$ en $\cat$.
+\end{definition}
+
+Evidentemente se tiene que $\left(\cat^{op}\right)^{op} = \cat$.
+A menudo nos encontraremos con conceptos que están relacionados por el dual de una categoría.
+Por ejemplo, el objeto terminal de una categoría (que veremos más adelante) no es más que el objeto inicial de su categoría opuesta.
+
+\begin{definition}
+Sea $A$, $B$ objetos de una categoría $\cat$.
+Un morfismo $f \colon B \to C$ de una categoría es un monomorfismo (o mónico) si para todo morfismo $g \colon A \to B$ y $h \colon A \to B$ tales que $f \circ g = f \circ h$, entonces $g = h$.
+\end{definition}
+
+\begin{proposition}
+En \Set, un morfismo es mónico si y sólo si es inyectivo.
+\end{proposition}
+
+\begin{proof}
+Sea $f \colon B \to C$ un monomorfismo. Sean $b, b' \in B$ tales que $f(b) = f(b')$. Sea $A = \{b\}$ y definimos $g \colon A \to B$ como $g(b)=b'$.
+Entonces $f(\id_A(b)) = f(g(b))$
+como $b$ es el único elemento de $A$, tenemos que:
+\[ f \circ \id_A = f \circ g \]
+luego, como $f$ es monomorfismo:
+\[ \id_A = g \]
+Entonces $b'=g(b)=\id_A(b)=b$.
+
+Consideramos ahora $f \colon B \to C$ un morfismo inyectivo.
+Sean los morfismos $g, h \colon A \to B$ tales que $f \circ g = f \circ h$.
+Sea $a \in A$ cualquiera. Como $f(g(a)) = f(h(a))$ y $f$ es inyectiva, entonces $g(a) = h(a)$.
+Es decir, se tiene que $g = h$. 
+\end{proof}
+
+\begin{definition}
+Un morfismo $f \colon A \to B$ es epimorfismo (o épico) si para cualquier par de morfismos $g \colon B \to C$ y $h \colon B \to C$, se tiene que $g \circ f = h \circ f$ implica que $g = h$.
+\end{definition}
+
+\begin{proposition}
+En \Set, un morfismo es épico si y sólo si es sobreyectivo.
+\end{proposition}
+
+\begin{proof}
+Sea $f \colon A \to B$ un epimorfismo. Supongamos que $f$ no fuera sobreyectivo. Entonces existe $b \in B$ que no es imagen de ningún elemento de $A$. Sean $g, h \colon B \to \{1,2\}$ tal que $g(x)=h(x)=1$ para todo $x \in B \setminus \{b\}$, $g(b) = 1$ y $h(b) = 2$. Entonces tenemos que $g \circ f = h \circ f$. Como $f$ es epimorfismo, esto implica que $g = h$, pero esto entra en una contradicción.
+
+Sea $f \colon A \to B$ un morfismo sobreyectivo. Sean $g, h \colon B \to C$ tales que $g \circ f = h \circ f$. Para todo $b \in B$, existe $a \in A$ tal que $f(a)=b$, luego: $g(b) = g(f(a)) = h(f(a)) = h(b)$, luego $g = h$.
+\end{proof}
+
+\begin{definition}
+Un morfismo $f \colon A \to B$ es \newterm{isomorfismo} si existe $g \colon B \to A$ tal que $g \circ f = \id_A$ y $f \circ g = \id_B$.
+
+Dos objetos $A$ y $B$ se dirán \emph{isomorfos} si existe un isomorfismo entre ellos.
+\end{definition}
+
+Claramente, en $\Set$, un morfismo mónico y épico es isomórfico.
+Sin embargo, todos los morfismos de un poset son épicos y mónicos, pero sólo los morfismos identidad son isomorfismos.
+
+\section{Functores}
+Parece que muchos conceptos como $\Set$ o $\Top$ forman categorías.
+De aquí surge la siguiente cuestión: ¿Podríamos hacer una categoría de categorías?
+Es decir, una categoría donde los objetos mismos sean categorías.
+Para ello, debemos definir morfismos entre categorías que respetan su estructura interna.
+Aunque la misma razón por la que no hay conjunto de conjuntos, no hay una categoría de categorías, esta cuestión motiva la definición de functor:
+
+\begin{definition}\label{def:functor}
+Un \newterm{functor} $F$ entre un par de categorías $\cat$ y $\mathcal{D}$ es un par de funciones:
+\begin{itemize}
+\item $F_O : O(\cat) \to O(\mathcal{D})$.
+\item $F_M : M(\cat) \to M(\mathcal{D})$.
+\end{itemize}
+tal que:
+\begin{itemize}
+\item Respeta el dominio y codominio de los morfismos: A cada morfismo $f : A \to B$:
+\[ F_M(f) : F_O(A) \to F_O(B) \]
+\item Respeta el morfismo identidad:
+\[ F_M(\id_A) = \id_{F_O(A)} \]
+\item Respeta la composición de morfismo: Para todo morfismos $f : A \to B$, $g : B \to C$.
+\[ F_M(g \circ f) = F_M(g) \circ F_M(f) \]
+\end{itemize}
+\end{definition}
+
+Escribiremos $F \colon \cat \to \mathcal{D}$ y a menudo usaremos $F$ para referirnos a $F_M$ ó $F_O$ según el contexto.
+
+Viendo los functores como funciones entre categorías, es natural que queramos definir composición entre functores.
+\begin{definition}
+Dado dos functores $F \colon \cat \to \mathcal{D}$ y $G \colon \mathcal{D} \to \mathcal{E}$, definimos $G \circ F$ como el functor con:
+\begin{itemize}
+  \item $(G \circ F)_O = G_O \circ F_O$.
+  \item $(G \circ F)_M = G_M \circ F_M$.
+\end{itemize}
+\end{definition}
+\subsection{Functores en Haskell}
+Recordemos que en el contexto de la programación con tipos, Haskell sólo trabaja con tipos de la categoría \code{Hask}.
+Los functores con los que podemos trabajar son de endofunctores de \code{Hask}, es decir, functores que van de \code{Hask} a \code{Hask} -- de tipos a tipos.
+
+Haskell implementa los functores a través de sus \code{typeclasses}.
+\begin{minted}{haskell}
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b
+\end{minted}
+
+La \code{f} actúa como $F$ y como $F_O$ en \ref{def:functor}.
+Si hay dudas de qué es lo que hace \code{fmap} aquí, resulta útil añadir unos paréntesis en el lugar adecuado:
+
+\begin{minted}{haskell}
+fmap :: (a -> b) -> (f a -> f b)
+\end{minted}
+
+\code{fmap} toma un función cualquiera \code{a -> b} y la transforma en una función del tipo \code{f a -> f b}.
+Esto es precisamente lo que antes llamábamos $F_M$.
+Con esto en mente, adaptemos las leyes de los functores en Haskell:
+\begin{minted}{haskell}
+fmap id = id
+fmap (g . f) = fmap g . fmap f
+\end{minted}
+Recordemos que en Haskell, la composición de funciones $g \circ f$ se expresa usando \code{g . f}.
+Antes de pasar a unos ejemplos, hay que tener en cuenta que Haskell no dispone de ningún mecanismo que comprueba que estas igualdades se cumplen.
+Queda como responsabilidad del programador que la clase \code{Functor} no se aplique sobre tipos que no cumplen las leyes de functores. 
+
+\begin{example}
+Nuestro primer ejemplo es \code{Maybe}.
+\begin{minted}{haskell}
+data Maybe a = Nothing | Just a 
+\end{minted}
+
+Podemos leer esta definición como \code{Maybe a} contiene o bien un valor constante o bien un valor del tipo \code{a}.
+Hay que tener cuidado con la diferencia entre \code{Maybe} y \code{Just}.
+\code{Maybe} es lo que llamamos un constructor de tipo.
+Veremos que este constructor de tipo, que asocia a cada tipo \code{a} el tipo \code{Maybe a}, es un functor.
+Por otro lado, \code{Just} es una función polimórfica --y por lo tanto una familia de morfismos en \code{Hask}-- de \code{a} a \code{Maybe a}.
+
+Para ver que \code{Maybe} es un functor, tenemos que describir como actúa sobre morfismos, ahí es donde entra en juego la función \code{fmap}.
+
+\begin{minted}{haskell}
+instance Functor Maybe where
+  fmap f Nothing = Nothing
+  fmap f (Just x) = Just (f x) 
+\end{minted}
+\end{example}
+
+\subsection{Functores especiales}
+Consideramos ahora el concepto de functor contravariante a través de un cambio en la definición de functor:
+\begin{definition}\label{def:cofunctor}
+Un \index{functor!contravariante}\emph{functor contravariante} $F$ entre un par de categorias $\cat$ y $\mathcal{D}$ es un par de funciones:
+\begin{itemize}
+\item $F_O : O(\cat) \to O(\mathcal{D})$.
+\item $F_M : M(\cat) \to M(\mathcal{D})$.
+\end{itemize}
+tal que:
+\begin{itemize}
+\item \textbf{Intercambia} el dominio y codominio de los morfismos: A cada morfismo $f : A \to B$:
+\[ F_M(f) : F_O(B) \to F_O(A) \]
+\item Respeta el morfismo identidad:
+\[ F_M(\id_A) = \id_{F_O(A)} \]
+\item \textbf{Intercambia} la composición de morfismo: Para todo morfismos $f : A \to B$, $g : B \to C$.
+\[ F_M(g \circ f) = F_M(f) \circ F_M(g) \]
+\end{itemize}
+\end{definition}
+
+Los functores con los que hemos trabajado hasta ahora serán llamados \index{functor!covariante}\emph{functores covariantes}, pero a menudo prescindiremos del adjetivo.
+Una razón para esto es que no hay diferencia esencial entre functor contravariante y functor covariante cuando observamos que los \textquote{intercambios} en la definición son equivalentes a que el functor parta de $\cat^{op}$.
+Por esta razón, hablaremos de functor contravariante cuando tratemos con un functor covariante de la forma:
+\[ F \colon \cat^{op} \to D \]
+
+Otros functores reciben nombres especiales por su dominio o su codominio:
+\begin{definition}
+Un functor $F \colon \cat \to \cat$ se denomina \newterm{endofunctor}.
+\end{definition}
+%Categories and Haskell 1
+\begin{example}
+Un ejemplo sencillo es el \newterm{endofunctor potencia} $\mathcal{P} \colon \Set \to \Set$ que envía un conjunto $A$ a su conjunto potencia $\mathcal{P}(A)$ y envía a las funciones entre conjuntos $f \colon A \to B$ a la función $\mathcal{P} f \colon \mathcal{P}(A) \to \mathcal{P}(B)$ definida como:
+\[ \mathcal{P} f (S) = \{f(s) \colon s \in S\}, \quad S \subseteq A \]
+\end{example}
+
+\begin{definition}
+Un functor $F \colon \cat^{op} \times \cat \to \mathcal{D}$ se denomina \newterm{bifunctor}.
+\end{definition}
+Aquí $\cat^{op} \times \cat$ es la categoría producto de $\cat^{op}$ y $\cat$, definida más adelante en la sección 1.5.
+
+\begin{definition}
+Un functor $F \colon \cat^{op} \to \Set$ se denomina \newterm{prehaz}.
+\end{definition}
+
+\section{Construcciones universales}
+Podemos caracterizar ciertos objetos en una categoría por alguna propiedad especial que cumplan. En lugar de pedir que sólo haya un objeto que cumpla dicha propiedad, nos limitamos a pedir que todos los objetos que cumplan la propiedad sean isomorfos. Estas propiedades son llamadas \emph{propiedades universales}.
+
+\begin{definition}
+Decimos que un objeto $A \in \cat$ es \newterm{inicial} si para cada objeto $B \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+
+Análogamente, decimos que un objeto $B \in \cat$ es \newterm{terminal} si para cada objeto $A \in \cat$, hay exactamente un morfismo $f \colon A \to B$.
+\end{definition}
+
+Cuando hablemos de un objeto inicial, usaremos a menudo la notación $0$.
+Análogamente, usaremos $1$ para referirnos a un objeto terminal.
+
+\begin{example}
+Veamos algunos ejemplos en categorías usuales:
+\begin{itemize}
+  \item En $\Set$, el conjunto vacío es un objeto inicial y cualquier conjunto unitario es terminal.
+  \item En $\Grp$, el grupo trivial es inicial y terminal.
+  \item En $\Ring$, el anillo unitario es terminal y el anillo $(\Z,+,\cdot)$ es inicial.
+  \item En un poset, visto como categoría, el objeto inicial es el elemento mínimo global y el objeto terminal es el elemento máximo global, si existen.
+  \item En $\Hask$, el objeto terminal se define como el tipo de dato con un sólo valor posible.
+  Se suele usar \code{()}, que puede entenderse como una $0$-tupla.
+  El objeto inicial se define como el tipo de dato sin constructor:
+  \begin{minted}{haskell}
+  data Empty
+  \end{minted}
+\end{itemize}
+\end{example}
+
+De estos ejemplos vemos que:
+\begin{itemize}
+  \item Los objetos iniciales y terminales no son necesariamente únicos.
+  \item Un objeto puede ser inicial y terminal.
+  En dicho caso, el objeto en cuestión recibe el nombre de \index{objeto!cero}\emph{objeto cero}.
+  \item Una categoría puede no poseer objetos iniciales o terminales.
+\end{itemize}
+
+Aunque no haya unicidad de objetos iniciales o terminales, sí hay una relación entre todos los objetos iniciales o terminales.
+\begin{proposition}
+Sea $\cat$ una categoría. Sean $A$ y $B$ objetos iniciales (o terminales) de $\cat$.
+Entonces existe un único isomorfismo $A \to B$.
+\end{proposition}
+\begin{proof}
+Como $A$ es inicial, existe un único morfismo $f \colon A \to B$.
+Como $B$ es inicial, existe un único morfismo $g \colon B \to A$.
+Entonces $g \circ f \colon A \to A$.
+Al ser $A$ inicial, sólo hay un morfismo $A \to A$, que debe ser el morfismo identidad, luego $g \circ f = \id_A$.
+Análogamente, $f \circ g = \id_B$.
+
+Luego $f$ es isomorfismo.
+\end{proof}
+
+\section{Diagramas y conos}
+En estas páginas hemos trabajado a menudo con categorías con infinitos objetos e innumerables morfismos.
+Sin embargo, resulta de interés estudiar una estructura particular de objetos y morfismos que podamos encontrar dentro de esa categoría.
+Para ello, formalizaremos un concepto que hemos manejado antes, los diagramas.
+\begin{definition}
+Sean $\cat$ y $\mathcal{I}$ dos categorías. Un \newterm{diagrama} de $\cat$ con \emph{forma} $\mathcal{I}$ es un functor $D \colon \mathcal{I} \to \cat$.
+\end{definition}
+Es decir, técnicamente diagrama será sólo otra palabra para functor.
+En la práctica, usaremos diagrama cuando querramos distinguir una estructura particular dentro de una categoría.
+También se llamará a $\mathcal{I}$ \index{categoría!índice}\emph{categoría índice} del diagrama.
+
+\begin{example}\label{ejemplo-span}
+Sea $\mathcal{I}$ la siguiente categoría índice:
+\[ \begin{tikzcd}
+A & B \arrow[l] \arrow[r] & C
+\end{tikzcd} \]
+Entonces el diagrama $D \colon \mathcal{I} \to \cat$ es llamado \newterm{span}.
+\end{example}
+
+\begin{definition}
+Sea $\cat$ una categoría y $D \colon \mathcal{I} \to \cat$ un diagrama de forma $\mathcal{I}$.
+Un \newterm{cono} en el diagrama $D$ es un objeto $V \in \cat$ (que llamamos \newterm{vértice}) y una familia de morfismos $f_A \colon C \to D A$ para todo $A \in \mathcal{I}$, tal que para todo morfismo $g \colon A \to B$ de $\mathcal{I}$, el siguiente diagrama conmuta:
+\[ \begin{tikzcd}
+ & D A \arrow[dd,"D g"]\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"]\\
+ & D B
+\end{tikzcd} \]
+\end{definition}
+
+Una buena técnica para estudiar una nueva construcción es preguntarse: ¿Podemos formar una categoría con ella?
+
+Lo que nos queda por hacer para crear una categoría de conos de un diagrama fijo $D$ es definir un morfismo entre conos.
+Resulta intuitivo definirlo a partir de un morfismo entre los vértices.
+Si $C$ y $C'$ son dos conos con vértices $V$ y $V'$ respectivamente, definimos el morfismo $C \to C'$ como un morfismo $u \colon V \to V'$ tal que el siguiente diagrama conmuta para todo $A \in \mathcal{I}$:
+\[ \begin{tikzcd}
+V \arrow[dr,"f_A"] \arrow[dd,"u"] &\\
+ & D A\\
+V' \arrow[ur,"f'_A"]
+\end{tikzcd} \]
+
+\begin{proposition}
+Dado una categoría $\cat$ y un diagram $D \colon \mathcal{I} \to \cat$, los conos de $D$ forma una categoría llamada $\text{Cono}(D)$ con los morfismos descritos anteriormente.
+\end{proposition}
+La demostración es directa gracias a que $\cat$ es una categoría.
+
+En esta categoría de conos, resulta de especial interés el objeto terminal.
+
+\begin{definition}
+Dado una categoría $\cat$ y un diagrama $D \colon \mathcal{I} \to \cat$, el \newterm{límite del diagrama} $D$ es el objeto terminal de $\text{Cono}(D)$.
+\end{definition}
+
+Usaremos la notación $\underset{\longleftarrow}\lim D$ para referirnos al límite de un diagrama si existe.
+
+Podemos considerar el dual de estos conceptos.
+
+\begin{definition}
+Un \newterm{cocono} de $\cat$ es un cono de $\cat^{op}$.
+En otras palabras, un cocono en un diagrama $D \colon \mathcal{I} \to \cat$ es un objeto $V \in \cat$ y una familia de morfismos $f_A \colon D A \to V$ para todo $A \in \mathcal{I}$, tal que para todo morfismo $g \colon B \to A$ de $\mathcal{I}$, el siguiente diagrama conmuta:
+\[ \begin{tikzcd}
+ & D A \arrow[dl,"f_A"]\\
+V\\
+ & D B \arrow[ul,"f_B"] \arrow[uu,"D g"]
+\end{tikzcd} \]
+\end{definition}
+
+\begin{definition}
+Un \newterm{colímite} es el objeto terminal de la categoría de coconos de un diagrama. Equivalentemente es el objeto inicial de la categoría de conos.
+\end{definition}
+
+\begin{definition}
+Una categoría $\cat$ es \index{categoría!completa}\index{categoría!cocompleta}\emph{(co)completa} si existen todos los (co)límites de diagramas $D \colon \mathcal{I} \to \cat$ con $\mathcal{I}$ categoría pequeña.
+
+Una categoría es \index{categoría!bicompleta}\emph{bicompleta} si es completa y cocompleta.
+\end{definition}
+
+\section{Productos y coproductos}
+
+Resulta importante familiarizarse con la idea de límite antes de continuar, porque nos resultará muy útil para definir nuevos conceptos.
+
+\begin{definition}
+Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos aparte de los morfismos identidad. El \newterm{producto} de dos objetos $A$ y $B$ en $\cat$ es el límite del diagrama $D \colon \mathcal{I} \to \cat$ con $D(I_1) = A$ y $D(I_2) = B$.
+
+Escribiremos $A \times B$ para denotar el producto de $A$ y $B$.
+\end{definition}
+
+Desenvolvamos las definiciones para entender qué significa realmente el producto de dos objetos $A$ y $B$.
+Primero obsérvese que el diagrama $D$ actúa para \textquote{seleccionar} los objetos $A$ y $B$ y sus morfismos identidad.
+Puede que haya algún morfismo entre $A$ y $B$, pero no son relevantes para el diagrama y, en consecuencia, ni para el límite.
+
+Un cono sobre $D$ es de la forma:
+\begin{equation}\label{producto-cono} \begin{tikzcd}
+ & A\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"]\\
+ & B
+\end{tikzcd} \end{equation}
+
+El producto $A \times B$, límite de $D$, puede ser visto como el cono terminal en la categorías de conos sobre $D$.
+Es decir, para todo cono como en \ref{producto-cono}, debe existir un único morfismo de dicho cono al $A \times B$.
+Desenvolvamos las definiciones aún más.
+Digamos que el producto está formado por los objetos $A \times B$ (abusando un poco de notación aquí), $p_A \colon A \times B \to A$ y $p_B \colon A \times B \to B$.
+Para todo $V$, $f_A \colon V \to A$ y $f_B \colon V \to B$, debe existir un $h \colon V \to A \times B$ tal que el siguiente diagrama conmute:
+
+\[\begin{tikzcd}
+ & A\\
+V \arrow[ur,"f_A"] \arrow[dr,"f_B"] \arrow[r,dashed,"h"] & A \times B \arrow[u,"p_A"] \arrow[d,"p_B"]\\
+ & B
+\end{tikzcd}\]
+
+o algebraicamente:
+\[ f_A = p_A \circ h \]
+\[ f_B = p_B \circ h \]
+Es decir, dar un par de morfismos $V \to A$ y $V \to B$ es equivalente a dar un morfismo $V \to A \times B$.
+Luego, podemos volver a los objetos $A$ y $B$ usando unos morfismos fijos $p_A$ y $p_B$ (que llamamos \index{morfismo!proyección}\emph{proyecciones}).
+
+\begin{definition}
+Sea $\mathcal{I}$ la categoría de dos objetos $I_1$ y $I_2$ y sin morfismos aparte de los morfismos identidad. El \newterm{coproducto} de dos objetos $A$ y $B$ en $\cat$ es el colímite del diagrama $D \colon \mathcal{I} \to \cat$ con $D(I_1) = A$ y $D(I_2) = B$.
+
+Escribiremos $A + B$ para denotar el coproducto de $A$ y $B$.
+\end{definition}
+
+Desarrollando como antes la definiciones tenemos que para todo $V$, $f_A \colon A \to V$, $f_B \colon B \to V$, se tiene que existe $h \colon A + B \to V$ tal que:
+
+\[\begin{tikzcd}
+ & A \arrow[dl,"f_A"] \arrow[d,"i_A"]\\
+V & A + B \arrow[l,dashed,"h"]\\
+ & B \arrow[ul,"f_B"] \arrow[u,"i_B"]
+\end{tikzcd}\]
+donde $i_A$ e $i_B$ son llamadas \newterm{inyecciones naturales}.
+
+\begin{example}
+No es de extrañar que en $\Set$, el producto de dos objetos es el producto cartesiano de dos conjuntos.
+Por otro lado, el coproducto de dos conjuntos se corresponde con la unión disjunta.
+\end{example}
+
+\begin{example}\label{ejemplo-producto-pos}
+Consideramos la categoría $Pos$ de conjuntos parcialmente ordenados (posets) donde los morfismos son funciones monótonas.
+El producto de dos posets $P$ y $Q$ es un poset $P \times Q$ de pares $(p,q)$ con $p \in P$ y $q \in Q$ ordenado parcialmente por:
+\[ (p,q) \leq (p',q') \sii p \leq p' \text{ y }q \leq q' \]
+Las proyecciones $p_1 \colon P \times Q \to P$ y $p_2 \colon P \times Q \to Q$ son evidentemente monótonas, luego son morfismos de $Pos$.
+\end{example}
+
+\begin{example}
+En $\Hask$, el producto de dos tipos \code{a} y \code{b} es el par \code{(a,b)} y las proyecciones son las funciones \code{fst :: (a,b) -> a} y \code{snd :: (a,b) -> b}.
+También tenemos que \code{(a,b)} es isomorfo a:
+\begin{minted}{haskell}
+newtype Pair a b = Pair a b
+\end{minted}
+A su vez, el coproducto de dos tipos \code{a} y \code{b} es el tipo \code{Either a b}, cuya definición es:
+\begin{minted}{haskell}
+data Either a b = Left a | Right b
+\end{minted}
+Es más, tenemos que todos los tipos de datos compuestos son isomorfos a productos y coproductos.
+\end{example}
+
+%Riehl 1
+\begin{example}
+En \index{categoría!{de categorías pequeñas}}\emph{categoría de categorías pequeñas} $\Cat$, el producto de dos categorías $\cat$ y $\mathcal{D}$ es una categoría $\cat \times \mathcal{D}$ cuyos objetos son pares ordenados $(A,B)$ con $A \in \cat$ y $B \in \mathcal{D}$.
+Los morfismos, composición e identidad se definen a manera análoga por componentes.
+\end{example}
+
+Podemos definir producto $n$-ario de objetos como el límite de un diagrama con una categoría índice discreta (es decir, sin morfismos a parte de los morfismos identidad) de $n$ objetos.
+\begin{remark}\mbox{}
+\begin{itemize}
+  \item Si existen productos binarios, entonces existe cualquier produco $n$-ario con $n \geq 2$.
+  \item En el caso particular de $n=1$, el $1$-producto de cualquier objeto es precisamente el mismo objeto.
+  \item En el caso particular de $n=0$, el $0$-producto es precisamente el objeto terminal.
+\end{itemize}
+\end{remark}
+
+Por esta razón, cuando una categoría tiene productos binarios y objeto terminal, se dice que tiene \emph{todos los productos finitos}.
+
+Hemos visto el producto y el coproducto como casos particulares de límites.
+Otros límites importantes son:
+\begin{definition}
+Dado un diagrama \newterm{span}
+\[ \begin{tikzcd}
+A & B \arrow[l] \arrow[r] & C
+\end{tikzcd} \]
+sobre una categoría, su colímite se denomina \newterm{pushout}.
+\end{definition}
+
+Un uso típico de pushouts está presente en topología:
+\begin{example} % https://ncatlab.org/nlab/show/limits+and+colimits+by+example#pullback
+Dado un span
+\[ \begin{tikzcd}
+X & A \arrow[l,"f" above] \arrow[r,"i"] & Y
+\end{tikzcd} \]
+en $\Top$, donde $i \colon A \to Y$ es una inclusión, entonces el pushout se llama \newterm{espacio de adjunción} y se escribe $X \cup_f Y$.
+El espacio de adjunción se corresponde con el espacio cociente de la unión disjunta de $X$ e $Y$ bajo la relación de equivalencia generada por $x \sim f(x)$. 
+\end{example}
+
+\begin{definition}
+Dado un diagrama \newterm{cospan} (dual de span)
+\[ \begin{tikzcd}
+A \arrow[r] & B & C \arrow[l]
+\end{tikzcd} \]
+sobre una categoría, su límite se denomina \newterm{pullback}.
+\end{definition}
+\begin{definition}
+Dado un diagrama de \newterm{pareja paralela}
+\[ \begin{tikzcd}
+A \arrow[r,bend left] \arrow[r,bend right] & B
+\end{tikzcd} \]
+sobre una categoría, su límite se denomina \newterm{ecualizador} y su colímite, \newterm{coequalizador}.
+\end{definition}
+
+En resumen:
+
+\begin{center}
+\begin{tabular}{ c | c | c }
+  Forma & Límite & Colímite\\
+  \hline
+  $\emptyset$ & Objeto terminal & Objeto inicial \\
+  Discreta finita & Producto & Coproducto \\
+  Span & - & Pushout \\
+  Cospan & Pullback & - \\
+  Pareja paralela & Ecualizador & Coecualizador
+\end{tabular}
+\end{center}
+
+\section{Functores continuos}
+Claramente un functor envía conos a conos, pero no es cierto que envíe límites a límites en general.
+
+\begin{definition}
+Un functor $F \colon \cat \to \mathcal{D}$ se dice que \emph{preserva límites de forma} $\mathcal{I}$ si para todo diagrama $D \colon \mathcal{I} \to \cat$ con cono límite $L = \underset{\longleftarrow}\lim D$, el cono $F L$ es el cono límite del diagrama $F \circ D$.
+Se suele expresar como:
+\[ F\left(\underset{\longleftarrow}\lim D\right) = \underset{\longleftarrow}\lim \left(F \circ D\right)\]
+Análogamente, $F$ se dice que \emph{preserva colímites de forma} $D$ si:
+\[ F\left(\underset{\longrightarrow}\lim D\right) = \underset{\longrightarrow}\lim \left(F \circ D\right)\]
+\end{definition}
+
+La uso de límites aquí nos recuerda a la definición de funciones continuas de la matemática clásica.
+Esto lleva a la definición de functor continuo y cocontinuo:
+\begin{definition}
+Un functor es \index{functor!(co)continuo}\emph{functor (co)continuo} si preserva (co)límites de cualquier forma pequeña.
+\end{definition}
+%Mac Lane
+%\begin{theorem}
+%Para una categoria localmente pequeña $\cat$ y un objeto $A \in \cat$, el functor $\cat(A,-)$ es continua.
+%\end{theorem}
+%\begin{proof}
+%Sea $D \colon \mathcal{I} \to \cat$ un diagrama pequeño cualquiera con cono límite $\underset{\longleftarrow}\lim D$ formado por un vértice $V$ y morfismos 
+%\end{proof}
+
+En algunos contextos, resulta más útil debilitar la definición de functor continuo a diagramas de forma $\omega = (\mathbb{N}, \leq)$, esto nos lleva a la definición de functor $\omega$-continuo.
+Un diagrama de forma $\omega$ se refiere a una cada de morfismos como:
+\[ \dots \rightarrow A_3 \rightarrow A_2 \rightarrow A_1 \Rightarrow A_0 \]
+En estos casos, se suele identificar el diagrama con la sucesión $\{A_n\}_{n \in \mathbb{N}}$, de manera que el límite se escribe:
+\[ \underset{\longleftarrow}\lim A_i\]
+\begin{definition}
+Un functor es $\omega$\emph{-(co)continuo} si preserva (co)límites de forma $\omega$.
+\end{definition}
+\begin{example}
+Dado un primo $p$, los enteros $p$-ádicos se definen como el límite del diagrama:
+\[ \dots \rightarrow \mathbb{Z}/p^3\Z \rightarrow \mathbb{Z}/p^2\Z \rightarrow \mathbb{Z}/p\Z \]
+en la categoría de anillos.
+\end{example}
+
+\section{Transformaciones naturales}
+\begin{definition}
+Una transformación natural $\mu$ entre dos functores $F, G \colon \cat \to \mathcal{D}$ es una colección de morfismos
+\[ \mu_A \colon F A \to G A \]
+donde $A \in \cat$ tal que para todo $f \colon A \to B$ el diagrama:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\mu_A"] \arrow[d,"F f" left] & G A \arrow[d,"G f"]\\
+F B \arrow[r,"\mu_B"] & G B
+\end{tikzcd}
+\]
+conmuta.
+\end{definition}
+
+Usaremos la notación $\mu \colon F \Rightarrow G$ para una transformación natural $\mu$.
+Llamamos $\mu_A$ \newterm{componente} de $\mu$ en $A$.
+La conmutatividad del diagrama se denomina \emph{propiedad de naturalidad} y es equivalente a:
+\[ G f \circ \mu_A = \mu_B \circ F f \]
+para todo morfismo $f \colon A \to B$ en $\cat$.
+
+Hay dos formas de componer transformaciones naturales.
+\begin{definition}
+Dado dos transformaciones naturales $\mu \colon F \Rightarrow G$ y $\eta \colon G \Rightarrow H$ donde $F,G,H \colon \cat \to \mathcal{D}$ son functores, su composición horizontal $\eta \circ \mu \colon F \Rightarrow H$ viene dada por
+\[ (\eta \circ \mu)_A = \eta_A \circ \mu_A \]
+para todo objeto $A \in \cat$.
+\end{definition}
+\[ \begin{tikzcd}{\cat} \arrow[r,"F", bend left=100, ""{name=U}] \arrow[r,"G", pos=0.2,""{name=M, pos=0.5,below},""{name=M', pos=0.5,above}] \arrow[r,"H" below, bend right=100, ""{name=D, below}] & \mathcal{D}\\
+\arrow[Rightarrow, from=U, to=M, "\mu"] \arrow[Rightarrow, from=M', to=D, "\eta"]\end{tikzcd}\]
+
+\begin{lemma}\label{functor-categoria}
+Dados dos categorías $\cat$ y $\mathcal{D}$, existe una categoría donde los objetos son functores $\cat \to \mathcal{D}$ y los morfismos son transformaciones naturales.
+
+Denotamos dicha categoría como $\mathcal{D}^\cat$ ó $[\cat,\mathcal{D}]$.
+\end{lemma}
+\begin{proof}
+Vemos primero que podemos definir una transformación natural identidad $\iota \colon F \Rightarrow F$ dado por $\iota_A = \id_{F A}$ para todo $A \in \cat$.
+Por otro lado, que la composición de transformaciones naturales es asociativa es trivial.
+\end{proof}
+
+% Milewski
+Nos interesa ahora definir una composición de transformaciones naturales de la forma:
+\begin{equation}\label{ver-comp} \begin{tikzcd}{\cat} \arrow[r,"F", bend left, ""{name=FU}] \arrow[r,"G" below, bend right, ""{name=FD, below}] & \mathcal{D} \arrow[r,"H",bend left, ""{name=GU}] \arrow[r,"K" below, bend right, ""{name=GD, below}] & \mathcal{E}
+\arrow[Rightarrow, from=FU, to=FD, "\mu"] \arrow[Rightarrow, from=GU, to=GD, "\eta"]\end{tikzcd}\end{equation}
+Nuestro objeto será definir una transformación natural que vaya de $H \circ F$ a $G \circ K$.
+%Riehl/Peter Selinger: Introduction to categorical logic. pdf, page 41
+Para ello necesitaremos describir dos formas en las que se pueden componer un functor y una transformación natural:
+\begin{definition}
+Si $F \colon \cat \to \mathcal{D}$ y $G, H\colon \mathcal{D} \to \mathcal{E}$ son functores y $\mu \colon G \Rightarrow H$ es una transformación natural, el \newterm{whiskering izquierdo}:
+\[ \mu \circ F \colon G \circ F \Rightarrow H \circ F \]
+está definido como:
+\[ (\mu \circ F)_A = \mu_{F A} \]
+\end{definition}
+La naturalidad de $(\mu \circ F)$ es consecuencia de la naturalidad de $\mu$.
+
+Se suele eliminar $\circ$ y escribir sencillamente $\mu F$.
+
+Por otro lado:
+\begin{definition}
+Si $F, G \colon \cat \to \mathcal{D}$ y $H\colon \mathcal{D} \to \mathcal{E}$ son functores y $\mu \colon F \Rightarrow G$ es una transformación natural, el \newterm{whiskering derecho}:
+\[ H \circ \mu  \colon H \circ F \Rightarrow H \circ G \]
+está definido como:
+\[ (H \circ \mu)_A = H(\mu_A) = H\mu_A \]
+\end{definition}
+Aquí la naturalidad no es tan evidente.
+\begin{proposition}
+El \emph{whiskering} derecho es una transformación natural.
+\end{proposition}
+\begin{proof}
+Por la naturalidad de $\mu$, se da la igualdad
+\[ G f \circ \mu_A = \mu_B \circ F f \]
+aplicando $H$ y su propiedad de functorialidad:
+\[ H(G f) \circ H\mu_A = H\mu_B \circ H(F f) \]
+Lo que prueba la naturalidad de $H \circ \mu$.
+\end{proof}
+Se suele escribir $H\mu$ en lugar de $H \circ \mu$.
+
+Con esto, ya podemos definir la composición horizontal o composición de Godement.
+\begin{definition}
+Sean $\cat$, $\mathcal{D}$ y $\mathcal{E}$ tres categorías.
+Consideramos los functores $F$, $G$, $H$ y $K$, y las transformaciones naturales $\mu$ y $\eta$ en la configuración dada en \ref{ver-comp}.
+Definimos la composición horizontal $\eta * \mu \colon H \circ F \Rightarrow K \circ G$ como:
+\[ (\eta * \mu)_A = \eta_{G A} \circ H\mu_A \]
+\end{definition}
+\begin{proposition}
+La composición de horizontal $\eta * \mu$ es una transformación natural.
+\end{proposition}
+%Riehl
+\begin{proof}
+Por la naturalidad de $\mu$ y $\eta$ se tiene que cada cuadrado del siguiente diagrama es conmutativo.
+\[\begin{tikzcd}
+{H(F A)} \arrow[r,"H\mu_A"] \arrow[d,"H(F f)"] & {H(G A)} \arrow[r,"\eta_{G A}"] \arrow[d,"H(G f)"] & {K(G A)} \arrow[d,"K(G f)"]\\
+{H(F B)} \arrow[r,"H\mu_A"] & {H(G B)} \arrow[r,"\eta_{G B}"] & {K(G B)}
+\end{tikzcd}\]
+Luego, componiendo horizontalmente, tenemos que es conmutativo el diagrama:
+\[\begin{tikzcd}
+{H(F A)} \arrow[rr,"\eta_{G A} \circ H\mu_A"] \arrow[d,"H(F f)"] & & {K(G A)} \arrow[d,"K(G f)"]\\
+{H(F B)} \arrow[rr,"\eta_{G B} \circ H\mu_A"] & & {K(G B)}
+\end{tikzcd}\]
+Esto demuestra la naturalidad de $\eta * \mu$.
+\end{proof}
+
+Véase que la composición horizontal se puede ver como una composición vertical tras aplicar un \emph{whiskering} apropiado a cada transformación natural.
+
+\begin{proposition}
+Para una transformación natural $\mu \colon F \Rightarrow G$ y una transformación natural identidad $\iota \colon H \Rightarrow H$:
+\[ \iota * \mu = H\mu \]
+\[ \mu * \iota = \mu H\]
+\end{proposition}
+\begin{proof}
+\begin{align*}
+(\iota * \mu)_A & = \iota_{G A} \circ F\mu_A\\
+& = \id_{H (G A)} \circ H\mu_A\\
+& = H\mu_A
+\end{align*}
+Por otro lado:
+\begin{align*}
+(\mu * \iota)_A & = \mu_{H A} \circ G\iota_A\\
+& = \mu_{H A} \circ G\id_{H A}\\
+& = \mu_{H A} \circ \id_{G(H A)}\\
+& = \mu_{H A}\\
+& = (\mu H)_A
+\end{align*}
+\end{proof}
+
+\section{Equivalencias y functores adjuntos}\label{functores-adjuntos}
+Obsérvese que tenemos una noción de ``equivalencia'' cuando hablamos de objetos en una categoría que no es estrictamente igualdad, sino isomorfía.
+Que dos objetos sean isomorfos significa que existan morfismos entre ellos inversos el uno del otro.
+Al nivel de la categoría de categorías pequeñas $\Cat$, podríamos hablar de categorías $\cat$ y $\mathcal{D}$ isomorfas si tienen functores $F \colon \cat \to \mathcal{D}$ y $G \colon \mathcal{D} \to \cat$ tal que $G \circ F = \Id_\cat$ y $F \circ G = \Id_\mathcal{D}$.
+Sin embargo, esta idea resulta muy estricta para ser aplicada, en lugar de ello hacemos uso de equivalencias.
+Para relajar esta definición, usaremos transformaciones naturales.
+
+\begin{definition}
+Una \newterm{equivalencia} entre dos categorías $\cat$ y $\mathcal{D}$ es un par de functores $F \colon \cat \to \mathcal{D}$ y $G \colon \mathcal{D} \to \cat$ de manera que existen dos isomorfismos naturales $G \circ F \cong \Id_\cat$ y $F \cong G \cong \Id_\mathcal{D}$.
+\end{definition}
+
+Aunque las equivalencias resultan útiles en la teoría de categorías de orden superior, no sirve para un tipo de functor muy habitual en diversos campos de la matemáticas.
+
+Aquí entra la idea de adjunción.
+Antes de entrar formalmente en ellos, veamos un ejemplo que motiva la noción que formalizaremos.
+
+%\begin{example}
+%Consideremos el caso de dos conjuntos pre-ordenados $\cat$ y $\mathcal{D}$.
+%Podemos verlos como categorías, donde los objetos son los elementos del conjunto y hay un morfismo $A \to B$ si $A \leq B$.
+%Una función $F \colon \cat \to \mathcal{D}$ que mantiene el orden puede ser visto sencillamente como un functor sobre estas categorías.
+
+%Un functor $G \colon \mathcal{D} \to \cat$ es un \newterm{adjunción derecha} a $F$ si, para todo $A \in \cat$ y $B \in \mathcal{B}$:
+%\[ F A \leq B \sii A \leq G B \]
+%\end{example}
+
+Sea $U \colon \Grp \to \Set$ el functor que asocia a cada grupo $(G,*)$ el conjunto de sus elementos $G$.
+Esta clase de functor, que sólo ``olvida'' la estructura sobre un objeto, se denomina \index{functor!olvidadizo}\emph{functor olvidadizo}.
+Sea $F \colon \Set \to \Grp$ el functor que asocia a cada conjunto su correspondiente \newterm{grupo libre}.
+En concreto, para un conjunto $S$, $F S$ puede verse como el grupo formado por la concatenación de palabras cuyas letras son elementos de $S$ y sus correspondiente letras inversas.
+
+Estos functores no son inversos el uno del otro, ni siquiera forman una equivalencia, pero representan una relajación de inversión.
+Esta idea se formaliza en la adjunción:
+
+\begin{definition}
+Una \newterm{adjunción} entre categorías $\cat$ y $\mathcal{D}$ son functores
+\[ F \colon \cat \to \mathcal{D} \qquad U \colon \mathcal{D} \to \cat \]
+y dos transformaciones naturales:
+\[ \eta \colon \Id_\cat \Rightarrow U \circ F \qquad \varepsilon \colon F \circ U \Rightarrow \Id_\mathcal{D} \]
+que satisfagan las identidades:
+
+\[
+\begin{tikzcd}
+F \arrow[r,Rightarrow,"F \eta"] \arrow[dr,Rightarrow,"\iota_F"] & F \circ U \circ F \arrow[d,Rightarrow,"\varepsilon F"]\\
+& F
+\end{tikzcd}
+\qquad
+\begin{tikzcd}
+U \arrow[r,Rightarrow,"\eta U"] \arrow[dr,Rightarrow,"\iota_U"] & U \circ F \circ U \arrow[d,Rightarrow,"U \varepsilon"]\\
+& U
+\end{tikzcd}
+\]
+donde $\iota_F \colon F \Rightarrow F$ es la transformación natural identidad.
+\end{definition}
+
+Dicha adjunción se suele expresar como:
+\[ \cat
+    \underoverset
+      {\underset{F}{\longrightarrow}}{\overset{U}{\longleftarrow}}{\top}
+  \mathcal{D}\]
+o sencillamente $F \dashv U$.
+Se suele decir que $U$ es la adjunta derecha de $F$ y $F$ es la adjunta izquierda de $U$.
+Las transformaciones naturales $\eta$ y $\varepsilon$ se llaman \newterm{unidad} y \newterm{counidad} respectivamente.
+
+Volviendo a nuestro ejemplo:
+\[ \Set
+    \underoverset
+      {\underset{F}{\longrightarrow}}{\overset{U}{\longleftarrow}}{}
+  \Grp\]
+para formar una adjunción basta tomar las transformaciones naturales $\eta_S \colon S \to U (F S)$ que envía cada elemento $s \in S$ a $s$ como elemento de $F S$ y $\varepsilon_G \colon F (U G) \to G$ que envía cada palabra cuyas letras son elementos $G$ a su producto.
+Con esto es una simple tarea comprobar que $F \dashv U$.
+
+\begin{proposition}
+Sea $F \colon \cat \to \mathbb{1}$ un functor a la categoría de un objeto $\mathbb{1}$ y $A$ un objeto de $\cat$.
+Dado $U \colon \mathbb{1} \to \cat$ cuya imagen es $A$, entonces $1$ es objeto terminal de $\cat$ si y sólo si $F \dashv U$.
+\end{proposition}
+\begin{proof}
+Denominemos $*$ el único objeto de $\mathbb{1}$.
+Obsérvese primero que $F (U *) = *$ y que $U (F B) = A$ para todo $B \in \cat$. Por lo tanto:
+\[ \eta_B \colon B \to A \]
+\[ \varepsilon_* = \id_* \]
+Entonces, tenemos:
+\[ F\eta_B = \id_* \]
+\[ \varepsilon_{F B} = \id_1\]
+\[ U\varepsilon_* \colon \id_A \]
+\[ \eta_{U *} = \eta_A \colon A \to A \]
+
+Luego se da siempre una de las dos igualdades triangulares:
+\[ F\eta \circ \varepsilon F = \iota \]
+
+Supongamos que $A$ es un objeto terminal, entonces $\eta$ es natural y $\eta_A = \id_A$, luego se da la otra igualdad triangular y se demuestra que $F \dashv U$.
+
+Supongamos que $F \dashv U$, entonces:
+\[ \id_A = U \varepsilon_1 \circ \eta_A = \id_A \circ \eta_A = \eta_A \]
+Sea $f \colon B \to A$ morfismo cualquiera a $A$.
+Por la naturalidad de $\eta$, se tiene que el siguiente diagrama conmuta:
+\[\begin{tikzcd}
+B \arrow[r,"\eta_B"] \arrow[d,"f" left] & A \arrow[d,"U(F f)"]\\
+A \arrow[r,"\eta_A"] & A
+\end{tikzcd}\]
+Obsérvese que $U (F f) = U (\id_1) = \id_A$, luego tenemos que: $\eta_B = f$, lo que implica la unicidad de los morfismos $B \to A$ y que $A$ es objeto terminal.
+\end{proof}

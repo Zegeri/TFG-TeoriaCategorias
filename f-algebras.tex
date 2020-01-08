@@ -1,0 +1,220 @@
+\chapter{F-álgebras}
+\section{Functores polinomiales}
+Nuestro objetivo va a ser describir una cierta clase de endofunctores que pueden ser descritos por producto y coproductos.
+Por esto, supongamos que estamos en una categoría $\cat$ con productos y coproductos finitos.
+Recordemos que esto implica, en particular que existen objetos iniciales y finales.
+
+\begin{definition}
+Un \index{functor!polinomial}\emph{functor polinomial} es un miembro de la menor colección de functores que:
+\begin{itemize}
+  \item Contiene el functor identidad $\Id$.
+  \item Contiene todo functor constante $\Delta_A$, que asocia todo elemento al objeto $A$.
+  \item Es cerrada bajo composición, producto y coproducto, donde el producto de dos functores se corresponde con el functor:
+  \[ (F \times G)(X) = F(X) \times G(X)\]
+  y el coproducto se corresponde con:
+  \[ (F + G)(X) = F(X) + G(X) \]
+\end{itemize}
+\end{definition}
+Estos tipos de functores se expresan como un polinomio.
+Por ejemplo, $F(X) = 1 + A \times X$ se debe entender como el functor que asocia a todo objeto $X$ el coproducto del producto de $A$ y $X$ con el objeto terminal $1$.
+
+Consideremos el functor $F(X) = 1 + X$ y una $F$-álgebra $(A,f)$ donde $f \colon F(A) \to A$.
+Por la definición de coproducto, este morfismo $f$ puede ser identificado con alguno de dos morfismos $f_1 \colon 1 \to U$ y $f_2 \colon A \to A$.
+Viendo $F(X)$ como un tipo parametrizado por $X$, tiene sentido considerar $f_1$ y $f_2$ los \index{constructor}\emph{constructores} de $F(X)$.
+
+Recordemos que en Haskell, el producto de dos tipos es su combinación en un par.
+El objeto terminal se corresponde con \code{()} y el objeto inicial se define como
+\begin{minted}{haskell}
+data Empty
+\end{minted}
+Es decir, un tipo sin constructor.
+En este contexto, podemos identificar $F(X)$ con el functor \code{Maybe a} y los morfismos $f_1$ y $f_2$ con \code{Nothing} y \code{Just}.
+
+\section{F-álgebras}
+\begin{definition}
+Sea $\cat$ una categoría y $F \colon \cat \to \cat$ un endofunctor.
+Una $F$-álgebra es un par $(A,\alpha)$, donde $A \in \cat$ y $\alpha \colon F a \to a$ es un morfismo de $\cat$.
+\end{definition}
+
+% A taste of category theory for computer scientist
+En algunos libros, también se le llama \newterm{punto prefijo}.
+Aunque no usaremos el nombre de punto prefijo, sí diremos que si $\alpha$ es isomorfismo, al par $(A,\alpha)$ par se le llama también \newterm{punto fijo}, señalando su similitud con la idea de punto fijo habitual de análisis.
+
+Puede ser interesante darle una estructura de categoría a la colección de $F$-álgebras.
+Para ello, necesitamos definir morfismos de un $(A,\alpha)$ a $(B,\beta)$.
+Suponiendo que tenemos un morfismo $f \colon A \to B$, observamos que $F f \colon F A \to F B$, que puede ser compuesta con $\beta$:
+\[ \beta \circ F f \colon F A \to B \]
+Por otro lado:
+\[ f \circ \alpha \colon F A \to B \]
+La igualdad de estos dos morfismos nos dará la fundación de la categoría de $F$-álgebras.
+Es más, como estos morfismos preservan bien la estructura de $F$-álgebras, les daremos el nombre (honorífico) de $F$-homomorfismo:
+
+\begin{proposition}\label{prop:fmorfismo}
+Sea $\cat$ una categoría y $F$ un endomorfismo en $\cat$.
+Sea $Alg_F$ la colección de $F$-álgebras con homomorfismos $f \colon (A,\alpha) \to (B,\beta)$ tal que:
+\begin{itemize}
+\item $f \colon A \to B$ es un morfismo de $\cat$.
+\item El siguiente diagrama conmuta
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F f"] & A \arrow[d,"f"]\\
+F B \arrow[r,"\beta"] & B
+\end{tikzcd}
+\]
+\end{itemize}
+Entonces $Alg_F$ forma una categoría.
+\end{proposition}
+\begin{proof}
+Basta ver que la composición está bien definida, pues las demás condiciones se cumplen trivialmente.
+Sean $f \colon (A,\alpha) \to (B,\beta)$ y $g \colon (B,\beta) \to (C,\gamma)$ homomorfismos de $F$-álgebras.
+Entonces cada cuadrado del siguiente diagrama conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F f"] & A \arrow[d,"f"]\\
+F B \arrow[r,"\beta"] \arrow[d,"F g"] & B \arrow[d,"g"]\\
+F C \arrow[r,"\gamma"] & C
+\end{tikzcd}
+\]
+Tenemos que:
+\[ g \circ f \circ \alpha = g \circ \beta \circ F f = \gamma \circ F g \circ F f \]
+Como $F g \circ F f = F (g \circ f)$, tenemos que el siguiente diagrama conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F (g \circ f)"] & A \arrow[d,"g \circ f"]\\
+F C \arrow[r,"\gamma"] & C
+\end{tikzcd}
+\]
+Luego $g \circ f$ es un homomorfismo de $F$-álgebras.
+\end{proof}
+
+Una vez hemos determinado una nueva categoría, podemos empezar a buscar qué aspecto tienen nuestra construcciones universales en esta nueva categoría.
+Resultará de particular interés el objeto inicial de una $Alg_F$ por el siguiente lema debido a \hyperref[lambek-pf]{Lambek}:
+
+\begin{lemma}\label{lambek-lemma}
+Sea $F \colon \cat \to \cat$ un endofunctor.
+Si $(A,\alpha)$ es una $F$-álgebra inicial de $Alg_F$, entonces $(A,\alpha)$ es un punto fijo de $F$.
+\end{lemma}
+\begin{proof}
+Sea $(A,\alpha)$ un objeto inicial en $Alg_F$.
+Para decir que $(A,\alpha)$ es un punto fijo, debemos ver que $\alpha$ es un isomorfismo.
+Para ello consideramos el $F$-álgebra $(F A, F \alpha)$.
+Como $(A,\alpha)$ es inicial, existe un único homomorfismo $u \colon (A, \alpha) \to (F A, F \alpha)$.
+
+Por un lado, $\alpha \circ u \colon (A, \alpha) \to (A, \alpha)$, pero el único homomorfismo de un objeto inicial a sí mismo es el morfismo identidad, luego $\alpha \circ u = \id_{(A, \alpha)}$.
+Por definición de homomorfismo, el siguiente diagram conmuta:
+\[
+\begin{tikzcd}
+F A \arrow[r,"\alpha"] \arrow[d,"F u"] & A \arrow[d,"u"]\\
+F (F A) \arrow[r,"F \alpha"] & F A
+\end{tikzcd}
+\]
+Entonces:
+\[ u \circ \alpha = F \alpha \circ F u = F (\alpha \circ u) = F (\id_{(A, \alpha)}) = \id_{(F A, F \alpha)} \]
+Luego $\alpha$ tiene inversa y debe ser isomorfismo.
+\end{proof}
+
+Dada una $F$-álgebra inicial $(A,\alpha)$, para toda otra $F$-áĺgebra $(B,\beta)$, el único homomorfismo de $(A,\alpha)$ a $(B,\beta)$ recibirá el imponente nombre de \newterm{catamorfismo}.
+Por ejemplo, el homomorfismo $u$ de la demostración era un catamorfismo a $(F A, F \alpha)$.
+
+\section{Catamorfismos en Haskell}
+
+Debemos empezar implementando álgebras en Haskell:
+\begin{minted}{haskell}
+type Algebra f a = f a -> a
+\end{minted}
+Hay que tener en cuenta que no estamos imponiendo que \code{f} sea un functor, ya que Haskell no permite imponer restricciones a constructores de datos sin recurrir a GADTs\footnote{\url{https://wiki.haskell.org/Data_declaration_with_constraint}}.
+
+Lo siguiente que necesitamos es implementar el punto fijo de \code{f}:
+\begin{minted}{haskell}
+newtype Fix f = U (f (Fix f))
+\end{minted}
+Como \code{Fix} tiene un único constructor, hay un isomorfismo entre \code{Fix f} y \code{f (Fix f)}.
+Este isomorfismo es \code{U}, y su inversa es:
+\begin{minted}{haskell}
+unFix :: Fix f -> f (Fix f)
+unFix (U f) = f
+\end{minted}
+
+Ahora que sabemos que (\code{Fix f}, \code{U}) es el álgebra inicial, sabemos que existe un catamorfismo de este álgebra a todas las demás álgebras.
+Consideramos cualquier otra álgebra (\code{b}, \code{g}), con \code{g :: Algebra f b}. Sea \code{m :: Fix f -> b} el correspondiente catamorfismo, entonces por \ref{prop:fmorfismo}:
+
+\[
+\begin{tikzcd}
+{f (Fix f)} \arrow[r,"fmap\ m"] \arrow[d,"U"] & f b \arrow[d,"g"]\\
+{Fix f} \arrow[r,"m"] & b
+\end{tikzcd}
+\]
+
+Podemos invertir \code{U} con \code{unFix}, luego la conmutatividad del diagrama es equivalente a que:
+\begin{minted}{haskell}
+m = g . fmap m . unFix
+\end{minted}
+Usamos esto para definir recursivamente el catamorfismo:
+\begin{minted}{haskell}
+cata :: (Functor f) => (Algebra f b) -> (Fix f -> b)
+cata g = g . fmap (cata g) . unFix
+\end{minted}
+
+Veamos un ejemplo con el functor \code{Maybe}
+\begin{example}
+Especialicemos el código anterior para \code{Maybe}:
+\begin{minted}{haskell}
+type AlgebraM a = Algebra Maybe a
+type FixM = Fix Maybe
+\end{minted}
+Por ahora, no dice mucho. Pero al añadir las siguientes de líneas obtenemos una perspectiva interesante:
+\begin{minted}{haskell}
+type Nat = FixM
+
+cero :: Nat
+cero = U Nothing
+suc :: Nat -> Nat
+suc = U . Just
+\end{minted}
+Es decir, los naturales pueden verse como el punto fijo del functor \code{Maybe}.
+\end{example}
+
+\section{F-coálgebras en Haskell}
+Una \index{F-coálgebra}\emph{$F$-coálgebra} es, naturalmente, el dual de una $F$-álgebra.
+Más precisamente, es un par $(A,\alpha)$, donde $\alpha \colon A \to F A$.
+En Haskell:
+\begin{minted}{haskell}
+type Coalgebra f a = a -> f a
+\end{minted}
+
+Al igual que con las álgebras, las $F$-coálgebras forman una categoría $Coalg_F$.
+El lema de Lambek \eqref{lambek-lemma} en el contexto de las coálgebras dice así:
+\begin{lemma}\ref{lambek-lemma}
+Sea $F \colon \cat \to \cat$ un endofunctor.
+Si $(A,\alpha)$ es una $F$-coálgebra terminal de $Coalg_F$, entonces $(A,\alpha)$ es un punto fijo de $F$.
+\end{lemma}
+
+El único homomorfismo de una $F$-coálgebra a la $F$-coálgebra terminal se denomina \newterm{anamorfismo}.
+Como en el caso del catamorfismo, podemos definirlo recursivamente:
+\begin{minted}{haskell}
+ana :: (Functor f) => (Coalgebra f b) -> (b -> Fix f)
+ana g = U . fmap (ana g) . g
+\end{minted}
+
+\begin{example}
+Consideramos el functor $F(X)=1+A\times X$, que se puede ver como la composición de $G(X) = A \times X$ con $H(X) = 1+X$.
+En términos de Haskell, la composición de \code{(a,)} con \code{Maybe}.
+\begin{minted}{haskell}
+data F a x = Maybe (a,x)
+\end{minted}
+Su punto fijo es un tipo de la forma $X = 1 + A \times X$, que se corresponde con el functor lista \code{[a]}.
+
+Por lo tanto, en este contexto \code{ana} tiene la forma:
+\begin{minted}{haskell}
+ana :: (x -> Maybe (a,x)) -> (x -> [a])
+\end{minted}
+\code{ana} nos permite construir una lista (posiblemente infinita) a partir de una \textquote{semilla} \code{x} y una función que devuelva \code{a}, el valor generado, y \code{x}, una nueva semilla. 
+Una implementación de este anamorfismo del paquete básico de Haskell es la función \code{unfoldr}.
+\end{example}
+
+\section{Referencias}
+\begin{itemize}
+  \item Pierce, B.C. (1991). \emph{A taste of category theory for computer scientist}, capítulo 3.4.
+  \item Milewski, B. (2014). \emph{Category Theory for Programmers}, capítulo 24.
+  \item Lambek, J. (1968). A fixed point theorem for complete categories. \emph{Mathematische Zeitschrift 103}, páginas 151--161. \label{lambek-pf}
+\end{itemize}
