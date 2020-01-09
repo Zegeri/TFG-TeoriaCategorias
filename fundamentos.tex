@@ -13,13 +13,13 @@ Aunque los axiomas que pediremos a las categorías no son muchos, resulta que po
 Una \newterm{categoría} $\cat$ es:
 \begin{itemize}
 \item Una colección de \index{objeto}\emph{objetos} $O(\cat)$.
-\item A cada par de objetos $A$, $B$ en $O(\cat)$, una colección de \index{morfismo}\emph{morfismos} $C(A,B)$ de $A$ a $B$.
-Un morfismo $f$ en $C(A,B)$ se denotará $f \colon A \to B$.
+\item A cada par de objetos $A$, $B$ en $O(\cat)$, una colección de \index{morfismo}\emph{morfismos} $\cat(A,B)$ de $A$ a $B$.
+Un morfismo $f$ en $\cat(A,B)$ se denotará $f \colon A \to B$.
 \item A cada par de morfismos $f \colon A \to B$, $g \colon B \to C$, un morfismo de $g \circ f \colon A \to C$ llamado \newterm{morfismo composición} de $f$ y $g$.
 \end{itemize}
 de manera que:
 \begin{itemize}
-\item Para cada objeto $A \in O(\cat)$, existe un morfismo $\id_A \in C(A,A)$ que llamamos \newterm{morfismo identidad}.
+\item Para cada objeto $A \in O(\cat)$, existe un morfismo $\id_A \in \cat(A,A)$ que llamamos \newterm{morfismo identidad}.
 \item Para todo morfismo $f \colon A \to B$:
 \[ \id_B \circ f = f \circ \id_A = f \]
 \item Asociatividad de la composición: Para toda tripleta de morfismos $f \colon A \to B$, $g \colon B \to C$, $h \colon C \to D$:
@@ -27,7 +27,7 @@ de manera que:
 \end{itemize}
 \end{definition}
 
-Una notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $C(A,B)$.
+Una notación habitual es usar $Hom(A,B)$ para referirse a la colección de morfismos entre $A$ y $B$, lo que hemos llamado $\cat(A,B)$.
 
 A menudo usaremos diagramas para expresar visualmente ciertas propiedades.
 En Teoría de Categoría, existe una definición precisa de diagrama, pero por ahora, no tenemos las herramientas suficientes para explicarlo.
@@ -45,11 +45,9 @@ C & & D \arrow[ll,"h"]
 conmuta.
 
 Dado un morfismo $f \colon A \to B$, llamaremos dominio de $f$ a $\dom f = A$.
-De igual manera, el codominio de $f$ será $\cod f = B$.
+De igual manera, el codominio de $f$ será $\cod f = B$. Además, llamaremos a la colección de morfismos de una categoría $M(\cat)$.
 
-Además, llamaremos a la colección de morfismos de una categoría $M(\cat)$.
-
-No hay ni mucho menos falta de ejemplos de categorías, ni siquiera si nos limitamos a un campo específicio de la matemática.
+No hay falta de ejemplos de categorías, ni siquiera si nos limitamos a un campo específicio de la matemática.
 Algunos ejemplos ilustrativos son los siguientes:
 
 \begin{example}
