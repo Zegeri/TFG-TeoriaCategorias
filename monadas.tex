@@ -122,7 +122,7 @@ Imaginemos que quisieramos combinar estas dos funciones en una nueva función:
 \begin{minted}{haskell}
 convertir_inversa :: String -> Maybe Float
 \end{minted}
-Donde \code{convertir\_inversa} primero usa \code{convertir} y luego usa \code{inversa} sobre el posible resultado.
+Donde \code{convertir_inversa} primero usa \code{convertir} y luego usa \code{inversa} sobre el posible resultado.
 ¿Cómo podríamos implementar esta función?
 Un camino sería el siguiente:
 \begin{minted}{haskell}
@@ -146,23 +146,21 @@ Aquí entra en juego la transformación natural $\mu \colon F^2 \Rightarrow F$, 
 join :: Monad m => m (m a) -> m a
 \end{minted}
 \code{join} nos permite transformar \code{Maybe (Maybe Float)} en \code{Maybe Float}.
-Luego podríamos implementar \code{convertir\_inversa} como la composición de estas tres funciones:
+Luego podríamos implementar \code{convertir_inversa} como la composición de estas tres funciones:
 \begin{minted}{haskell}
 convertir_inversa = join . fmap inversa . convertir
 \end{minted}
-Estamos definiendo \code{convertir\_inversa} de manera que el siguiente diagram conmute:
+Estamos definiendo \code{convertir_inversa} de manera que el siguiente diagram conmute:
 \begin{displaymath}\begin{tikzcd}[column sep=6em,row sep=4em]
 {String} \arrow[r,"convertir\_inversa",dashed] \arrow[d,"inversa"]& {Maybe\ Float}\\
 {Maybe\ String} \arrow[r,"{fmap\ inversa}"] & {Maybe\ (Maybe\ Float)} \arrow[u,"join"]
 \end{tikzcd}\end{displaymath}
 Se puede reconocer aquí el diagrama que define la composición de Kleisli $\circ_F$.
 En Haskell, dicha composición se denota a menudo como \code{>=>}, llamado conmúnmente \newterm{operador pez}, con tipo:
-
 \begin{minted}{haskell}
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 \end{minted}
-
-y nos permite dar la siguiente definición sucinta de \code{convertir\_inversa}
+y nos permite dar la siguiente definición sucinta de \code{convertir_inversa}
 \begin{minted}{haskell}
 convertir_inversa = convertir >=> inversa
 \end{minted}
