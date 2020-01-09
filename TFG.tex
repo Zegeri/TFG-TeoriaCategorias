@@ -1,7 +1,7 @@
 %!TEX TS-program = pdflatex
 %!TEX encoding = utf8
 %!TEX options=--shell-escape
-\documentclass[12pt, twoside]{book}
+\documentclass[\OPTfontsize, twoside]{book}
 \usepackage[T1]{fontenc}
 \usepackage{bussproofs}
 \usepackage[utf8]{inputenc}
@@ -204,10 +204,15 @@
 % ============================
 % = Composición de la página =
 % ============================
-\usepackage[
-    a4paper,
-    textwidth=80ex,
-]{geometry}
+
+\usepackage[papersize={\OPTpagesize},
+            twoside,
+            includehead,
+            top=\OPTtopmargin,
+            bottom=\OPTbottommargin,
+            inner=\OPTinnermargin,
+            outer=\OPToutermargin,
+            bindingoffset=\OPTbindingoffset]{geometry}
 
 \linespread{1.069}
 \parskip=10pt plus 1pt minus .5pt
