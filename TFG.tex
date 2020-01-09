@@ -30,6 +30,15 @@
 \newcommand{\tutores}[1]{\newcommand{\guardatutores}{#1}}
 \tutores{Prof. Tutor José A. Alonso Jiménez}
 
+\makeatletter
+\AtBeginDocument{
+  \hypersetup{
+    pdftitle = {\@title},
+    pdfauthor = {\@author},
+    pdfsubject= {Matemáticas}
+  }
+}
+\makeatother
 
 \newenvironment{dedication}
   {\clearpage           % we want a new page
